@@ -1,141 +1,123 @@
-# DRAFT SCRIPT — Cara Kerja Obligasi SBN
+# DRAFT SCRIPT — Bedah Saham BMRI (Bank Mandiri)
 **Status:** DRAFT — MENUNGGU REVIEW (jangan render sebelum approval)
-**Tanggal riset:** 2 Juli 2026
-**Estimasi durasi:** ± 9–10 menit (~1.300 kata)
+**Tanggal riset:** 3 Juli 2026
+**Estimasi durasi:** ± 9–10 menit (~1.400 kata)
+**Visual:** Fase 2 pakai workflow baru — slide didesain di Canva per section + chart matplotlib lokal
 
 ---
 
-## FACT SHEET (semua angka dari web, diakses 2 Juli 2026)
+## FACT SHEET (semua angka dari web, diakses 3 Juli 2026)
 
 | Data | Angka | Sumber |
 |---|---|---|
-| BI-Rate terkini | **5,75%** (RDG 17–18 Juni 2026, naik 25 bps) | bi.go.id, CNN Indonesia |
-| Riwayat kenaikan BI-Rate 2026 | 4,75% → 5,25% (20 Mei) → 5,50% (9 Juni) → 5,75% (18 Juni) | CNN Indonesia |
-| Kupon ORI029 (Jan 2026) | 5,45% (tenor 3 th) / 5,80% (tenor 6 th), fixed | Bareksa |
-| Imbal hasil SR024 (Mar 2026) | 5,55% (3 th) / 5,90% (5 th), fixed | Infonasional |
-| Imbalan ST016 (Mei 2026) | Floor 6,05% (T2) / 6,25% (T4); spread 130/150 bps di atas BI-Rate; penyesuaian tiap 11 Feb/Mei/Agu/Nov | Bareksa, Kemenkeu |
-| Masa penawaran ORI030 | **6–30 Juli 2026** (kupon fixed, angka BELUM diumumkan per 2 Juli) | Bibit, OCBC, Kompas |
-| Sisa jadwal SBN ritel 2026 | SR025 (21 Agu–11 Sep), SBR015 (28 Sep–22 Okt), ST017 (6 Nov–2 Des) — tentatif | OCBC, Kompas, BCA |
-| Pajak kupon SBN | **10% final** (deposito: 20%) | Klikpajak, Bareksa |
-| Minimal pembelian | Rp1 juta, kelipatan Rp1 juta | Kompas, DJPPR |
-| Pembayaran kupon | ORI tiap tanggal 15/bulan; SR/ST/SBR tiap tanggal 10/bulan | Bareksa |
+| Laba bersih FY2025 (konsolidasi, atribusi pemilik) | **Rp56,3 T** (+0,93% dari Rp55,78 T di 2024) | IDN Financials, Indopremier, Databoks |
+| Kredit FY2025 (konsolidasi) | Rp1.895 T (+13,4% yoy) | IDN Financials |
+| NPL gross akhir 2025 | **0,96%**, coverage ratio 253% | IDN Financials |
+| Pendapatan bunga bersih 2025 | Rp106 T (+4,38%); non-bunga Rp48,5 T (+14,5%) | IDN Financials |
+| DPK 2025 | Rp2.106 T (+23,9%); dana murah Rp1.431 T (+12,6%) | IDN Financials |
+| Aset 2025 | Rp2.829,95 T (+16,6%); CAR 20,4% | IDN Financials |
+| Laba Q1 2026 | **Rp15,4 T** (+16,6% yoy); ROE 22,1%; NPL 0,98%; CAR 19,7% | Bisnis, iNews, IDX Channel, Databoks |
+| Harga saham (2 Jul 2026) | **Rp3.900** (rebound harian +2,36%; -3,7% sebulan; **-17,7% setahun**) | TradingEconomics |
+| Kapitalisasi pasar | Rp367,4 T (per 2 Jul, -11,2% seminggu) | TradingView/Stockbit |
+| Dividen tahun buku 2025 | **Rp476,9569/saham** (interim Rp100 + final Rp376,9569); yield TTM ±12,1–12,2% di harga sekarang | Bareksa (4 Mei 2026) |
+| Konsensus analis | 17 analis, rata-rata TP **Rp5.301** (kisaran 3.600–7.300) → upside ±36% dari 3.900 | TradingView |
+| TP sekuritas individual | Samuel 5.700 · MNC 6.050 · BRI Danareksa 6.200 (proy. yield 8,3%) · Macquarie 6.240 · CGS 6.700 · UBS 7.950 | Investortrust |
+| Konteks koreksi 30 Jun | IHSG -3,05% ke 5.643; bank besar rontok (BBRI -3,87% ke 2.730) | Databoks Katadata |
+| Penyebab tekanan | Sensitivitas BI-Rate (5,75%, naik 3x dlm sebulan), net sell asing, sentimen reshuffle kabinet, tarif impor AS 32% berlaku 1 Agustus | Investortrust, Investor.id |
 
-**⚠️ ITEM YANG PERLU DICEK ULANG SEBELUM RENDER:**
-1. **Kupon ORI030** — belum diumumkan saat riset. Biasanya rilis 1–3 hari sebelum masa penawaran (≈3–5 Juli). Kalau render setelah 6 Juli, WAJIB masukin angka resminya.
-2. Simulasi "kupon ST016 bisa naik ke ±7,05%" adalah ILUSTRASI mekanisme (BI-Rate 5,75% + spread 130 bps), bukan angka resmi — di script sudah diberi kalimat pengaman.
-3. Jadwal SBN sisa 2026 bersifat tentatif (disebut di script).
+**⚠️ CATATAN KONSISTENSI DATA (untuk review lo):**
+1. Angka kredit Q1 2026 (Rp1.530 T) dan DPK Q1 (Rp1.675 T) kemungkinan **bank-only**, beda basis dari angka FY2025 yang konsolidasi (Rp1.895 T / Rp2.106 T) — script sengaja TIDAK membandingkan keduanya langsung.
+2. Laba Q1 2025 (±Rp13,2 T) adalah turunan aritmetika dari "+16,6%", bukan angka yang diberitakan langsung — di script cuma disebut pertumbuhannya, bukan angka Q1 2025.
+3. Yield dividen ±12% adalah TTM di harga sekarang (karena harga turun); proyeksi analis pakai asumsi beda (7–8,3%). Script membedakan keduanya.
 
 ---
 
 ## SCRIPT
 
 ### HOOK (0:00–0:35)
-Tanggal 6 Juli ini, pemerintah buka lagi "lapak utang" buat kita semua — namanya ORI030. Dan timing-nya menarik: Bank Indonesia baru aja naikin suku bunga tiga kali dalam sebulan, sekarang nangkring di 5,75%. Pertanyaannya — kalau lo minjemin duit ke negara, lo dapet apa? Amankah? Dan kenapa banyak orang bilang ini "naik kelas"-nya orang yang biasa nabung deposito?
+Ada yang aneh di saham Bank Mandiri. Kuartal pertama tahun ini labanya naik 16,6 persen — salah satu yang paling kencang di antara bank besar. Tapi harga sahamnya? Turun hampir 18 persen dalam setahun, dan minggu lalu ikut rontok bareng IHSG. Laba naik, harga turun. Buat sebagian orang ini alarm. Buat sebagian lagi, ini... diskon. Kita bedah datanya, bukan feeling-nya.
 
-Di video ini kita bedah cara kerja obligasi negara alias SBN, dari nol, pakai angka asli tahun ini.
+Dan sebelum mulai: **konten ini untuk tujuan edukasi, bukan merupakan nasihat keuangan (financial advice).** Bukan ajakan beli atau jual. Keputusan tetap di tangan lo.
 
-Oh iya, satu hal dulu: **konten ini untuk tujuan edukasi, bukan merupakan nasihat keuangan (financial advice).** Semua keputusan investasi tetap di tangan lo.
+> [CANVA: hook slide — teks "LABA NAIK 16%, SAHAM TURUN 18%?" gaya kontras hijau/merah]
 
-> [VISUAL: Animasi grafik — line chart BI-Rate 2026: 4,75% → 5,25% → 5,50% → 5,75%, highlight tiga kenaikan Mei–Juni]
+### SECTION 1 — Kenalan Dulu: Sebesar Apa Bank Mandiri (0:35–2:00)
+Bank Mandiri itu bank dengan aset terbesar di Indonesia. Akhir 2025, asetnya tembus dua ribu delapan ratus tiga puluh triliun rupiah — naik 16,6 persen dalam setahun. Kalau BRI yang pernah kita bedah itu rajanya kredit mikro dan UMKM, Mandiri main di lapangan yang beda: kredit korporasi dan wholesale — perusahaan-perusahaan gede, BUMN, proyek — ditambah mesin digital yang lagi ngebut, aplikasi Livin' by Mandiri.
 
-### SECTION 1 — Obligasi Itu Apa Sih? (0:35–2:00)
-Gampangnya gini. Kalau saham itu lo *beli kepemilikan* perusahaan, obligasi itu lo *minjemin duit*. Lo jadi yang punya piutang.
+Kenapa ini penting? Karena karakter bisnisnya beda. Kredit korporasi itu marginnya lebih tipis dari mikro, tapi risikonya juga lebih terkendali. Dan itu kelihatan banget di satu angka yang bakal kita bahas nanti: rasio kredit macetnya termasuk yang paling rendah di industri.
 
-Nah, SBN — Surat Berharga Negara — artinya yang ngutang ke lo itu... negara. Republik Indonesia. Lo minjemin duit ke pemerintah, dipakai buat bangun jalan, sekolah, subsidi, dan isi APBN. Sebagai gantinya, negara bayar "uang sewa" ke lo secara rutin. Uang sewa ini namanya **kupon**.
+> [CANVA: slide profil — logo/siluet Mandiri + 3 angka kunci: aset Rp2.830 T, kredit Rp1.895 T, DPK Rp2.106 T]
 
-Analoginya kayak lo ngekosin kamar: duit lo "ngekos" di negara, tiap bulan lo terima uang sewanya, dan pas kontrak habis — istilahnya **jatuh tempo** — duit pokok lo balik utuh.
+### SECTION 2 — Kinerja: Mesinnya Masih Ngebut (2:00–4:00)
+Kita lihat rapornya. Tahun 2025 penuh, laba bersih Mandiri Rp56,3 triliun. Naiknya memang tipis — cuma 0,9 persen dari tahun sebelumnya — tapi inget, 2025 itu tahun yang berat buat perbankan: suku bunga tinggi, ekonomi melambat. Yang menarik justru mesin di baliknya. Kredit tumbuh 13,4 persen jadi seribu delapan ratus sembilan puluh lima triliun. Dana pihak ketiga naik 23,9 persen. Pendapatan non-bunga — fee dari Livin', transaksi, treasury — melonjak 14,5 persen jadi Rp48,5 triliun.
 
-Tiga kata kunci yang bakal sering muncul:
-- **Pokok**: duit yang lo pinjemin.
-- **Kupon**: bunga/imbal hasil yang dibayar rutin.
-- **Tenor**: lamanya kontrak, misal 2, 3, atau 6 tahun.
+Terus masuk 2026, kuartal pertama: laba Rp15,4 triliun, naik 16,6 persen dibanding periode yang sama tahun lalu. Return on equity 22 persen — artinya tiap seratus rupiah modal, setahun bisa jadi laba dua puluh dua rupiah. Buat bank sebesar ini, itu angka yang sehat banget.
 
-> [VISUAL: Infografis alur — "Duit lo → Negara (APBN) → Kupon tiap bulan → Pokok balik saat jatuh tempo"]
+Jadi kalau lihat dapurnya doang: gak ada tanda-tanda mesin rusak. Justru lagi kenceng.
 
-### SECTION 2 — Empat Keluarga SBN Ritel (2:00–4:00)
-SBN ritel — yang bisa dibeli orang biasa mulai **Rp1 juta** — ada 4 keluarga. Bedanya cuma di dua hal: konvensional atau syariah, dan bisa dijual lagi atau nggak.
+> [CHART: bar pertumbuhan FY2025 & Q1 2026 (%)]
+> [CANVA: big-number "Rp15,4 T — laba kuartal I 2026, +16,6%"]
 
-1. **ORI** (Obligasi Negara Ritel) — konvensional, kupon **tetap**, dan **bisa diperjualbelikan** di pasar sekunder setelah periode tertentu.
-2. **SR** (Sukuk Ritel) — kembarannya ORI versi **syariah**, imbal hasil tetap, bisa diperjualbelikan.
-3. **SBR** (Savings Bond Ritel) — konvensional, kupon **mengambang** alias floating, dan **gak bisa dijual** — kayak deposito, dikunci sampai jatuh tempo.
-4. **ST** (Sukuk Tabungan) — kembarannya SBR versi syariah.
+### SECTION 3 — Terus Kenapa Sahamnya Turun? (4:00–6:00)
+Nah, ini bagian pentingnya. Harga saham BMRI sekarang di sekitar tiga ribu sembilan ratus rupiah. Setahun terakhir turun hampir 18 persen. Akhir Juni kemarin bahkan ikut kena panic selling waktu IHSG anjlok tiga persen sehari dan saham bank besar rontok berjamaah.
 
-Tahun 2026 ini semuanya kebagian jatah terbit. Yang udah lewat: ORI029 kuponnya 5,45% untuk 3 tahun dan 5,80% untuk 6 tahun. SR024: 5,55% dan 5,90%. ST016: mulai dari 6,05%.
+Penyebabnya bukan dari dalam dapur Mandiri — tapi dari luar. Setidaknya ada empat: Pertama, Bank Indonesia naikin suku bunga tiga kali dalam sebulan sampai ke 5,75 persen, dan saham bank memang paling sensitif sama ini karena biaya dana naik. Kedua, investor asing lagi keluar — net sell terus-terusan di saham BUMN. Ketiga, sentimen politik: isu reshuffle kabinet bikin pasar gugup sama saham pelat merah. Keempat, dari luar negeri: tarif impor Amerika 32 persen buat produk Indonesia yang mulai berlaku 1 Agustus, bikin pasar waswas soal ekonomi ke depan.
 
-> [VISUAL: Comparison table 4 keluarga SBN — kolom: Konvensional/Syariah, Kupon Fixed/Floating, Tradable/Non-tradable, Tenor]
-> [VISUAL: Bar chart perbandingan kupon seri 2026 — ORI029 (5,45 / 5,80), SR024 (5,55 / 5,90), ST016 floor (6,05 / 6,25)]
+Poinnya gini: laba naik, harga turun — itu artinya pasar lagi menghukum sektor dan negaranya, bukan perusahaannya. Tapi hati-hati, ini bukan berarti besok langsung balik. Sentimen kayak gini bisa lama, dan harga bisa turun lebih dalam dulu sebelum pulih.
 
-### SECTION 3 — Cara Kerja Kuponnya, Pakai Angka Beneran (4:00–6:00)
-Oke, sekarang bagian yang paling sering ditanya: *duitnya gimana?*
+> [CANVA: slide 4 faktor tekanan — ikon BI rate, asing keluar, politik, tarif AS]
+> [CHART: table profil saham BMRI]
 
-Misal lo beli ORI029 tenor 3 tahun senilai **Rp10 juta**, kupon 5,45% per tahun.
-- Setahun: Rp10 juta × 5,45% = **Rp545.000**.
-- Dibagi 12 bulan: sekitar **Rp45.400** per bulan.
-- Kena pajak final 10%, jadi bersihnya sekitar **Rp40.900** masuk rekening tiap tanggal 15.
+### SECTION 4 — Kualitas Aset & Dividen: Dua Jangkar (6:00–7:45)
+Di tengah tekanan kayak gini, ada dua angka yang bikin BMRI beda. Pertama, kualitas aset. Rasio kredit macet alias NPL gross-nya cuma nol koma sembilan enam persen di akhir 2025 — dan di kuartal satu 2026 masih terjaga di nol koma sembilan delapan. Bandingin sama BRI yang NPL-nya tiga koma dua sembilan persen karena main di segmen mikro yang lebih rawan. Dan Mandiri udah nyiapin "dana jaga-jaga" alias pencadangan dua setengah kali lipat dari kredit macetnya. Konservatif.
 
-Kecil? Inget, ini per Rp10 juta. Dan poin pentingnya: angka ini **pasti**, gak peduli pasar lagi drama apa, karena kuponnya fixed. Tiga tahun kemudian, pokok Rp10 juta lo balik utuh.
+Kedua, dividen. Untuk tahun buku 2025, Mandiri bagi Rp476,96 per saham. Di harga sekarang, itu setara imbal hasil sekitar dua belas persen — angka yang gede karena harganya lagi turun. Catatan penting: yield segede ini gak otomatis keulang tiap tahun; kalau harga naik atau laba berubah, yield-nya ikut berubah. Proyeksi analis untuk ke depan lebih konservatif, di kisaran tujuh sampai delapan persen. Tetap termasuk yang tertinggi di bursa.
 
-Nah, yang tipe **floating with floor** kayak ST016 beda cara mainnya. Kuponnya ngikutin BI-Rate, disesuaikan tiap 3 bulan, dengan "lantai" yang gak bisa ditembus ke bawah. ST016 tenor 2 tahun floor-nya 6,05% — itu udah BI-Rate waktu itu plus spread 1,30%. Sekarang BI-Rate udah naik ke 5,75%. Artinya apa? Kalau BI-Rate bertahan di situ sampai penyesuaian berikutnya di 11 Agustus, imbalan ST016 *bisa* ikut naik jadi sekitar 7,05%. Ini ilustrasi mekanisme ya, bukan janji — angkanya tetap nunggu penetapan resmi.
+> [CHART: bar NPL gross BMRI 0,96% vs BBRI 3,29%]
+> [CANVA: big-number "Rp476,96/saham — dividen tahun buku 2025"]
 
-Jadi: suku bunga lagi tren naik → floating diuntungin. Suku bunga tren turun → fixed yang menang, dan floating dilindungi floor. Itu logika dasarnya.
+### SECTION 5 — Kata Analis & Valuasinya (7:45–8:45)
+Terus pasar profesional lihatnya gimana? Konsensus tujuh belas analis yang dirangkum TradingView kasih target harga rata-rata lima ribu tiga ratus rupiah — sekitar 36 persen di atas harga sekarang. Yang paling pesimis di tiga ribu enam ratus, yang paling optimis — UBS — sampai tujuh ribu sembilan ratus lima puluh. MNC, Danareksa, Macquarie, CGS semuanya di kisaran enam ribuan, dan mayoritas rekomendasinya beli.
 
-> [VISUAL: Infografis simulasi Rp10 juta → Rp545rb/tahun → Rp45,4rb/bulan → potong pajak 10% → Rp40,9rb bersih]
-> [VISUAL: Animasi grafik — mekanisme floating with floor: garis BI-Rate naik-turun, garis kupon ngikutin tapi mentok di floor]
+Tapi inget dua hal. Target harga itu opini, bukan janji — analis juga sering salah. Dan konsensus dibuat sebelum tahu gimana dampak tarif Amerika beneran kerasa. Jadi pakai ini sebagai satu bahan pertimbangan, bukan satu-satunya.
 
-### SECTION 4 — Amannya di Mana, Risikonya di Mana (6:00–7:30)
-Kenapa SBN sering disebut instrumen paling aman di Indonesia? Karena pembayaran pokok dan kuponnya **dijamin undang-undang**, dibayar dari APBN. Negara gagal bayar warganya sendiri itu skenario yang jauh lebih ekstrem daripada bank kesulitan — dan deposito aja penjaminannya lewat LPS dengan batas tertentu.
+> [CHART: bar target harga 6 sekuritas + garis harga sekarang Rp3.900]
 
-Tapi "aman" bukan berarti tanpa risiko. Dua yang perlu lo tau:
+### KESIMPULAN (8:45–9:30)
+Jadi, BMRI hari ini: bisnis lagi sehat — laba kuartalan naik dua digit, kredit macet terendah di kelasnya, dividen jumbo. Sahamnya lagi murah bukan karena perusahaannya bermasalah, tapi karena pasarnya lagi takut — suku bunga, asing keluar, politik, tarif. Buat investor jangka pendek, ini zona yang gak nyaman. Buat yang horizonnya panjang dan ngerti risikonya, sejarah bilang momen kayak gini justru yang sering dicari. Yang mana lo? Itu keputusan lo, sesuai profil risiko lo — dan sekali lagi, ini edukasi, bukan rekomendasi beli atau jual.
 
-**Risiko likuiditas.** SBR dan ST gak bisa dijual sebelum jatuh tempo. Ada fasilitas *early redemption* buat nyairin sebagian di jendela waktu tertentu — tapi terbatas dan ada syaratnya. Jadi jangan taruh dana darurat di sini.
+> [CANVA: slide kesimpulan — dua kolom "Fundamental ✓" vs "Sentimen ✗"]
 
-**Risiko harga pasar.** ORI dan SR bisa dijual sebelum jatuh tempo, tapi harganya ngikutin pasar. Kalau suku bunga naik, harga obligasi lama cenderung turun — lo bisa rugi kalau maksa jual. Dipegang sampai jatuh tempo? Pokok balik 100%.
-
-Satu lagi yang sering kelewat: **pajak**. Kupon SBN kena pajak final cuma **10%**. Bandingin bunga deposito yang kena **20%**. Selisih 10% itu, buat dana ratusan juta, bukan angka kecil.
-
-> [VISUAL: Chart perbandingan pajak — bar 10% (SBN) vs 20% (deposito)]
-> [VISUAL: Animasi grafik hubungan terbalik suku bunga vs harga obligasi]
-
-### SECTION 5 — Cara Beli & Jadwal Sisa Tahun Ini (7:30–8:45)
-Belinya gampang dan full online: lewat mitra distribusi resmi — bank, sekuritas, atau aplikasi fintech yang terdaftar. Daftar SID (Single Investor Identification), pesan pas masa penawaran buka, bayar, selesai. Minimal **Rp1 juta**.
-
-Kalender sisa 2026 — catat, jadwal ini tentatif dari Kemenkeu:
-- **ORI030: 6–30 Juli** — paling dekat. Kuponnya diumumkan menjelang pembukaan, cek di situs resmi DJPPR atau mitra distribusi.
-- SR025: 21 Agustus–11 September
-- SBR015: 28 September–22 Oktober
-- ST017: 6 November–2 Desember
-
-> [VISUAL: Timeline jadwal SBN ritel 2026, highlight ORI030]
-> [VISUAL: Screen recording — halaman SBN di salah satu mitra distribusi (tampilkan alur pemesanan, blur data pribadi)]
-
-### CTA (8:45–9:30)
-Jadi, obligasi SBN itu intinya: lo minjemin duit ke negara, dibayar kupon rutin tiap bulan, pokok balik pas jatuh tempo, dijamin undang-undang, pajaknya lebih ringan dari deposito. Bukan instrumen buat kaya cepat — ini instrumen buat duit lo kerja pelan tapi pasti.
-
-Kalau video ini bikin lo lebih ngerti SBN, bantu channel ini dengan like dan subscribe — biar makin banyak orang Indonesia yang melek finansial. Tulis di komentar: lo tim kupon fixed atau floating? Sampai ketemu di video Moovon Finance berikutnya.
-
-**Sekali lagi: ini konten edukasi, bukan ajakan beli produk tertentu. Selalu riset sendiri sebelum investasi.**
+### CTA (9:30–10:00)
+Kalau lo mau saham lain dibedah kayak gini — data dulu, baru opini — tulis di komentar. Jangan lupa like, subscribe, dan nyalain lonceng, biar makin banyak orang Indonesia yang melek finansial. Sampai ketemu di video Moovon Finance berikutnya.
 
 ---
 
-## CHARTS: (spec untuk render_chart — final saat Fase 2)
+## CHARTS: (matplotlib lokal — angka terkunci dari fact sheet)
 ```json
 [
-  {"type": "line", "title": "BI-Rate 2026: Naik 3x dalam Sebulan", "section": 0, "x": ["Jan–Apr", "20 Mei", "9 Jun", "18 Jun"], "series": [{"label": "BI-Rate (%)", "data": [4.75, 5.25, 5.50, 5.75]}], "source": "Bank Indonesia"},
-  {"type": "comparison_table", "title": "4 Keluarga SBN Ritel", "section": 2, "columns": ["Seri", "Prinsip", "Kupon", "Bisa Dijual Lagi?"], "rows": [["ORI", "Konvensional", "Tetap", "Ya"], ["SR", "Syariah", "Tetap", "Ya"], ["SBR", "Konvensional", "Mengambang + floor", "Tidak"], ["ST", "Syariah", "Mengambang + floor", "Tidak"]], "source": "DJPPR Kemenkeu"},
-  {"type": "bar", "title": "Kupon SBN Ritel 2026 (% per tahun)", "section": 2, "categories": ["ORI029 3th", "ORI029 6th", "SR024 3th", "SR024 5th", "ST016 2th*", "ST016 4th*"], "data": [5.45, 5.80, 5.55, 5.90, 6.05, 6.25], "note": "*floor (minimal), bisa naik ikut BI-Rate", "source": "DJPPR Kemenkeu, per Juli 2026"},
-  {"type": "bar", "title": "Pajak Imbal Hasil: SBN vs Deposito", "section": 4, "categories": ["Kupon SBN", "Bunga Deposito"], "data": [10, 20], "source": "PP 91/2021"},
-  {"type": "timeline", "title": "Jadwal SBN Ritel Sisa 2026 (tentatif)", "section": 5, "events": [{"label": "ORI030", "date": "6–30 Jul"}, {"label": "SR025", "date": "21 Agu–11 Sep"}, {"label": "SBR015", "date": "28 Sep–22 Okt"}, {"label": "ST017", "date": "6 Nov–2 Des"}], "source": "DJPPR Kemenkeu"}
+  {"type": "bar", "section": "SECTION 2", "judul": "Mesin BMRI Tetap Tumbuh (% yoy)", "sumber": "Laporan Keuangan BMRI", "horizontal": true,
+   "kategori": ["DPK 2025", "Laba Q1 2026", "Non-bunga 2025", "Kredit 2025", "Laba FY 2025"],
+   "nilai": [23.9, 16.6, 14.5, 13.4, 0.9]},
+  {"type": "table", "section": "SECTION 3", "judul": "Profil Saham BMRI", "sumber": "BEI & TradingView, per 2 Jul 2026",
+   "headers": ["Indikator", "Nilai"],
+   "rows": [["Harga Saham", "Rp3.900"], ["Kapitalisasi Pasar", "Rp367,4 T"], ["Kinerja 1 Tahun", "-17,7%"], ["Dividen / Saham (2025)", "Rp476,96"], ["Yield (TTM)", "±12%"], ["Target Konsensus (17 analis)", "Rp5.301"], ["Potensi Upside", "+36%"]]},
+  {"type": "bar", "section": "SECTION 4", "judul": "NPL Gross 2025: Mandiri vs BRI (%)", "sumber": "Laporan Keuangan BMRI & BBRI 2025",
+   "kategori": ["BMRI", "BBRI"], "nilai": [0.96, 3.29]},
+  {"type": "bar", "section": "SECTION 5", "judul": "Target Harga Analis vs Harga Sekarang (Rp)", "sumber": "Investortrust & TradingView, Jul 2026", "horizontal": true,
+   "kategori": ["Harga sekarang", "Samuel", "MNC", "BRI Danareksa", "Macquarie", "CGS", "UBS"],
+   "nilai": [3900, 5700, 6050, 6200, 6240, 6700, 7950]}
 ]
 ```
 
-## Sumber (diakses 2 Juli 2026)
-- https://www.bi.go.id/id/publikasi/ruang-media/news-release/Pages/sp_2812626.aspx (BI-Rate 5,75%)
-- https://www.cnnindonesia.com/ekonomi/20260618143411-78-1370442/bi-rate-naik-25-bps-lagi-jadi-575-persen-per-18-juni (riwayat kenaikan)
-- https://www.bareksa.com/berita/sbn/2026-01-23/kupon-obligasi-negara-ritel-ori029-resmi-545-58-hampir-2x-deposito (kupon ORI029)
-- https://www.infonasional.com/pemerintah-tawarkan-sukuk-ritel-sr024-kupon-5-90-persen (SR024)
-- https://www.bareksa.com/berita/sbn/2026-05-12/kupon-st016-floating-with-floor-ada-proteksi-batas-minimum-imbalan (ST016 floor & spread)
-- https://www.ocbc.id/en/article/2026/01/26/jadwal-sbn-ritel-2026-lengkap-ori-sr-st-dan-sbr-dari-januari-desember (jadwal 2026)
-- https://money.kompas.com/read/2026/05/20/101021726/st016-masih-dibuka-hingga-3-juni-ini-jadwal-lengkap-sbn-ritel-2026 (jadwal)
-- https://bibit.id/sbn (ORI030 mulai 6 Juli)
-- https://klikpajak.id/blog/surat-berharga-negara/ (pajak 10% final)
-- https://money.kompas.com/read/2026/05/09/104811126/sukuk-tabungan-st016-sudah-bisa-dibeli-minimal-investasi-rp-1-juta (minimal Rp1 juta)
+## Sumber (diakses 3 Juli 2026)
+- https://www.idnfinancials.com/id/news/59701/npl-sehat-bmri-catat-laba-bersih-rp5-26-triliun-pada-november-2025
+- https://www.indopremier.com/ipotnews/newsDetail.php?news_id=212956 (laba FY2025 Rp56,3 T)
+- https://finansial.bisnis.com/read/20260422/90/1968420/bank-mandiri-catat-laba-rp154-triliun-di-kuartal-i-2026
+- https://databoks.katadata.co.id/en/market/statistics/69eaf48547e47/bank-mandiri-bmri-profit-rises-16-in-q1-2026
+- https://id.tradingeconomics.com/bmri:ij (harga Rp3.900, -17,7% yoy)
+- https://www.bareksa.com/berita/saham/2026-05-04/bmri-tebar-dividen-jumbo-rp47695-per-saham-yield-menarik
+- https://id.tradingview.com/symbols/IDX-BMRI/forecast/ (konsensus 17 analis TP Rp5.301)
+- https://investortrust.id/market/101651/intip-prospek-saham-bmri-rekomendasi-beli-dengan-target-harga-rp-5660-6200
+- https://databoks.katadata.co.id/datapublish/2026/06/30/ihsg-anjlok-3-harga-saham-bank-besar-turun-selasa-30-juni-2026
+- https://investor.id/market/431882/penyebab-saham-bbri-bmri-cs-anjlok

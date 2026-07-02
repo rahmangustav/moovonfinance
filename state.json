@@ -17,13 +17,24 @@
     "required_phrase": "Data aman, lanjut render",
     "approved": false
   },
-  "last_run": "2026-07-02",
+  "last_run": "2026-07-03",
   "history": [
     {
       "topic": "cara kerja obligasi SBN",
       "youtube_id": "VVn3WHReEP8",
       "uploaded": "2026-07-02",
       "run_dir": "output/sbn_20260702_201929"
+    },
+    {
+      "topic": "bedah saham BMRI",
+      "youtube_id": "FId3xkUS0CY",
+      "uploaded": "2026-07-03",
+      "run_dir": "output/bmri_20260703_003419"
     }
-  ]
+  ],
+  "blocked": null,
+  "pending_topics": [
+    "kupon ORI030 (nunggu angka resmi diumumkan, cek berkala)"
+  ],
+  "draft": "assets/draft_script_moovon.md"
 }

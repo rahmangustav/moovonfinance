@@ -633,13 +633,21 @@ def create_video(
     total_duration  = audio.duration
     topic           = topic_keywords or title
 
-    # ── Title slide ──
-    title_query = visual_keywords.get("TITLE") or f"{topic} finance Indonesia"
-    print(f"   📸 Foto title: {title_query[:65]}")
-    title_img  = draw_title_slide(title, bg_image_path=fetch_image(title_query))
+    # ── Title slide (pack "TITLE" menang; fallback foto web + draw_title_slide) ──
+    title_pack = _pack_for("TITLE")
     title_path = str(out_dir / "slide_title.png")
-    title_img.save(title_path)
-    clips = [_ken_burns_clip(title_path, 10, "zoom_in").with_effects([vfx.FadeIn(FADE)])]
+    if title_pack:
+        print(f"   🎨 Title slide dari desain: {Path(title_pack[0]).name}")
+        prepare_designed_slide(title_pack[0]).save(title_path)
+        clips = [ImageClip(title_path).with_duration(10).with_fps(FPS)
+                 .with_effects([vfx.FadeIn(FADE)])]
+        slide_packs = {k: v for k, v in slide_packs.items() if k.upper() != "TITLE"}
+    else:
+        title_query = visual_keywords.get("TITLE") or f"{topic} finance Indonesia"
+        print(f"   📸 Foto title: {title_query[:65]}")
+        title_img = draw_title_slide(title, bg_image_path=fetch_image(title_query))
+        title_img.save(title_path)
+        clips = [_ken_burns_clip(title_path, 10, "zoom_in").with_effects([vfx.FadeIn(FADE)])]
 
     # ── Rencana visual: tiap section = 1 slide foto; chart (bila ada) disisipkan
     #    sebagai slide sendiri tepat setelah section terkait. ──
