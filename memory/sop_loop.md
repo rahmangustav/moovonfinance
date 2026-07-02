@@ -13,9 +13,15 @@ Jalan saat user ketik: **"Bikin video Moovon tentang [topik]"**.
 
 ## FASE 2 — EKSEKUSI (hanya setelah user bilang "Data aman, lanjut render")
 1. Generate Audio (edge-tts `id-ID-GadisNeural`, WordBoundary untuk SRT).
-2. Generate Visual/B-Roll + render chart (`scripts/chart_templates.py` → `render_chart`).
-3. Compile video (moviepy/FFmpeg).
-4. Update `state.json` di root project tiap langkah.
+2. **VISUAL via CANVA (keputusan user 2026-07-03):** desain slide per section di Canva
+   (generate-design → create-from-candidate → export PNG 1920x1080) sesuai isi script.
+   - Chart data TETAP lokal (`scripts/chart_templates.py`) — akurasi angka non-negotiable.
+   - WAJIB review visual: AI Canva pernah nyelipin duit dolar AS. Cek tiap slide
+     sebelum dipakai; tunjukkan ke user (checkpoint review visual baru).
+   - Thumbnail juga via Canva (pola terbukti di video SBN, design `DAHOQKIpIsw`).
+3. Compile lokal (moviepy/FFmpeg): audio + slide Canva + chart lokal + subtitle burn.
+4. Upload YouTube setelah user approve hasil compile.
+5. Update `state.json` di root project tiap langkah.
 
 ## FASE 3 — FINISHING
 1. Video final di `output/`.

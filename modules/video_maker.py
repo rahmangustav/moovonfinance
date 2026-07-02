@@ -548,6 +548,19 @@ def draw_fullimage_slide(bg_image_path: str | None) -> Image.Image:
     return img
 
 
+def prepare_designed_slide(slide_path: str) -> Image.Image:
+    """Siapkan slide hasil desain eksternal (mis. Canva): fill-crop ke 1920x1080
+    + gradien gelap tipis di bawah agar subtitle terbaca. Tidak menambah
+    header/footer — branding diasumsikan sudah ada di desainnya."""
+    img = _fill_crop(Image.open(slide_path).convert("RGB"), WIDTH, HEIGHT)
+    grad = Image.new("L", (1, HEIGHT), 0)
+    for y in range(HEIGHT - 190, HEIGHT):
+        t = ((y - (HEIGHT - 190)) / 190) ** 0.7
+        grad.putpixel((0, y), int(190 * t))
+    grad = grad.resize((WIDTH, HEIGHT))
+    return Image.composite(Image.new("RGB", (WIDTH, HEIGHT), (0, 0, 0)), img, grad)
+
+
 def _burn_subtitles(video_path: str, srt_path: str, output_path: str):
     """Burn SRT subtitles into video using bundled ffmpeg."""
     import subprocess
@@ -588,7 +601,12 @@ def create_video(
     topic_keywords: str = "",
     visual_keywords: dict | None = None,
     charts: list | None = None,
+    slide_packs: dict | None = None,
 ) -> str:
+    """slide_packs: {label_section: [path_png, ...]} — slide jadi hasil desain
+    (mis. Canva). Section yang punya pack memakai PNG-nya (statis + fade,
+    tanpa fetch foto); section tanpa pack jatuh ke perilaku lama (foto web).
+    Label dicocokkan partial & case-insensitive, sama seperti visual_keywords."""
     import sys
     from modules.image_fetcher import fetch_image
     from modules.subtitle import transcribe, to_srt
@@ -599,6 +617,16 @@ def create_video(
 
     visual_keywords = visual_keywords or {}
     charts          = charts or []
+    slide_packs     = slide_packs or {}
+
+    def _pack_for(label: str):
+        u = label.upper()
+        if u in slide_packs:
+            return slide_packs[u]
+        for k, v in slide_packs.items():
+            if k.upper() in u:
+                return v
+        return None
     sections        = parse_sections(script)
     out_dir         = Path(output_path).parent
     audio           = AudioFileClip(audio_path)
@@ -618,9 +646,17 @@ def create_video(
     per_section_charts = _match_charts_to_sections(sections, charts)
     items = []
     for i, section in enumerate(sections):
-        items.append({"kind": "photo", "section": section, "index": i})
+        pack = _pack_for(section["label"])
+        if pack:
+            for j, p in enumerate(pack):
+                items.append({"kind": "designed", "path": p, "section": section, "index": i, "sub": j})
+        else:
+            items.append({"kind": "photo", "section": section, "index": i})
         for j, chart in enumerate(per_section_charts[i]):
             items.append({"kind": "chart", "spec": chart, "section": section, "index": i, "sub": j})
+    n_designed = sum(1 for it in items if it["kind"] == "designed")
+    if n_designed:
+        print(f"   🎨 {n_designed} slide desain (Canva) dipakai langsung")
 
     n_charts = sum(len(c) for c in per_section_charts)
     if n_charts:
@@ -631,6 +667,18 @@ def create_video(
 
     photo_i = 0
     for item in items:
+        if item["kind"] == "designed":
+            print(f"   🎨 [{item['section']['label'][:20]}] slide desain: {Path(item['path']).name}")
+            slide_img  = prepare_designed_slide(item["path"])
+            slide_path = str(out_dir / f"slide_{item['index']:03d}_d{item['sub']}.png")
+            slide_img.save(slide_path)
+            # Statis + fade (tanpa Ken Burns) agar teks desain tetap tajam.
+            clips.append(
+                ImageClip(slide_path).with_duration(per_item)
+                .with_fps(FPS).with_effects([vfx.FadeIn(FADE)])
+            )
+            continue
+
         if item["kind"] == "chart":
             spec = dict(item["spec"])
             spec.setdefault("sumber", "Moovon Finance")
