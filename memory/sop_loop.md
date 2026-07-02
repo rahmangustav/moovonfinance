@@ -1,0 +1,33 @@
+# SOP Loop Produksi — Moovon Finance
+
+## TRIGGER
+Jalan saat user ketik: **"Bikin video Moovon tentang [topik]"**.
+
+## FASE 1 — DRY-RUN (Riset + Script) → STOP
+1. Riset data terbaru via web-search (WAJIB, jangan dari memori internal). Catat sumber + tanggal.
+2. Cek `memory/production_log.md` — jangan bahas topik yang persis sama dengan video lama.
+3. Bikin outline & script (gaya sesuai `memory/style_moovon.md`, disclaimer di 30 detik pertama).
+4. Tandai bagian yang butuh "Screen recording chart" / "Animasi grafik" / chart statis (spec CHARTS: JSON).
+5. Simpan ke `assets/draft_script_moovon.md`.
+6. **STOP. Tunggu approval user.** User cek kebenaran angka & alur logika sendiri.
+
+## FASE 2 — EKSEKUSI (hanya setelah user bilang "Data aman, lanjut render")
+1. Generate Audio (edge-tts `id-ID-GadisNeural`, WordBoundary untuk SRT).
+2. Generate Visual/B-Roll + render chart (`scripts/chart_templates.py` → `render_chart`).
+3. Compile video (moviepy/FFmpeg).
+4. Update `state.json` di root project tiap langkah.
+
+## FASE 3 — FINISHING
+1. Video final di `output/`.
+2. Draft metadata: 5 opsi judul (SEO, non-clickbait), deskripsi (timestamp + disclaimer), tags.
+3. Catat hasil ke `memory/production_log.md`.
+
+## GUARDRAIL
+- API error / data market gak ketemu → **STOP, eskalasi ke user.** Jangan lanjut dengan data tebakan.
+- Jaringan shell kadang mati (DNS gagal) — kalau web-search/edge-tts gagal, lapor, jangan hang.
+
+## ESKALASI
+Topik abu-abu secara regulasi (platform investasi bodong, skema ponzi, dsb) → **tanya user dulu** cara penyampaiannya biar channel gak kena demonetize.
+
+## MAKER-CHECKER
+JANGAN generate audio / render video sebelum user secara eksplisit approve ("Data aman, lanjut render").

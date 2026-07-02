@@ -1,0 +1,14 @@
+{
+  "pipeline": "moovon-video-loop",
+  "current_topic": "cara kerja obligasi SBN",
+  "phase": "compile",
+  "draft": "assets/draft_script_moovon.md",
+  "phases": ["idle", "riset", "script_draft", "menunggu_approval", "render_audio", "render_visual", "compile", "finishing", "selesai"],
+  "approval": {
+    "required_phrase": "Data aman, lanjut render",
+    "approved": true,
+    "approved_at": "2026-07-02"
+  },
+  "last_run": null,
+  "history": []
+}

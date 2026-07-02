@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ── Moovon Finance: rahasia & file besar ──
+config/client_secrets.json
+config/token.json
+output/
+logs/
+*TEMP_MPY*.mp4
