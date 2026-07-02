@@ -569,16 +569,22 @@ def _burn_subtitles(video_path: str, srt_path: str, output_path: str):
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
     font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
+    # CATATAN SKALA: libass memakai PlayResY=288 untuk SRT, lalu menskalakan ke
+    # resolusi video. Di 1080p semua angka di bawah dikali ~3,75:
+    # FontSize=13 ≈ 49px, Outline=1 ≈ 4px, MarginV=12 ≈ 45px dari bawah.
+    # (Dulu FontSize=26/MarginV=90 → ±97px di tengah layar, menutupi slide.)
     style = (
         "FontName=DejaVu Sans Bold,"
-        "FontSize=26,"
+        "FontSize=13,"
         "PrimaryColour=&H00ffffff,"
         "OutlineColour=&H00000000,"
         "BorderStyle=1,"
-        "Outline=2,"
-        "Shadow=1,"
+        "Outline=1,"
+        "Shadow=0.5,"
         "ShadowColour=&H80000000,"
-        "MarginV=90,"
+        "MarginV=12,"
+        "MarginL=30,"
+        "MarginR=30,"
         "Alignment=2,"
         "Bold=1"
     )
