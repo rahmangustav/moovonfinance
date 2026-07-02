@@ -27,9 +27,10 @@
     },
     {
       "topic": "bedah saham BMRI",
-      "youtube_id": "FId3xkUS0CY",
+      "youtube_id": "ymRoSeUyPO8",
       "uploaded": "2026-07-03",
-      "run_dir": "output/bmri_20260703_003419"
+      "run_dir": "output/bmri_20260703_003419",
+      "note": "v2 subtitle-fix; v1 FId3xkUS0CY unlisted manual"
     }
   ],
   "blocked": null,
