@@ -1,7 +1,17 @@
 {
   "pipeline": "moovon-video-loop",
   "current_topic": "cara kerja obligasi SBN",
-  "phase": "compile",
+  "phase": "selesai",
+  "upload_plan": {
+    "tanggal": "2026-07-06",
+    "sebelum_upload": [
+      "Fact-check kupon ORI030 (diumumkan ~3-5 Jul) — masukkan angka resmi ke deskripsi + pin comment (re-render tidak wajib)"
+    ],
+    "judul_final": "Cara Kerja Obligasi SBN: Dibayar Negara Tiap Bulan",
+    "video": "output/sbn_20260702_201929/video.mp4",
+    "thumbnail": "output/sbn_20260702_201929/thumbnail.jpg",
+    "metadata": "output/sbn_20260702_201929/metadata_draft.md"
+  },
   "draft": "assets/draft_script_moovon.md",
   "phases": ["idle", "riset", "script_draft", "menunggu_approval", "render_audio", "render_visual", "compile", "finishing", "selesai"],
   "approval": {

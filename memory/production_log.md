@@ -9,4 +9,4 @@ Format: tanggal | topik/judul | status | link/ID | catatan
 - Analisis kinerja/laporan keuangan saham BBRI (Bank Rakyat Indonesia)
 
 ## Antrian / draft
-- 2026-07-02 | Cara kerja obligasi SBN | DRAFT — menunggu review user | `assets/draft_script_moovon.md` | Kupon ORI030 belum diumumkan saat riset — wajib cek ulang sebelum render.
+- 2026-07-02 | Cara kerja obligasi SBN | **RENDER SELESAI — jadwal upload 6 Juli 2026** | `output/sbn_20260702_201929/video.mp4` (10,03 mnt, 1080p) | Keputusan user 2 Jul: upload tepat 6 Jul (hari pembukaan ORI030) — hook "Tanggal 6 Juli ini" tetap akurat hari itu, re-render tidak wajib. SEBELUM upload: (1) fact-check kupon ORI030 yang diumumkan ~3–5 Jul → sebut di pin comment, atau re-render hook kalau user mau; (2) user pilih judul dari 5 opsi di `metadata_draft.md`. Script approved user; 5 chart data riil.
