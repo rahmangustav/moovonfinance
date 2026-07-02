@@ -31,6 +31,12 @@
       "uploaded": "2026-07-03",
       "run_dir": "output/bmri_20260703_003419",
       "note": "v2 subtitle-fix; v1 FId3xkUS0CY unlisted manual"
+    },
+    {
+      "topic": "bedah saham BBNI",
+      "youtube_id": "WNrqGryFf9M",
+      "uploaded": "2026-07-03",
+      "run_dir": "output/bbni_20260703_030329"
     }
   ],
   "blocked": null,
