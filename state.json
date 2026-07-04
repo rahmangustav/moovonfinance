@@ -1,7 +1,7 @@
 {
   "pipeline": "moovon-video-loop",
-  "current_topic": null,
-  "phase": "idle",
+  "current_topic": "investasi emas 2026 (tren harga & panduan praktis)",
+  "phase": "blocked",
   "phases": [
     "idle",
     "riset",
@@ -39,9 +39,14 @@
       "run_dir": "output/bbni_20260703_030329"
     }
   ],
-  "blocked": null,
+  "blocked": "Canva quota habis (dicek ulang 2026-07-04, masih limit) — render PIL sudah ada di output/emas_20260704_104436/video.mp4 tapi user TIDAK suka desainnya, mau visual Canva. User akan cek/upgrade quota Canva sendiri, tunggu kabar sebelum lanjut ke desain ulang slide + recompile.",
   "pending_topics": [
     "kupon ORI030 (nunggu angka resmi diumumkan, cek berkala)"
   ],
-  "draft": "assets/draft_script_moovon.md"
+  "draft": "assets/draft_script_moovon.md",
+  "parked": {
+    "topic": "ORI030",
+    "status": "draft approved, nunggu kupon resmi — loop cek jalan",
+    "draft": "assets/draft_script_ori030_parked.md"
+  }
 }
