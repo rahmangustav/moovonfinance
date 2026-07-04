@@ -3,7 +3,7 @@ import textwrap
 import numpy as np
 from datetime import datetime
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageOps
 from moviepy import AudioFileClip, VideoClip, ImageClip, concatenate_videoclips, vfx
 
 # Brand palette
@@ -52,17 +52,13 @@ def _fill_crop(img: Image.Image, w: int, h: int) -> Image.Image:
 
 
 def _draw_bg(draw: ImageDraw.ImageDraw, x_limit: int = WIDTH):
+    """Plain vertical gradient — no grid overlay, keeps the slide clean/simple."""
     for y in range(HEIGHT):
         t = y / HEIGHT
         r = int(DARK_BG[0] + 6 * (1 - t))
         g = int(DARK_BG[1] + 8 * (1 - t))
         b = int(DARK_BG[2] + 20 * (1 - t))
         draw.line([(0, y), (x_limit, y)], fill=(r, g, b))
-    grid = (16, 22, 46)
-    for x in range(0, x_limit + 1, 120):
-        draw.line([(x, 0), (x, HEIGHT)], fill=grid)
-    for y in range(0, HEIGHT + 1, 120):
-        draw.line([(0, y), (x_limit, y)], fill=grid)
 
 
 def _draw_header(draw: ImageDraw.ImageDraw, num: int = 0, total: int = 0):
@@ -93,10 +89,29 @@ def _paste_rounded(base: Image.Image, overlay: Image.Image, xy: tuple, r: int = 
     base.paste(overlay, xy, mask)
 
 
+def _radial_mask(size: tuple, inner: float = 0.0, outer: float = 1.0) -> Image.Image:
+    """Smooth radial gradient mask (0 at center*inner .. 255 at edge*outer),
+    computed with numpy so it has no ring/banding artifacts."""
+    w, h = size
+    yy, xx = np.mgrid[0:h, 0:w]
+    cx, cy = w / 2, h / 2
+    max_r  = max(np.hypot(cx, cy), 1e-6)
+    d      = np.hypot(xx - cx, yy - cy) / max_r
+    d      = np.clip((d - inner) / max(outer - inner, 1e-6), 0, 1)
+    return Image.fromarray((d * 255).astype(np.uint8), mode="L")
+
+
+def _add_corner_glow(img: Image.Image, xy: tuple, radius: int = 420,
+                      color: tuple = BLUE, intensity: float = 0.5):
+    """Soft blurred glow, brightest at `xy` fading smoothly to nothing —
+    used instead of banded concentric-circle 'glow' loops."""
+    size   = radius * 2
+    mask   = ImageOps.invert(_radial_mask((size, size)))
+    layer  = Image.new("RGB", (size, size), tuple(int(c * intensity) for c in color))
+    img.paste(layer, (xy[0] - radius, xy[1] - radius), mask)
+
+
 # ─── Ken Burns ────────────────────────────────────────────────────────────────
-
-_KB_CYCLE = ["zoom_in", "pan_right", "zoom_out", "pan_left"]
-
 
 def _ken_burns_clip(slide_path: str, duration: float, style: str = "zoom_in") -> VideoClip:
     """VideoClip with subtle Ken Burns motion. Pan styles use pre-rendered large
@@ -158,10 +173,7 @@ def draw_title_slide(title: str, bg_image_path: str | None = None) -> Image.Imag
                                                 int(DARK_BG[2] + 18 * t)))
 
     # Decorative glow top-right
-    for r in range(400, 0, -20):
-        t = r / 400
-        c = (int(BLUE[0] * t * 0.3), int(BLUE[1] * t * 0.3), int(BLUE[2] * t * 0.3))
-        draw.ellipse([WIDTH - 80 - r, -80 - r, WIDTH - 80 + r, -80 + r], fill=c)
+    _add_corner_glow(img, (WIDTH - 80, -80), radius=420, color=BLUE, intensity=0.45)
 
     draw.rectangle([(0, 0), (WIDTH, 6)], fill=ACCENT)
     draw.rectangle([(0, 0), (6, HEIGHT)], fill=BLUE)
@@ -201,17 +213,22 @@ def draw_hook_slide(content: str, bg_image_path: str | None = None) -> Image.Ima
             img.paste(bg, (0, 0))
         except Exception:
             pass
+    else:
+        # No photo available — soft glows so the top area isn't a flat void
+        _add_corner_glow(img, (WIDTH - 100, 60), radius=520, color=BLUE, intensity=0.35)
+        _add_corner_glow(img, (140, HEIGHT - 700), radius=380, color=ACCENT, intensity=0.18)
+
+    # Smooth darken gradient from midpoint down, so text stays readable
+    # whether or not there's a photo underneath (previously computed but
+    # never applied — the old loop always painted flat DARK_BG, causing a
+    # hard seam line instead of a gradient).
+    mid      = HEIGHT // 2
+    t        = np.clip((np.arange(HEIGHT) - mid) / (HEIGHT - mid), 0, 1)
+    grad     = (220 * (t ** 1.5)).astype(np.uint8)
+    grad_img = Image.fromarray(np.tile(grad.reshape(-1, 1), (1, WIDTH)), mode="L")
+    img = Image.composite(Image.new("RGB", (WIDTH, HEIGHT), DARK_BG), img, grad_img)
 
     draw = ImageDraw.Draw(img)
-
-    # Gradient darkening from midpoint down
-    mid = HEIGHT // 2
-    for y in range(mid, HEIGHT):
-        t = (y - mid) / (HEIGHT - mid)
-        v = int(200 * (t ** 1.5))
-        r_, g_, b_ = DARK_BG
-        draw.line([(0, y), (WIDTH, y)], fill=(r_, g_, b_))
-
     draw.rectangle([(0, 0), (WIDTH, 6)], fill=ACCENT)
     draw.rectangle([(0, 0), (6, HEIGHT)], fill=BLUE)
     _draw_header(draw)
@@ -252,15 +269,13 @@ def draw_cta_slide(content: str, bg_image_path: str | None = None) -> Image.Imag
         except Exception:
             pass
 
+    # Radial dark vignette — smooth, darkens toward the edges (the previous
+    # concentric-ellipse loop layered largest-to-smallest and ended up
+    # darkening the CENTER instead, plus visible banding rings).
+    vignette = _radial_mask((WIDTH, HEIGHT), inner=0.3, outer=1.05)
+    img = Image.composite(Image.new("RGB", (WIDTH, HEIGHT), (2, 3, 10)), img, vignette)
+
     draw = ImageDraw.Draw(img)
-
-    # Radial dark vignette
-    cx, cy = WIDTH // 2, HEIGHT // 2
-    for r in range(max(WIDTH, HEIGHT), 0, -30):
-        t = r / max(WIDTH, HEIGHT)
-        v = int(180 * (t ** 2))
-        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(v // 10, v // 8, v // 4))
-
     draw.rectangle([(0, 0), (WIDTH, 6)], fill=ACCENT)
     draw.rectangle([(0, 0), (6, HEIGHT)], fill=BLUE)
     _draw_header(draw)
@@ -510,44 +525,6 @@ def _resolve_keyword(
     return _section_keywords(label, content, topic)
 
 
-def draw_fullimage_slide(bg_image_path: str | None) -> Image.Image:
-    """Full-screen image slide with header + bottom gradient (no text content)."""
-    img = Image.new("RGB", (WIDTH, HEIGHT), DARK_BG)
-
-    if bg_image_path:
-        try:
-            bg = _fill_crop(Image.open(bg_image_path).convert("RGB"), WIDTH, HEIGHT)
-            img.paste(bg, (0, 0))
-        except Exception:
-            pass
-
-    draw = ImageDraw.Draw(img)
-
-    # Dark gradient at top so header is readable
-    for y in range(90):
-        t = 1 - (y / 90) ** 0.5
-        r, g, b = int(10 * t), int(15 * t), int(35 * t)
-        draw.line([(0, y), (WIDTH, y)], fill=(8 + r, 12 + g, 28 + b))
-
-    # Dark gradient at bottom so subtitles are readable
-    for y in range(HEIGHT - 220, HEIGHT):
-        t = ((y - (HEIGHT - 220)) / 220) ** 0.6
-        v = int(t * 220)
-        draw.line([(0, y), (WIDTH, y)], fill=(max(0, v - 8), max(0, v - 10), max(0, v - 5)))
-
-    # Header
-    draw.rectangle([(0, 0), (WIDTH, 4)], fill=ACCENT)
-    draw.text((38, 36), "MOOVON FINANCE", fill=ACCENT, font=_font(30), anchor="lm")
-
-    # Footer
-    draw.rectangle([(0, HEIGHT - 52), (WIDTH, HEIGHT)], fill=(8, 12, 28))
-    draw.text((38, HEIGHT - 26),
-              "Subscribe untuk update analisis saham terbaru  |  @MoovonFinance",
-              fill=GRAY, font=_font(22, False), anchor="lm")
-
-    return img
-
-
 def prepare_designed_slide(slide_path: str) -> Image.Image:
     """Siapkan slide hasil desain eksternal (mis. Canva): fill-crop ke 1920x1080
     + gradien gelap tipis di bawah agar subtitle terbaca. Tidak menambah
@@ -679,7 +656,6 @@ def create_video(
     remaining = total_duration - 10
     per_item  = max(4.0, remaining / max(len(items), 1))
 
-    photo_i = 0
     for item in items:
         if item["kind"] == "designed":
             print(f"   🎨 [{item['section']['label'][:20]}] slide desain: {Path(item['path']).name}")
@@ -723,20 +699,26 @@ def create_video(
         if not img_path:
             img_path = fetch_image("Indonesia economy business finance")
 
-        stype    = _slide_type(section["label"])
-        kb_style = _KB_CYCLE[photo_i % len(_KB_CYCLE)]
-
-        if stype == "cta":
+        stype = _slide_type(section["label"])
+        if stype == "hook":
+            slide_img = draw_hook_slide(section["content"], img_path)
+        elif stype == "cta":
             slide_img = draw_cta_slide(section["content"][:200], img_path)
         else:
-            slide_img = draw_fullimage_slide(img_path)
+            slide_img = draw_content_slide(
+                _clean_label(section["label"]), section["content"],
+                item["index"] + 1, len(sections), side_image_path=img_path,
+            )
 
         slide_path = str(out_dir / f"slide_{item['index']:03d}.png")
         slide_img.save(slide_path)
+        # Slide-slide ini punya teks/layout tetap (bukan sekadar foto polos)
+        # → statis + fade seperti slide desain/chart, biar teks tak ikut
+        # zoom/geser Ken Burns dan tetap tajam.
         clips.append(
-            _ken_burns_clip(slide_path, per_item, kb_style).with_effects([vfx.FadeIn(FADE)])
+            ImageClip(slide_path).with_duration(per_item)
+            .with_fps(FPS).with_effects([vfx.FadeIn(FADE)])
         )
-        photo_i += 1
 
     # ── Export background-only video ──
     bg_path = output_path.replace(".mp4", "_bg.mp4")
