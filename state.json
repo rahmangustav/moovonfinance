@@ -1,7 +1,7 @@
 {
   "pipeline": "moovon-video-loop",
   "current_topic": "[EVERGREEN Fase 2] Cara Baca Laporan Keuangan Saham untuk Pemula",
-  "phase": "selesai_render_menunggu_review",
+  "phase": "idle",
   "phases": [
     "idle",
     "riset",
@@ -89,6 +89,13 @@
       "run_dir": "output/short_-_20260706_184453",
       "scheduled_for": "2026-07-14T17:30:00+07:00",
       "note": "Short edukasi hook-first"
+    },
+    {
+      "topic": "Minyak Dunia Menuju $60? Nasib Saham MEDC, PGAS & ELSA",
+      "youtube_id": "G4RsTFXRuZM",
+      "uploaded": "2026-07-06",
+      "run_dir": null,
+      "scheduled_for": "2026-07-10T17:30:00+07:00"
     }
   ],
   "blocked": null,
