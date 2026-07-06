@@ -1,0 +1,4 @@
+TICKER: MIGAS
+HOOK: Kalau harga minyak dunia jatuh ke enam puluh dolar, tiga saham migas ini nasibnya beda-beda.
+BODY: Medco itu produsen minyak, jadi paling kena — labanya ikut turun. Tapi biaya produksinya cuma sekitar sembilan dolar per barel, jadi dia tetap untung. Perusahaan Gas Negara malah paling aman, karena dia hanya menyalurkan gas, bukan menjual minyak, dan dividennya hampir sepuluh persen. Elnusa ada di tengah — dia perusahaan jasa, bisa kena kalau klien mengerem belanja, tapi bisnis distribusinya bikin lebih stabil.
+CLOSE: Bedah lengkap ketiganya ada di channel.
