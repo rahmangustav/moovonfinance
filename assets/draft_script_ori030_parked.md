@@ -40,7 +40,7 @@
 ## SCRIPT
 
 ### HOOK (0:00–0:35)
-Mulai Senin depan, negara resmi "ngutang" ke kita lagi — dan kali ini bunganya diperkirakan analis paling tinggi dalam beberapa tahun terakhir. Namanya ORI030. Modal mulai satu juta rupiah, dibayar bunga tiap bulan, dan bunganya dikunci — gak bisa turun sampai lunas. Menariknya: pajaknya cuma setengah pajak deposito. Tapi sebelum lo ikut-ikutan beli, ada beberapa hal yang jarang dijelasin — termasuk kapan produk ini justru bisa bikin rugi. Kita bedah tuntas. Dan seperti biasa: **konten ini untuk tujuan edukasi, bukan merupakan nasihat keuangan (financial advice).**
+Mulai Senin depan, negara resmi "ngutang" ke kita lagi — dan kali ini bunganya diperkirakan analis paling tinggi dalam beberapa tahun terakhir. Namanya ORI030. Modal mulai satu juta rupiah, dibayar bunga tiap bulan, dan bunganya dikunci — gak bisa turun sampai lunas. Menariknya: pajaknya cuma setengah pajak deposito. Tapi sebelum lo ikut-ikutan beli, ada beberapa hal yang jarang dijelasin — termasuk kapan produk ini justru bisa bikin rugi. Kita bedah tuntas. Dan seperti biasa, **konten ini cuma untuk edukasi ya — ini bukan saran jual atau beli.**
 
 > [VISUAL: hook slide — "ORI030 · mulai 6 Juli" + badge "Rp1 juta bisa mulai" + "kupon tiap bulan"]
 

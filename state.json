@@ -1,7 +1,7 @@
 {
   "pipeline": "moovon-video-loop",
-  "current_topic": "investasi emas 2026 (tren harga & panduan praktis)",
-  "phase": "blocked",
+  "current_topic": "[EVERGREEN Fase 2] Cara Baca Laporan Keuangan Saham untuk Pemula",
+  "phase": "selesai_render_menunggu_review",
   "phases": [
     "idle",
     "riset",
@@ -15,7 +15,8 @@
   ],
   "approval": {
     "required_phrase": "Data aman, lanjut render",
-    "approved": false
+    "approved": true,
+    "note": "user pre-approve render 2026-07-05; upload tetap butuh approval"
   },
   "last_run": "2026-07-03",
   "history": [
@@ -23,30 +24,93 @@
       "topic": "cara kerja obligasi SBN",
       "youtube_id": "VVn3WHReEP8",
       "uploaded": "2026-07-02",
-      "run_dir": "output/sbn_20260702_201929"
+      "run_dir": null,
+      "note": "sudah live YouTube; folder run lokal dihapus 2026-07-04 (video aman di YouTube)"
     },
     {
       "topic": "bedah saham BMRI",
       "youtube_id": "ymRoSeUyPO8",
       "uploaded": "2026-07-03",
-      "run_dir": "output/bmri_20260703_003419",
-      "note": "v2 subtitle-fix; v1 FId3xkUS0CY unlisted manual"
+      "run_dir": null,
+      "note": "v2 subtitle-fix; v1 FId3xkUS0CY unlisted manual; folder run lokal dihapus 2026-07-04 (video aman di YouTube)"
     },
     {
       "topic": "bedah saham BBNI",
       "youtube_id": "WNrqGryFf9M",
       "uploaded": "2026-07-03",
-      "run_dir": "output/bbni_20260703_030329"
+      "run_dir": null,
+      "note": "folder run lokal dihapus 2026-07-04 (video aman di YouTube)"
+    },
+    {
+      "topic": "BBCA: Laba Naik, Kredit Makin Sehat, Tapi Kenapa Jadi Saham Paling Dibuang Asing?",
+      "youtube_id": "scEbyVKy3CA",
+      "uploaded": "2026-07-05",
+      "run_dir": null
+    },
+    {
+      "topic": "BBCA: Laba Naik, Kredit Makin Sehat, Tapi Kenapa Jadi Saham Paling Dibuang Asing?",
+      "youtube_id": "4cB59WQqSQo",
+      "uploaded": "2026-07-05",
+      "run_dir": null
+    },
+    {
+      "topic": "TLKM: Pendapatan Naik, Laba Anjlok 21%, Tapi Kok Malah Diborong Pemburu Dividen?",
+      "youtube_id": "w6A0xapT7nM",
+      "uploaded": "2026-07-05",
+      "run_dir": null
+    },
+    {
+      "topic": "ANTM: Laba Melonjak 60%, Dividen 7%, Tapi Sahamnya Jatuh — Salah Harga atau Sinyal Bahaya?",
+      "youtube_id": "X7LZhLsREVQ",
+      "uploaded": "2026-07-06",
+      "run_dir": null,
+      "scheduled_for": "2026-07-07T17:30:00+07:00"
+    },
+    {
+      "topic": "Short BBCA — asing buang 32T padahal laba naik",
+      "youtube_id": "bdlysl320LI",
+      "uploaded": "2026-07-06",
+      "run_dir": "output/short_BBCA_20260706_184206",
+      "scheduled_for": "2026-07-08T17:30:00+07:00",
+      "note": "Short hook-first (pipeline baru)"
+    },
+    {
+      "topic": "Short Kelas Saham — jebakan margin (Antam 30T vs untung 3T)",
+      "youtube_id": "Zh1PNw9HcNQ",
+      "uploaded": "2026-07-06",
+      "run_dir": "output/short_ANTM_20260706_184336",
+      "scheduled_for": "2026-07-09T17:30:00+07:00",
+      "note": "Short edukasi hook-first"
+    },
+    {
+      "topic": "Short Kelas Saham — 4 angka cek saham",
+      "youtube_id": "vzIn0Dbws6s",
+      "uploaded": "2026-07-06",
+      "run_dir": "output/short_-_20260706_184453",
+      "scheduled_for": "2026-07-14T17:30:00+07:00",
+      "note": "Short edukasi hook-first"
     }
   ],
-  "blocked": "Canva quota habis (dicek ulang 2026-07-04, masih limit) — render PIL sudah ada di output/emas_20260704_104436/video.mp4 tapi user TIDAK suka desainnya, mau visual Canva. User akan cek/upgrade quota Canva sendiri, tunggu kabar sebelum lanjut ke desain ulang slide + recompile.",
+  "blocked": null,
   "pending_topics": [
     "kupon ORI030 (nunggu angka resmi diumumkan, cek berkala)"
   ],
   "draft": "assets/draft_script_moovon.md",
-  "parked": {
-    "topic": "ORI030",
-    "status": "draft approved, nunggu kupon resmi — loop cek jalan",
-    "draft": "assets/draft_script_ori030_parked.md"
+  "parked": [
+    {
+      "topic": "ORI030",
+      "status": "draft approved, nunggu kupon resmi — loop cek jalan",
+      "draft": "assets/draft_script_ori030_parked.md"
+    },
+    {
+      "topic": "investasi emas 2026 (tren harga & panduan praktis)",
+      "status": "script approved sebelumnya, render lama sudah dihapus 2026-07-04 (belum sempat upload). produce_emas.py juga sudah dihapus saat rebuild sistem (2026-07-04) — kalau mau lanjut, naskahnya perlu ditulis ulang ke assets/draft_script_moovon.md format baru (lihat draft BBCA sebagai contoh), lalu render pakai produce.py."
+    }
+  ],
+  "last_run_dir": "output/run_20260706_202118",
+  "next_topic": {
+    "topic": "bedah saham ANTM (Aneka Tambang)",
+    "requested": "2026-07-05",
+    "status": "SELESAI 2026-07-06 — X7LZhLsREVQ, terjadwal publish Sel 7 Jul 17:30 WIB"
   }
 }

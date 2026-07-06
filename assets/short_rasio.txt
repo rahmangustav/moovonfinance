@@ -1,0 +1,5 @@
+TICKER: -
+EYEBROW: KELAS SAHAM
+HOOK: Sebelum beli saham, cek 4 angka ini dulu. Banyak yang lupa yang terakhir.
+BODY: Pertama, imbal hasil modal di atas 10 persen, tandanya modal diputar jadi laba dengan efisien. Kedua, rasio utang di bawah satu, artinya utangnya lebih kecil dari modal sendiri. Ketiga, harga dibanding laba di bawah 15 kali, umumnya masih wajar. Dan yang paling sering dilupakan, harga dibanding nilai buku di bawah satu, berarti sahamnya lebih murah dari nilai perusahaannya. Tapi jangan pakai satu angka sendirian. Selalu bandingkan semuanya.
+CLOSE: Belajar bareng di channel.

@@ -16,9 +16,10 @@ Objektif, terpercaya, analitis tapi dibawain santai — kayak ngobrol sama temen
 
 ## Aturan Khusus Finance
 1. **FACT-CHECKING WAJIB:** data suku bunga BI, inflasi, harga saham, PDB, dll → ambil dari web-search/tool terbaru, catat sumber + tanggal akses. Dilarang ngarang dari memori internal model.
-2. **DISCLAIMER WAJIB** di 30 detik pertama script, verbatim:
-   > "Konten ini untuk tujuan edukasi, bukan merupakan nasihat keuangan (financial advice)."
-   Disclaimer juga wajib ada di deskripsi video.
+2. **DISCLAIMER WAJIB** di 30 detik pertama script. Frasa VOICE-OVER (natural, JANGAN pakai kata Inggris "advice"/"financial advice" — kaku/robotik di TTS):
+   > "Seperti biasa, konten ini cuma untuk edukasi ya — ini bukan saran jual atau beli."
+   Disclaimer juga wajib ada di deskripsi video (di deskripsi teks boleh lebih formal, tapi tetap tanpa "(financial advice)").
+   **ATURAN UMUM NARASI:** hindari kata/istilah Inggris & tanda kurung penjelas di teks yang dibacakan TTS — tulis apa adanya dalam Bahasa Indonesia lisan biar terdengar natural.
 3. **VISUAL DATA:** kalau bahas angka, prompt visual harus minta "chart", "grafik perbandingan", atau "infografis" — jangan cuma B-roll orang ngitung duit. Ikuti sistem desain FinanceViz (CLAUDE.md root project).
 
 ## Judul & Metadata

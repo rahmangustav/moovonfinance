@@ -1,0 +1,4 @@
+TICKER: TLKM
+HOOK: Laba Telkom anjlok 21 persen. Tapi asing malah memborong sahamnya.
+BODY: Anehnya, pendapatan Telkom justru naik. Yang bikin laba turun cuma beban satu kali, bukan bisnis intinya melemah. Dividennya tetap gede, imbal hasil sekitar 7 persen. Jadi buat pemburu dividen, harga yang lagi turun ini malah dilihat sebagai diskon.
+CLOSE: Bedah lengkapnya ada di channel.

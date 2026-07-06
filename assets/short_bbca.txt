@@ -1,0 +1,4 @@
+TICKER: BBCA
+HOOK: Asing buang saham BBCA 32 triliun rupiah. Padahal labanya lagi naik. Kok bisa?
+BODY: Kuartal ini BBCA cetak laba 14,7 triliun rupiah, naik 4 persen. Kredit macetnya cuma 1,8 persen, malah makin sehat. Jadi bukan kinerjanya yang jelek. Asing keluar karena sentimen global, bukan karena BBCA. Setelah turun sejauh ini, valuasinya jadi termurah dalam bertahun-tahun. Dan 23 analis kompak memberi rekomendasi beli.
+CLOSE: Bedah lengkapnya ada di channel.

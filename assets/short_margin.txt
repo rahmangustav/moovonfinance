@@ -1,0 +1,5 @@
+TICKER: ANTM
+EYEBROW: KELAS SAHAM
+HOOK: Antam jualan hampir 30 triliun rupiah. Untungnya cuma 3 triliun. Ke mana sisanya?
+BODY: Ini jebakan yang sering bikin pemula tertipu. Pendapatan besar belum tentu untung besar. Dari setiap 100 rupiah penjualan Antam, yang tersisa jadi laba cuma sekitar 12 rupiah. Sisanya habis buat beban dan pajak. Makanya jangan berhenti di baris pendapatan. Selalu turun sampai baris paling bawah, laba bersih, baru ambil kesimpulan.
+CLOSE: Kelas saham lengkap di channel.

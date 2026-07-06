@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moovon Finance — Sistem Desain Slide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Palet inti */
+    --navy-950:#081422;   /* latar terdalam */
+    --navy-900:#0B1B2E;   /* latar slide */
+    --navy-800:#12263F;   /* panel terangkat */
+    --navy-700:#1B3350;   /* garis / border */
+    --ivory:#F4EFE3;      /* teks utama (Warm Ivory) */
+    --ivory-dim:#C9C4B6;  /* teks sekunder */
+    --slate:#7F93A8;      /* label / caption */
+    --gold:#DFB863;       /* aksen utama */
+    --gold-deep:#C0912F;  /* aksen dalam / gradasi */
+    --up:#4CB782;         /* diskon / undervalue / naik */
+    --down:#E06B5E;       /* premium / overvalue / turun */
+
+    --font-display:'Space Grotesk',system-ui,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #0e2036 0%, transparent 60%),
+      var(--navy-950);
+    color:var(--ivory);
+    font-family:var(--font-display);
+    -webkit-font-smoothing:antialiased;
+    padding:64px 24px 120px;
+  }
+
+  .wrap{max-width:1120px;margin:0 auto}
+
+  /* ---------- Header dokumen ---------- */
+  .doc-head{margin-bottom:56px;border-bottom:1px solid var(--navy-700);padding-bottom:36px}
+  .doc-kicker{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--gold);display:flex;align-items:center;gap:12px;margin-bottom:20px;
+  }
+  .doc-kicker::before{content:"";width:34px;height:1px;background:var(--gold)}
+  .doc-head h1{font-size:clamp(34px,5vw,58px);font-weight:700;letter-spacing:-.02em;line-height:1.02}
+  .doc-head h1 span{color:var(--gold)}
+  .doc-head p{margin-top:18px;max-width:640px;color:var(--ivory-dim);font-size:16px;line-height:1.6}
+
+  /* ---------- Penanda bagian ---------- */
+  .sec-label{
+    display:flex;align-items:baseline;gap:16px;margin:64px 0 24px;
+  }
+  .sec-label .n{font-family:var(--font-mono);color:var(--gold);font-size:13px;letter-spacing:.2em}
+  .sec-label h2{font-size:22px;font-weight:600;letter-spacing:-.01em}
+  .sec-label .line{flex:1;height:1px;background:var(--navy-700)}
+
+  .caption{font-family:var(--font-mono);font-size:12px;color:var(--slate);letter-spacing:.04em;margin:10px 2px 30px;line-height:1.5}
+  .caption b{color:var(--ivory-dim);font-weight:500}
+
+  /* ---------- Kartu fondasi ---------- */
+  .grid{display:grid;gap:20px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+
+  .card{background:var(--navy-800);border:1px solid var(--navy-700);border-radius:14px;padding:24px}
+  .card h3{font-size:13px;font-family:var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--slate);margin-bottom:18px}
+
+  /* Palet */
+  .sw{display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .sw:last-child{border-bottom:0}
+  .sw .chip{width:38px;height:38px;border-radius:9px;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+  .sw .meta{display:flex;flex-direction:column;gap:2px}
+  .sw .meta .nm{font-size:14px;font-weight:500}
+  .sw .meta .hx{font-family:var(--font-mono);font-size:12px;color:var(--slate)}
+
+  /* Tipografi contoh */
+  .type-row{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .type-row:last-child{border-bottom:0}
+  .type-row .tag{font-family:var(--font-mono);font-size:11px;color:var(--slate);letter-spacing:.1em;margin-bottom:6px}
+  .ex-display{font-size:32px;font-weight:700;letter-spacing:-.02em}
+  .ex-num{font-family:var(--font-mono);font-size:30px;font-weight:600;letter-spacing:-.01em}
+  .ex-body{font-size:17px;color:var(--ivory-dim);line-height:1.5}
+  .ex-label{font-family:var(--font-mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+
+  /* Badge verdict */
+  .badges{display:flex;flex-wrap:wrap;gap:12px}
+  .verdict{font-family:var(--font-mono);font-weight:600;font-size:14px;letter-spacing:.14em;
+    padding:10px 18px;border-radius:8px;display:inline-flex;align-items:center;gap:9px}
+  .verdict::before{content:"";width:9px;height:9px;border-radius:50%}
+  .v-beli{background:rgba(76,183,130,.12);color:var(--up);border:1px solid rgba(76,183,130,.35)}
+  .v-beli::before{background:var(--up)}
+  .v-tahan{background:rgba(223,184,99,.12);color:var(--gold);border:1px solid rgba(223,184,99,.35)}
+  .v-tahan::before{background:var(--gold)}
+  .v-hindari{background:rgba(224,107,94,.12);color:var(--down);border:1px solid rgba(224,107,94,.35)}
+  .v-hindari::before{background:var(--down)}
+
+  /* Do & Don't */
+  .rule{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px;line-height:1.5;color:var(--ivory-dim)}
+  .rule:last-child{border-bottom:0}
+  .rule .m{font-family:var(--font-mono);font-weight:600;flex:none}
+  .rule.ok .m{color:var(--up)} .rule.no .m{color:var(--down)}
+
+  /* ---------- SLIDE ENGINE (16:9) ---------- */
+  .slide-block{margin-bottom:14px}
+  .slide{
+    width:100%;aspect-ratio:16/9;border-radius:16px;overflow:hidden;position:relative;
+    background:
+      radial-gradient(900px 520px at 82% -18%, #10243c 0%, transparent 62%),
+      var(--navy-900);
+    container-type:size;
+    box-shadow:0 24px 60px -30px rgba(0,0,0,.8),0 0 0 1px var(--navy-700);
+    isolation:isolate;
+  }
+  /* motif grid halus di setiap slide */
+  .slide::before{
+    content:"";position:absolute;inset:0;z-index:0;opacity:.5;
+    background-image:
+      linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+    background-size:5.55cqw 5.55cqw;
+    -webkit-mask-image:radial-gradient(120% 120% at 50% 40%,#000 55%,transparent 100%);
+            mask-image:radial-gradient(120% 120% at 50% 40%,#000 55%,transparent 100%);
+  }
+  .pad{position:absolute;inset:0;z-index:2;padding:5cqw 5.4cqw;display:flex;flex-direction:column}
+
+  /* Rel merek atas */
+  .brandbar{display:flex;align-items:center;justify-content:space-between}
+  .logo{display:flex;align-items:center;gap:1.4cqw}
+  .mark{width:3.1cqw;height:3.1cqw;border-radius:.7cqw;flex:none;position:relative;
+    background:linear-gradient(150deg,var(--gold) 0%,var(--gold-deep) 100%)}
+  .mark svg{position:absolute;inset:0;width:100%;height:100%}
+  .logo .wm{font-weight:700;font-size:1.75cqw;letter-spacing:.02em;line-height:1}
+  .logo .wm b{color:var(--gold);font-weight:700}
+  .logo .wm small{display:block;font-family:var(--font-mono);font-size:.82cqw;letter-spacing:.32em;
+    color:var(--slate);text-transform:uppercase;margin-top:.35cqw}
+
+  .ticker-tag{font-family:var(--font-mono);font-size:1.05cqw;letter-spacing:.12em;
+    color:var(--gold);border:1px solid var(--navy-700);border-radius:.55cqw;padding:.7cqw 1.1cqw;
+    background:rgba(223,184,99,.06)}
+
+  /* Status bar bawah (gaya terminal) */
+  .statusbar{position:absolute;left:0;right:0;bottom:0;z-index:2;height:3.1cqw;
+    display:flex;align-items:center;justify-content:space-between;padding:0 5.4cqw;
+    border-top:1px solid var(--navy-700);
+    font-family:var(--font-mono);font-size:.92cqw;letter-spacing:.1em;color:var(--slate)}
+  .statusbar .dot{color:var(--gold)}
+  .statusbar .rt{display:flex;gap:1.6cqw;align-items:center}
+
+  .eyebrow{font-family:var(--font-mono);font-size:1.05cqw;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--gold);display:flex;align-items:center;gap:.9cqw}
+  .eyebrow::before{content:"";width:2.4cqw;height:1px;background:var(--gold)}
+
+  /* ====== COVER ====== */
+  .s-cover .mid{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .s-cover h1{font-size:6.4cqw;font-weight:700;line-height:1.0;letter-spacing:-.02em;margin:1.6cqw 0 1.2cqw}
+  .s-cover h1 .hl{color:var(--gold)}
+  .s-cover .sub{font-size:1.7cqw;color:var(--ivory-dim);max-width:64cqw;line-height:1.4}
+  .s-cover .meta{display:flex;gap:2.6cqw;margin-top:3cqw;font-family:var(--font-mono);font-size:1.1cqw;color:var(--slate)}
+  .s-cover .meta b{color:var(--ivory);font-weight:500;display:block;margin-top:.4cqw;font-size:1.25cqw}
+
+  /* ====== AGENDA ====== */
+  .s-agenda h2{font-size:3.4cqw;font-weight:700;margin:1.2cqw 0 .4cqw;letter-spacing:-.01em}
+  .agenda-list{margin-top:1.4cqw;display:flex;flex-direction:column;gap:.2cqw;flex:1;justify-content:center}
+  .ai{display:flex;align-items:center;gap:2cqw;padding:1.15cqw 0;border-bottom:1px solid var(--navy-700)}
+  .ai .num{font-family:var(--font-mono);font-size:1.6cqw;color:var(--gold);width:3.4cqw;font-weight:600}
+  .ai .txt{font-size:2cqw;font-weight:500}
+  .ai .note{margin-left:auto;font-family:var(--font-mono);font-size:1.05cqw;color:var(--slate)}
+
+  /* ====== SNAPSHOT / METRIK ====== */
+  .s-snap h2{font-size:3.1cqw;font-weight:700;margin:1cqw 0 0}
+  .metrics{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:1.6cqw;align-content:center;margin-top:1.4cqw}
+  .metric{background:var(--navy-800);border:1px solid var(--navy-700);border-radius:1cqw;padding:1.9cqw 1.8cqw}
+  .metric .k{font-family:var(--font-mono);font-size:.98cqw;letter-spacing:.14em;text-transform:uppercase;color:var(--slate)}
+  .metric .v{font-family:var(--font-mono);font-size:3.4cqw;font-weight:600;letter-spacing:-.02em;margin-top:.7cqw;line-height:1}
+  .metric .d{font-family:var(--font-mono);font-size:1.05cqw;margin-top:.7cqw;display:flex;align-items:center;gap:.5cqw}
+  .up{color:var(--up)} .down{color:var(--down)}
+
+  /* ====== CHART ====== */
+  .s-chart h2{font-size:2.7cqw;font-weight:700;margin:.8cqw 0}
+  .chart-area{flex:1;background:var(--navy-800);border:1px solid var(--navy-700);border-radius:1cqw;
+    margin-top:1cqw;position:relative;overflow:hidden;padding:1.6cqw}
+  .chart-area .yl{position:absolute;right:1.4cqw;top:1.4cqw;font-family:var(--font-mono);font-size:.9cqw;color:var(--slate);text-align:right;line-height:2.2}
+  .chart-cap{font-family:var(--font-mono);font-size:1cqw;color:var(--slate);margin-top:.9cqw}
+
+  /* ====== PERBANDINGAN ====== */
+  .s-comp h2{font-size:2.7cqw;font-weight:700;margin:.7cqw 0}
+  table.cmp{width:100%;border-collapse:collapse;margin-top:1cqw;font-family:var(--font-mono)}
+  table.cmp th,table.cmp td{text-align:left;padding:1.2cqw 1cqw;border-bottom:1px solid var(--navy-700);font-size:1.35cqw}
+  table.cmp thead th{font-size:1cqw;letter-spacing:.12em;text-transform:uppercase;color:var(--slate);font-weight:500}
+  table.cmp td:first-child,table.cmp th:first-child{font-family:var(--font-display);font-weight:600;color:var(--ivory)}
+  table.cmp td .best{color:var(--up)}
+  table.cmp .row-hl td{background:rgba(223,184,99,.06)}
+
+  /* ====== TESIS ====== */
+  .s-thesis{justify-content:center}
+  .s-thesis .quote{font-size:3.5cqw;font-weight:600;line-height:1.28;letter-spacing:-.01em;max-width:78cqw;margin-top:1.6cqw}
+  .s-thesis .quote .hl{color:var(--gold)}
+  .s-thesis .mark-big{position:absolute;top:3cqw;right:5cqw;font-family:var(--font-mono);
+    font-size:14cqw;color:var(--navy-700);line-height:1;z-index:1;opacity:.7}
+  .s-thesis .attrib{font-family:var(--font-mono);font-size:1.15cqw;color:var(--slate);margin-top:2.4cqw;letter-spacing:.06em}
+
+  /* ====== VALUASI + GAUGE (signature) ====== */
+  .s-val h2{font-size:2.7cqw;font-weight:700;margin:.6cqw 0}
+  .val-body{flex:1;display:grid;grid-template-columns:1.35fr 1fr;gap:3cqw;align-items:center}
+  .gauge-wrap{margin-top:1cqw}
+  .gauge-legend{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:1cqw;color:var(--slate);margin-bottom:1cqw}
+  .gauge{position:relative;height:5.4cqw;border-radius:.9cqw;background:var(--navy-800);
+    border:1px solid var(--navy-700);overflow:hidden}
+  .gauge .fair{position:absolute;top:0;bottom:0;background:rgba(76,183,130,.16);
+    border-left:1px dashed rgba(76,183,130,.5);border-right:1px dashed rgba(76,183,130,.5)}
+  .gauge .fairlbl{position:absolute;top:.7cqw;font-family:var(--font-mono);font-size:.85cqw;color:var(--up);letter-spacing:.1em}
+  .gauge .price{position:absolute;top:-.6cqw;bottom:-.6cqw;width:.32cqw;background:var(--gold);
+    box-shadow:0 0 1.4cqw rgba(223,184,99,.6)}
+  .gauge .price .flag{position:absolute;top:-2.2cqw;left:50%;transform:translateX(-50%);
+    background:var(--gold);color:var(--navy-950);font-family:var(--font-mono);font-weight:600;
+    font-size:.9cqw;padding:.3cqw .7cqw;border-radius:.4cqw;white-space:nowrap}
+  .gauge .disc{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,rgba(76,183,130,.10) 0 .8cqw,transparent .8cqw 1.6cqw)}
+  .mos{margin-top:1.4cqw;font-family:var(--font-mono);font-size:1.1cqw;color:var(--ivory-dim)}
+  .mos b{color:var(--up)}
+
+  .val-side{display:flex;flex-direction:column;gap:1.2cqw}
+  .val-num{background:var(--navy-800);border:1px solid var(--navy-700);border-radius:.9cqw;padding:1.3cqw 1.5cqw}
+  .val-num .k{font-family:var(--font-mono);font-size:.92cqw;letter-spacing:.12em;text-transform:uppercase;color:var(--slate)}
+  .val-num .v{font-family:var(--font-mono);font-size:2.5cqw;font-weight:600;margin-top:.4cqw;line-height:1}
+  .val-verdict{font-family:var(--font-mono);font-weight:600;font-size:1.7cqw;letter-spacing:.14em;
+    padding:1.2cqw;border-radius:.9cqw;text-align:center;display:flex;align-items:center;justify-content:center;gap:1cqw}
+  .val-verdict::before{content:"";width:1.2cqw;height:1.2cqw;border-radius:50%}
+  .val-verdict.beli{background:rgba(76,183,130,.14);color:var(--up);border:1px solid rgba(76,183,130,.4)}
+  .val-verdict.beli::before{background:var(--up)}
+
+  /* ====== PENUTUP ====== */
+  .s-out{justify-content:center;text-align:center;align-items:center}
+  .s-out .big-mark{width:6cqw;height:6cqw;border-radius:1.3cqw;margin:0 auto 1.6cqw;position:relative;
+    background:linear-gradient(150deg,var(--gold),var(--gold-deep))}
+  .s-out .big-mark svg{position:absolute;inset:0;width:100%;height:100%}
+  .s-out h2{font-size:4cqw;font-weight:700;letter-spacing:-.02em}
+  .s-out p{font-size:1.6cqw;color:var(--ivory-dim);margin-top:1cqw}
+  .s-out .cta{margin-top:2.4cqw;display:inline-flex;align-items:center;gap:1cqw;
+    font-family:var(--font-mono);font-size:1.3cqw;letter-spacing:.1em;color:var(--navy-950);
+    background:var(--gold);padding:1.1cqw 2.2cqw;border-radius:.8cqw;font-weight:600}
+  .s-out .disc{margin-top:2.6cqw;font-family:var(--font-mono);font-size:.92cqw;color:var(--slate);
+    letter-spacing:.04em;max-width:66cqw;line-height:1.6}
+
+  .foot{margin-top:80px;padding-top:28px;border-top:1px solid var(--navy-700);
+    font-family:var(--font-mono);font-size:12px;color:var(--slate);letter-spacing:.06em;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <header class="doc-head">
+    <div class="doc-kicker">Sistem Desain · v1.0</div>
+    <h1><span>Moovon</span> Finance<br>Panduan Slide Video</h1>
+    <p>Satu bahasa visual untuk seluruh konten analisis saham. Elemen tanda tangan channel ini adalah <b style="color:var(--gold)">selisih Harga vs Nilai Wajar</b> — divisualkan lewat <em>gauge margin of safety</em> yang muncul konsisten di setiap pembahasan valuasi. Semua template dirancang 16:9 pada 1920×1080 agar cocok dengan pipeline render Anda.</p>
+  </header>
+
+  <!-- ============ FONDASI ============ -->
+  <div class="sec-label"><span class="n">01</span><h2>Fondasi</h2><div class="line"></div></div>
+
+  <div class="grid g2">
+    <!-- Palet -->
+    <div class="card">
+      <h3>Palet Warna</h3>
+      <div class="sw"><div class="chip" style="background:#0B1B2E"></div><div class="meta"><span class="nm">Navy Latar</span><span class="hx">#0B1B2E · dasar seluruh slide</span></div></div>
+      <div class="sw"><div class="chip" style="background:#12263F"></div><div class="meta"><span class="nm">Navy Panel</span><span class="hx">#12263F · kartu & tabel</span></div></div>
+      <div class="sw"><div class="chip" style="background:#DFB863"></div><div class="meta"><span class="nm">Gold Aksen</span><span class="hx">#DFB863 · penekanan & angka kunci</span></div></div>
+      <div class="sw"><div class="chip" style="background:#F4EFE3"></div><div class="meta"><span class="nm">Warm Ivory</span><span class="hx">#F4EFE3 · teks utama</span></div></div>
+      <div class="sw"><div class="chip" style="background:#4CB782"></div><div class="meta"><span class="nm">Sinyal Naik</span><span class="hx">#4CB782 · diskon / undervalue</span></div></div>
+      <div class="sw"><div class="chip" style="background:#E06B5E"></div><div class="meta"><span class="nm">Sinyal Turun</span><span class="hx">#E06B5E · premium / overvalue</span></div></div>
+    </div>
+
+    <!-- Tipografi -->
+    <div class="card">
+      <h3>Tipografi</h3>
+      <div class="type-row"><div class="tag">DISPLAY · Space Grotesk Bold</div><div class="ex-display">Nilai Wajar BBRI</div></div>
+      <div class="type-row"><div class="tag">ANGKA & DATA · IBM Plex Mono</div><div class="ex-num">Rp 4.720 · P/E 11,2×</div></div>
+      <div class="type-row"><div class="tag">BODI · Space Grotesk Regular</div><div class="ex-body">Harga di bawah nilai wajar memberi ruang margin of safety.</div></div>
+      <div class="type-row"><div class="tag">LABEL · Mono, spasi lebar</div><div class="ex-label">MARGIN OF SAFETY</div></div>
+    </div>
+  </div>
+
+  <div class="grid g3" style="margin-top:20px">
+    <!-- Logo -->
+    <div class="card">
+      <h3>Logo & Rel Merek</h3>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 0">
+        <div style="width:44px;height:44px;border-radius:10px;flex:none;position:relative;background:linear-gradient(150deg,#DFB863,#C0912F)">
+          <svg viewBox="0 0 44 44"><path d="M11 30 L18 21 L24 26 L33 13" fill="none" stroke="#081422" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="33" cy="13" r="3" fill="#081422"/></svg>
+        </div>
+        <div style="line-height:1.1"><div style="font-weight:700;font-size:20px"><span style="color:var(--gold)">MOOVON</span> Finance</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.3em;color:var(--slate);margin-top:4px">ANALISIS SAHAM</div></div>
+      </div>
+      <div class="caption" style="margin:8px 0 0">Selalu di kiri-atas. Ticker di kanan-atas.</div>
+    </div>
+
+    <!-- Verdict -->
+    <div class="card">
+      <h3>Badge Verdict</h3>
+      <div class="badges">
+        <span class="verdict v-beli">BELI</span>
+        <span class="verdict v-tahan">TAHAN</span>
+        <span class="verdict v-hindari">HINDARI</span>
+      </div>
+      <div class="caption" style="margin:18px 0 0">Konsisten: hijau = diskon, gold = wajar, merah = premium.</div>
+    </div>
+
+    <!-- Do / Don't -->
+    <div class="card">
+      <h3>Aturan Main</h3>
+      <div class="rule ok"><span class="m">YA</span><span>Angka & ticker selalu pakai font mono agar rata</span></div>
+      <div class="rule ok"><span class="m">YA</span><span>Satu ide besar per slide</span></div>
+      <div class="rule no"><span class="m">TIDAK</span><span>Jangan pakai gradasi warna-warni</span></div>
+      <div class="rule no"><span class="m">TIDAK</span><span>Jangan >6 baris teks per slide</span></div>
+    </div>
+  </div>
+
+  <!-- ============ TEMPLATE SLIDE ============ -->
+  <div class="sec-label"><span class="n">02</span><h2>Template Slide</h2><div class="line"></div></div>
+
+  <!-- 1. COVER -->
+  <div class="slide-block">
+    <div class="slide">
+      <div class="pad s-cover">
+        <div class="brandbar">
+          <div class="logo">
+            <div class="mark"><svg viewBox="0 0 44 44"><path d="M11 30 L18 21 L24 26 L33 13" fill="none" stroke="#081422" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="33" cy="13" r="3" fill="#081422"/></svg></div>
+            <div class="wm"><b>MOOVON</b> Finance<small>Analisis Saham</small></div>
+          </div>
+          <div class="ticker-tag">EPISODE 042</div>
+        </div>
+        <div class="mid">
+          <div class="eyebrow">Analisis Valuasi</div>
+          <h1>Apakah <span class="hl">BBRI</span><br>Masih Murah?</h1>
+          <div class="sub">Menghitung nilai wajar Bank Rakyat Indonesia dan mencari margin of safety untuk horizon 5–10 tahun.</div>
+          <div class="meta">
+            <div>TICKER<b>BBRI · IDX</b></div>
+            <div>SEKTOR<b>Perbankan</b></div>
+            <div>DURASI<b>12 menit</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="statusbar"><span><span class="dot">●</span> MOOVON FINANCE</span><span class="rt"><span>IHSG 7.240 ▲</span><span>WIB 20:00</span></span></div>
+    </div>
+  </div>
+  <div class="caption"><b>Slide 1 — Cover.</b> Judul berupa pertanyaan tajam. Ticker + sektor di kolom meta. Gunakan sebagai thumbnail juga.</div>
+
+  <!-- 2. AGENDA -->
+  <div class="slide-block">
+    <div class="slide">
+      <div class="pad s-agenda">
+        <div class="brandbar">
+          <div class="eyebrow">Yang Kita Bahas</div>
+          <div class="ticker-tag">BBRI</div>
+        </div>
+        <h2>Peta Jalan Analisis</h2>
+        <div class="agenda-list">
+          <div class="ai"><span class="num">01</span><span class="txt">Model bisnis & daya tahan</span><span class="note">Bertahan 5–10 thn?</span></div>
+          <div class="ai"><span class="num">02</span><span class="txt">Kesehatan keuangan</span><span class="note">ROE · NPL · CAR</span></div>
+          <div class="ai"><span class="num">03</span><span class="txt">Menghitung nilai wajar</span><span class="note">DCF & relatif</span></div>
+          <div class="ai"><span class="num">04</span><span class="txt">Harga vs Nilai Wajar</span><span class="note">Margin of safety</span></div>
+          <div class="ai"><span class="num">05</span><span class="txt">Verdict & catatan risiko</span><span class="note">Kesimpulan</span></div>
+        </div>
+      </div>
+      <div class="statusbar"><span><span class="dot">●</span> AGENDA</span><span class="rt"><span>05 BAGIAN</span></span></div>
+    </div>
+  </div>
+  <div class="caption"><b>Slide 2 — Agenda.</b> Nomor urut memang dipakai di sini karena isinya benar-benar sebuah urutan. Kolom kanan = intisari tiap poin.</div>
+
+  <!-- 3. SNAPSHOT -->
+  <div class="slide-block">
+    <div class="slide">
+      <div class="pad s-snap">
+        <div class="brandbar">
+          <div class="eyebrow">Snapshot Fundamental</div>
+          <div class="ticker-tag">BBRI · TTM</div>
+        </div>
+        <h2>Angka Kunci Sekilas</h2>
+        <div class="metrics">
+          <div class="metric"><div class="k">Harga</div><div class="v">4.720</div><div class="d up">▲ 1,3% hari ini</div></div>
+          <div class="metric"><div class="k">P/E</div><div class="v">11,2×</div><div class="d">vs sektor 13,5×</div></div>
+          <div class="metric"><div class="k">P/BV</div><div class="v">2,4×</div><div class="d">rata-rata 5thn 2,7×</div></div>
+          <div class="metric"><div class="k">ROE</div><div class="v">19,4%</div><div class="d up">▲ konsisten</div></div>
+          <div class="metric"><div class="k">Dividend Yield</div><div class="v">6,1%</div><div class="d up">payout 80%</div></div>
+          <div class="metric"><div class="k">Market Cap</div><div class="v">715T</div><div class="d">bank terbesar</div></div>
+        </div>
+      </div>
+      <div class="statusbar"><span><span class="dot">●</span> DATA FUNDAMENTAL</span><span class="rt"><span>SUMBER: LAP. KEUANGAN Q2</span></span></div>
+    </div>
+  </div>
+  <div class="caption"><b>Slide 3 — Snapshot metrik.</b> Grid 3×2 kartu. Angka besar mono; baris bawah untuk konteks (naik/turun, pembanding).</div>
+
+  <!-- 4. CHART -->
+  <div class="slide-block">
+    <div class="slide">
+      <div class="pad s-chart">
+        <div class="brandbar">
+          <div class="eyebrow">Pergerakan Harga</div>
+          <div class="ticker-tag">BBRI · 1Y</div>
+        </div>
+        <h2>Harga 12 Bulan Terakhir</h2>
+        <div class="chart-area">
+          <svg viewBox="0 0 100 42" preserveAspectRatio="none" style="width:100%;height:100%">
+            <defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#DFB863" stop-opacity=".28"/><stop offset="1" stop-color="#DFB863" stop-opacity="0"/>
+            </linearGradient></defs>
+            <line x1="0" y1="10" x2="100" y2="10" stroke="#1B3350" stroke-width=".2"/>
+            <line x1="0" y1="21" x2="100" y2="21" stroke="#1B3350" stroke-width=".2"/>
+            <line x1="0" y1="32" x2="100" y2="32" stroke="#4CB782" stroke-width=".25" stroke-dasharray="1 1"/>
+            <path d="M0 30 L12 27 L24 31 L36 24 L48 26 L60 18 L72 21 L84 14 L100 12 L100 42 L0 42 Z" fill="url(#fill)"/>
+            <path d="M0 30 L12 27 L24 31 L36 24 L48 26 L60 18 L72 21 L84 14 L100 12" fill="none" stroke="#DFB863" stroke-width=".6" stroke-linejoin="round"/>
+            <circle cx="100" cy="12" r=".9" fill="#DFB863"/>
+          </svg>
+          <div class="yl">5.000<br>4.500<br>4.000<br>3.500</div>
+        </div>
+        <div class="chart-cap">Garis putus hijau = level nilai wajar estimasi · Titik gold = harga terkini</div>
+      </div>
+      <div class="statusbar"><span><span class="dot">●</span> GRAFIK HARGA</span><span class="rt"><span>+18% YoY</span></span></div>
+    </div>
+  </div>
+  <div class="caption"><b>Slide 4 — Chart.</b> Area chart minimalis satu warna gold. Garis nilai wajar hijau jadi rujukan visual berulang.</div>
+
+  <!-- 5. PERBANDINGAN -->
+  <div class="slide-block">
+    <div class="slide">
+      <div class="pad s-comp">
+        <div class="brandbar">
+          <div class="eyebrow">Adu Bank BUMN</div>
+          <div class="ticker-tag">BBRI vs BMRI vs BBNI</div>
+        </div>
+        <h2>Perbandingan Head-to-Head</h2>
+        <table class="cmp">
+          <thead><tr><th>Emiten</th><th>Harga</th><th>P/E</th><th>P/BV</th><th>ROE</th><th>Div. Yield</th></tr></thead>
+          <tbody>
+            <tr class="row-hl"><td>BBRI</td><td>4.720</td><td>11,2×</td><td>2,4×</td><td class="best">19,4%</td><td class="best">6,1%</td></tr>
+            <tr><td>BMRI</td><td>6.150</td><td>10,8×</td><td>2,1×</td><td>18,1%</td><td>5,4%</td></tr>
+            <tr><td>BBNI</td><td>5.480</td><td>9,4×</td><td>1,3×</td><td>14,2%</td><td>4,8%</td></tr>
+          </tbody>
+        </table>
+        <div class="chart-cap" style="margin-top:1.4cqw">Angka hijau = terbaik di kelasnya · Baris tersorot = fokus episode</div>
+      </div>
+      <div class="statusbar"><span><span class="dot">●</span> KOMPARASI</span><span class="rt"><span>3 EMITEN</span></span></div>
+    </div>
+  </div>
+  <div class="caption"><b>Slide 5 — Perbandingan.</b> Tabel mono agar kolom rata. Sorot angka terbaik hijau + baris fokus dengan latar gold tipis.</div>
+
+  <!-- 6. TESIS -->
+  <div class="slide-block">
+    <div class="slide">
+      <div class="pad s-thesis">
+        <div class="mark-big">"</div>
+        <div class="brandbar" style="position:absolute;top:5cqw;left:5.4cqw;right:5.4cqw">
+          <div class="eyebrow">Inti Tesis</div>
+        </div>
+        <div class="quote">Harga adalah yang kamu bayar. <span class="hl">Nilai adalah yang kamu dapat.</span> Kita hanya membeli saat harga jelas di bawah nilai wajar.</div>
+        <div class="attrib">— Prinsip value investing yang jadi pegangan channel ini</div>
+      </div>
+      <div class="statusbar"><span><span class="dot">●</span> TESIS UTAMA</span><span class="rt"><span>MARGIN OF SAFETY</span></span></div>
+    </div>
+  </div>
+  <div class="caption"><b>Slide 6 — Tesis / kutipan.</b> Untuk pernyataan besar. Satu kalimat, sebagian kata di-highlight gold. Tanda kutip raksasa jadi tekstur.</div>
+
+  <!-- 7. VALUASI + GAUGE (SIGNATURE) -->
+  <div class="slide-block">
+    <div class="slide">
+      <div class="pad s-val">
+        <div class="brandbar">
+          <div class="eyebrow">Harga vs Nilai Wajar</div>
+          <div class="ticker-tag">VALUASI</div>
+        </div>
+        <h2>Margin of Safety</h2>
+        <div class="val-body">
+          <div class="gauge-wrap">
+            <div class="gauge-legend"><span>Rp 3.500</span><span style="color:var(--up)">ZONA NILAI WAJAR</span><span>Rp 6.500</span></div>
+            <div class="gauge">
+              <div class="fair" style="left:52%;right:14%"></div>
+              <div class="disc" style="left:31%;width:21%"></div>
+              <div class="fairlbl" style="left:53%">WAJAR ≈ 5.900</div>
+              <div class="price" style="left:31%"><div class="flag">HARGA 4.720</div></div>
+            </div>
+            <div class="mos">Diskon terhadap nilai wajar: <b>≈ 20%</b> · masih dalam batas margin of safety yang dicari</div>
+          </div>
+          <div class="val-side">
+            <div class="val-num"><div class="k">Nilai Wajar (est.)</div><div class="v">5.900</div></div>
+            <div class="val-num"><div class="k">Harga Sekarang</div><div class="v">4.720</div></div>
+            <div class="val-verdict beli">BELI</div>
+          </div>
+        </div>
+      </div>
+      <div class="statusbar"><span><span class="dot">●</span> KEPUTUSAN VALUASI</span><span class="rt"><span>DISKON 20%</span></span></div>
+    </div>
+  </div>
+  <div class="caption"><b>Slide 7 — Valuasi + gauge (elemen tanda tangan).</b> Marker gold = harga, pita hijau = zona wajar, arsiran = besarnya diskon. Inilah slide inti tiap episode.</div>
+
+  <!-- 8. PENUTUP -->
+  <div class="slide-block">
+    <div class="slide">
+      <div class="pad s-out">
+        <div class="big-mark"><svg viewBox="0 0 60 60"><path d="M15 41 L25 29 L33 35 L45 18" fill="none" stroke="#081422" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="45" cy="18" r="4" fill="#081422"/></svg></div>
+        <h2>Terima kasih sudah menonton</h2>
+        <p>Subscribe untuk analisis saham BUMN tiap minggu.</p>
+        <div class="cta">▶ SUBSCRIBE · MOOVON FINANCE</div>
+        <div class="disc">Konten ini bersifat edukasi dan bukan rekomendasi untuk membeli atau menjual. Selalu lakukan riset sendiri sebelum berinvestasi. Angka valuasi merupakan estimasi.</div>
+      </div>
+      <div class="statusbar"><span><span class="dot">●</span> PENUTUP</span><span class="rt"><span>@moovonfinance</span></span></div>
+    </div>
+  </div>
+  <div class="caption"><b>Slide 8 — Penutup.</b> CTA subscribe + disclaimer wajib. Logo kembali ke tengah sebagai penutup simetris terhadap cover.</div>
+
+  <div class="foot">
+    MOOVON FINANCE — SISTEM DESAIN SLIDE v1.0<br>
+    Kanvas 1920×1080 (16:9) · Space Grotesk + IBM Plex Mono · Navy #0B1B2E / Gold #DFB863 / Ivory #F4EFE3<br>
+    Semua slide memakai unit relatif (cqw) sehingga skala tetap konsisten di resolusi berapa pun.
+  </div>
+
+</div>
+</body>
+</html>
