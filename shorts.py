@@ -194,10 +194,23 @@ def _render_bg(ticker: str, hook_lines: list[str], out: Path, eyebrow: str = "BE
     d.line([mx, y + 6 * S, mx + 120 * S, y + 6 * S], fill=brand, width=5 * S)
 
     # ── CTA bawah + disclaimer (di atas zona subtitle) ──
+    # Hierarki: pil SUBSCRIBE = aksi utama (Shorts nyaris tak mengonversi sub
+    # tanpa ajakan eksplisit), baru link ke video panjang, lalu disclaimer.
+    # Zona subtitle mulai ~320px dari bawah (MarginV=48) → pil aman di 235px.
+    pill_f = F("mono_semi", 28)
+    pill_t = "SUBSCRIBE"
+    pw = d.textlength(pill_t, font=pill_f)
+    pad_x, pill_h = 26 * S, 52 * S
+    pill_w = pw + pad_x * 2
+    pill_y = H - 235 * S
+    _rounded(d, [W / 2 - pill_w / 2, pill_y, W / 2 + pill_w / 2, pill_y + pill_h],
+             pill_h / 2, fill=brand)
+    d.text((W / 2, pill_y + pill_h / 2), pill_t, font=pill_f,
+           fill=T.RGB["black"], anchor="mm")
+
     cta_y = H - 150 * S
     cta_f = F("mono_semi", 30)
-    tri = "▶"
-    label = f"{tri}  ANALISIS LENGKAP DI CHANNEL"
+    label = "▶  ANALISIS LENGKAP DI CHANNEL"
     lw = d.textlength(label, font=cta_f)
     d.text((W / 2 - lw / 2, cta_y), label, font=cta_f, fill=brand, anchor="lm")
     disc_f = F("mono_reg", 21)
@@ -322,7 +335,8 @@ def make_short_from_script(script_path: str):
 
 
 def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
-               start: float | None = None, ticker: str | None = None):
+               start: float | None = None, ticker: str | None = None,
+               eyebrow: str | None = None):
     """MODE PAKAI-ULANG: Short dari jendela HOOK audio video panjang (hook-first)."""
     from moviepy import AudioFileClip, ImageClip
 
@@ -350,7 +364,8 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
     print(f"\U0001F3AC Short {ticker}: jendela {a0:.1f}→{a1:.1f}s ({a1-a0:.1f}s) | "
           f"hook: {' / '.join(hook_lines)}")
 
-    bg = _render_bg(ticker, hook_lines, rd / "short_bg.png")
+    bg = _render_bg(ticker, hook_lines, rd / "short_bg.png",
+                    eyebrow=eyebrow or "BEDAH SAHAM")
     sub_srt = rd / "short.srt"
     _write_sub_srt(cues, a0, a1, sub_srt)
 
@@ -381,7 +396,7 @@ if __name__ == "__main__":
 
     # Mode PAKAI-ULANG
     run = args[0]
-    hook = cut = start = tick = None
+    hook = cut = start = tick = eyeb = None
     if "--hook" in args:
         hook = args[args.index("--hook") + 1]
     if "--cut" in args:
@@ -390,4 +405,6 @@ if __name__ == "__main__":
         start = float(args[args.index("--start") + 1])
     if "--ticker" in args:
         tick = args[args.index("--ticker") + 1]
-    make_short(run, hook=hook, cut=cut, start=start, ticker=tick)
+    if "--eyebrow" in args:
+        eyeb = args[args.index("--eyebrow") + 1]
+    make_short(run, hook=hook, cut=cut, start=start, ticker=tick, eyebrow=eyeb)
