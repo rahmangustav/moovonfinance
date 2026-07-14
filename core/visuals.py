@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from pathlib import Path
-from moviepy import AudioFileClip, ImageClip, concatenate_videoclips, vfx
+from moviepy import AudioFileClip, VideoClip, concatenate_videoclips, vfx
 
 # Video FULL ON-BRAND v2.0 "SINYAL": semua slide dirender oleh render_slides.py
 # (cover + section + valuasi/gauge + snapshot + penutup) + chart tema gelap.
@@ -11,6 +11,32 @@ from moviepy import AudioFileClip, ImageClip, concatenate_videoclips, vfx
 WIDTH, HEIGHT = 1920, 1080
 FPS  = 24
 FADE = 0.6
+ZOOM = 0.045   # micro-zoom kinetik per slide (4,5% — subtil, chrome tetap terbaca)
+
+
+def _kinetic_clip(img_path: str, duration: float, mode: str = "in") -> VideoClip:
+    """Slide hidup: push-in ('in') / push-out ('out') pelan lewat crop tengah +
+    resize per frame. Micro-zoom 4,5% dengan easing smoothstep — cukup untuk
+    membunuh kesan statis tanpa mengganggu keterbacaan. PIL BILINEAR dipilih
+    sadar: murah di mesin tanpa GPU, softness-nya tak terlihat saat bergerak.
+    (Ini BUKAN Ken Burns foto jalur lama — tetap slide on-brand, hanya kameranya
+    yang bernapas.)"""
+    import numpy as np
+    from PIL import Image
+
+    src = Image.open(img_path).convert("RGB")
+
+    def frame(t):
+        p = min(t / max(duration, 0.01), 1.0)        # clamp: aman bila clip diperpanjang
+        p = p * p * (3 - 2 * p)                      # smoothstep
+        z = 1 + ZOOM * (p if mode == "in" else 1 - p)
+        cw, ch = int(WIDTH / z), int(HEIGHT / z)
+        x0, y0 = (WIDTH - cw) // 2, (HEIGHT - ch) // 2
+        return np.asarray(
+            src.crop((x0, y0, x0 + cw, y0 + ch)).resize((WIDTH, HEIGHT), Image.BILINEAR)
+        )
+
+    return VideoClip(frame, duration=duration).with_fps(FPS)
 
 
 # ─── Section parsing & label ──────────────────────────────────────────────────
@@ -116,8 +142,13 @@ def _match_charts_to_sections(sections: list, charts: list) -> list:
     return per_section
 
 
-def _burn_subtitles(video_path: str, srt_path: str, output_path: str):
-    """Burn SRT subtitles into video using bundled ffmpeg."""
+def _burn_subtitles(video_path: str, srt_path: str, output_path: str,
+                    duration: float | None = None):
+    """Burn SRT subtitles into video using bundled ffmpeg.
+
+    Bila `duration` diberikan, progress bar citron 6px ditumpangkan di tepi
+    bawah (drawbox dengan lebar = iw*t/durasi) — elemen bergerak konstan,
+    gratis karena menumpang pass re-encode subtitle yang memang sudah ada."""
     import subprocess
     import imageio_ffmpeg
 
@@ -142,12 +173,26 @@ def _burn_subtitles(video_path: str, srt_path: str, output_path: str):
         "Bold=1"
     )
 
-    result = subprocess.run(
-        [ffmpeg, "-y", "-i", video_path,
-         "-vf", f"subtitles={srt_path}:force_style='{style}'",
-         "-c:a", "copy", output_path],
-        capture_output=True, text=True,
-    )
+    subs = f"subtitles={srt_path}:force_style='{style}'"
+    if duration and duration > 0:
+        # Progress bar: strip citron full-width digeser masuk dari kiri lewat
+        # overlay (ekspresi x dengan variabel waktu 't' dievaluasi per frame —
+        # drawbox TIDAK bisa: di sana 't' berarti thickness, bukan timestamp).
+        # Warna = brand citron #C6F24E (moovon_theme RGB['brand']).
+        filter_complex = (
+            f"[0:v]{subs}[v];"
+            f"color=c=0xC6F24E:s={WIDTH}x6:d={duration:.3f}[bar];"
+            f"[v][bar]overlay=x='-w+w*min(t/{duration:.3f}\\,1)':y=H-6:shortest=1[out]"
+        )
+        cmd = [ffmpeg, "-y", "-i", video_path,
+               "-filter_complex", filter_complex,
+               "-map", "[out]", "-map", "0:a?",
+               "-c:a", "copy", output_path]
+    else:
+        cmd = [ffmpeg, "-y", "-i", video_path,
+               "-vf", subs, "-c:a", "copy", output_path]
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         raise RuntimeError(f"ffmpeg subtitle burn failed:\n{result.stderr[-500:]}")
 
@@ -228,7 +273,11 @@ def create_video(
     cover_path = str(out_dir / "slide_cover.png")
     RS.render_cover(cover_eyebrow, cover_title, ticker, subtitle, _id_date()).save(cover_path)
     print(f"   🎨 Cover on-brand — {ticker or '(tanpa ticker)'}")
-    clips = [ImageClip(cover_path).with_duration(10).with_fps(FPS).with_effects([vfx.FadeIn(FADE)])]
+    clips = [_kinetic_clip(cover_path, 10, "in").with_effects([vfx.FadeIn(FADE)])]
+
+    # arah micro-zoom bergantian per slide (in/out) — ritme hidup, anti-monoton
+    def _zoom_mode() -> str:
+        return "in" if len(clips) % 2 == 0 else "out"
 
     # ── Posisi sisip slide tanda tangan (gauge valuasi & snapshot fundamental) ──
     # Dicocokkan ke section lewat kata kunci label (pola sama dgn chart matching).
@@ -282,8 +331,8 @@ def create_video(
             label, _c, mos = MT.verdict(v["harga"], v["nilai_wajar"])
             print(f"   📐 Gauge Margin of Safety — {label} (MoS {mos*100:+.1f}%)")
             clips.append(
-                ImageClip(slide_path).with_duration(per_item)
-                .with_fps(FPS).with_effects([vfx.FadeIn(FADE)])
+                _kinetic_clip(slide_path, per_item, _zoom_mode())
+                .with_effects([vfx.FadeIn(FADE)])
             )
             continue
 
@@ -294,8 +343,8 @@ def create_video(
                                s["metrics"]).save(slide_path)
             print(f"   🧭 Snapshot fundamental — {len(s['metrics'])} metrik")
             clips.append(
-                ImageClip(slide_path).with_duration(per_item)
-                .with_fps(FPS).with_effects([vfx.FadeIn(FADE)])
+                _kinetic_clip(slide_path, per_item, _zoom_mode())
+                .with_effects([vfx.FadeIn(FADE)])
             )
             continue
 
@@ -307,8 +356,8 @@ def create_video(
             chart_path = render_chart(spec, out_dir=out_dir)
             if chart_path:
                 clips.append(
-                    ImageClip(chart_path).with_duration(per_item)
-                    .with_fps(FPS).with_effects([vfx.FadeIn(FADE)])
+                    _kinetic_clip(chart_path, per_item, _zoom_mode())
+                    .with_effects([vfx.FadeIn(FADE)])
                 )
             else:
                 print("   ⚠️  Chart gagal dirender, slide dilewati.")
@@ -332,8 +381,8 @@ def create_video(
         slide_img.save(slide_path)
         print(f"   🎨 [{section['label'][:24]}] slide on-brand {i + 1}/{n_sec}")
         clips.append(
-            ImageClip(slide_path).with_duration(per_item)
-            .with_fps(FPS).with_effects([vfx.FadeIn(FADE)])
+            _kinetic_clip(slide_path, per_item, _zoom_mode())
+            .with_effects([vfx.FadeIn(FADE)])
         )
 
     # ── Kompensasi kalau ada chart/slide gagal dirender di tengah loop ──
@@ -366,8 +415,8 @@ def create_video(
         print(f"   📝 {len(segments)} subtitle segments")
 
     # ── Burn subtitles ──
-    print("   🔤 Burning subtitles...")
-    _burn_subtitles(bg_path, srt_path, output_path)
+    print("   🔤 Burning subtitles + progress bar...")
+    _burn_subtitles(bg_path, srt_path, output_path, duration=total_duration)
     Path(bg_path).unlink(missing_ok=True)
 
     print(f"Video saved: {output_path}")

@@ -47,7 +47,10 @@ Modul:
   (naratif + mode statement bila judul kosong), `render_valuation` (gauge),
   `render_snapshot`, `render_closing`. Pola acuan untuk slide baru.
 - `core/visuals.py` — `create_video`: rakit video dari slide on-brand + chart,
-  TTS, subtitle burn. TIDAK ada foto/ddgs/Ken Burns.
+  TTS, subtitle burn. TIDAK ada foto/ddgs/Ken Burns. Sejak 14 Jul 2026: tiap
+  slide dapat **micro-zoom kinetik** 4,5% (push-in/out bergantian, smoothstep,
+  `_kinetic_clip`) + **progress bar citron** 6px di tepi bawah (overlay ffmpeg,
+  menumpang pass subtitle) — anti-monoton tanpa keluar brand.
 - `core/chart_templates.py` + `core/moovon_style.py` — chart matplotlib tema
   GELAP v2.0 (line/bar/donut/table/timeline).
 - `core/tts.py` (edge-tts `id-ID-GadisNeural` + SRT word-boundary), `core/thumbnail.py`,
