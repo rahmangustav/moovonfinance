@@ -1,6 +1,6 @@
 {
   "pipeline": "moovon-video-loop",
-  "current_topic": "[EVERGREEN Fase 2] Cara Baca Laporan Keuangan Saham untuk Pemula",
+  "current_topic": "",
   "phase": "idle",
   "phases": [
     "idle",
@@ -87,8 +87,8 @@
       "youtube_id": "vzIn0Dbws6s",
       "uploaded": "2026-07-06",
       "run_dir": "output/short_-_20260706_184453",
-      "scheduled_for": "2026-07-14T17:30:00+07:00",
-      "note": "Short edukasi hook-first"
+      "scheduled_for": null,
+      "note": "Short edukasi hook-first. TERBIT DINI 12 Jul 13:46 WIB (jadwal 14 Jul kelepas saat remaster -14 LUFS) — dibiarkan live karena jadi Short views tertinggi (594 views per 14 Jul); publishAt tak bisa dipasang ulang untuk video yang sudah publik"
     },
     {
       "topic": "Minyak Dunia Menuju $60? Nasib Saham MEDC, PGAS & ELSA",
@@ -103,6 +103,113 @@
       "uploaded": "2026-07-06",
       "run_dir": null,
       "scheduled_for": "2026-07-11T17:30:00+07:00"
+    },
+    {
+      "topic": "Cara Baca Laporan Keuangan Saham untuk Pemula (5 Hal Penting)",
+      "youtube_id": "OBxxAgBWZho",
+      "uploaded": "2026-07-07",
+      "run_dir": null,
+      "scheduled_for": "2026-07-08T17:30:00+07:00"
+    },
+    {
+      "topic": "Minyak Dunia Menuju $60? Nasib Saham MEDC, PGAS & ELSA",
+      "youtube_id": "ak7tI3sB6BQ",
+      "uploaded": "2026-07-07",
+      "run_dir": null,
+      "scheduled_for": "2026-07-09T17:30:00+07:00"
+    },
+    {
+      "topic": "IHSG Anjlok ke 5.873, Rupiah Tembus 18 Ribu — Investor Harus Apa?",
+      "youtube_id": "JBHlCHjz0eo",
+      "uploaded": "2026-07-08",
+      "scheduled_for": "2026-07-09T17:30:00+07:00",
+      "run_dir": "output/run_20260708_234244",
+      "note": "Video pertama dibantu Jarwo — render & upload otomatis"
+    },
+    {
+      "topic": "Short ANTM",
+      "youtube_id": "Y4FwGCuMCqA",
+      "uploaded": "2026-07-09",
+      "type": "short",
+      "run_dir": null,
+      "scheduled_for": null
+    },
+    {
+      "topic": "Short TLKM",
+      "youtube_id": "iEpjSTykUWw",
+      "uploaded": "2026-07-09",
+      "type": "short",
+      "run_dir": null,
+      "scheduled_for": null
+    },
+    {
+      "topic": "Laba BRI Naik 14%, Sahamnya Malah Jatuh 35% — Kok Bisa? #Shorts",
+      "youtube_id": "9qANjY-Hebs",
+      "uploaded": "2026-07-12",
+      "run_dir": null,
+      "scheduled_for": "2026-07-14T17:30:00+07:00",
+      "remaster": "-14 LUFS 2026-07-12"
+    },
+    {
+      "topic": "IHSG Hilang 30% dari Puncak, Rupiah Tembus 18 Ribu — Panik atau Belanja? #Shorts",
+      "youtube_id": "FmoCIzRKmYI",
+      "type": "short",
+      "uploaded": "2026-07-12",
+      "run_dir": "output/run_20260708_234244",
+      "scheduled_for": "2026-07-13T17:30:00+07:00",
+      "remaster": "-14 LUFS 2026-07-12"
+    },
+    {
+      "topic": "Laporan Keuangan Itu Rapor Perusahaan — Cukup Paham 5 Bagian Ini #Shorts",
+      "youtube_id": "HBNVWNeJO-s",
+      "type": "short",
+      "uploaded": "2026-07-12",
+      "run_dir": "output/run_20260706_123338",
+      "scheduled_for": "2026-07-15T17:30:00+07:00",
+      "remaster": "-14 LUFS 2026-07-12"
+    },
+    {
+      "topic": "Saham Rp1.000 Lebih Murah dari Rp10.000? Salah Besar — Ini Arti PER #Shorts",
+      "youtube_id": "6_wycxiap_w",
+      "type": "short",
+      "uploaded": "2026-07-12",
+      "run_dir": "output/short_-_20260712_200053",
+      "scheduled_for": "2026-07-16T17:30:00+07:00",
+      "remaster": "-14 LUFS 2026-07-12"
+    },
+    {
+      "topic": "Saham Dijual Lebih Murah dari Kekayaan Bersihnya? Ini Arti PBV #Shorts",
+      "youtube_id": "pGzNEehpiTI",
+      "type": "short",
+      "uploaded": "2026-07-12",
+      "run_dir": "output/short_-_20260712_200248",
+      "scheduled_for": "2026-07-17T17:30:00+07:00",
+      "remaster": "-14 LUFS 2026-07-12"
+    },
+    {
+      "topic": "Rahasia Investor Kawakan: Beli Barang Rp100 Ribu di Harga Rp70 Ribu #Shorts",
+      "youtube_id": "6nIMuSiKnx8",
+      "type": "short",
+      "uploaded": "2026-07-12",
+      "run_dir": "output/short_-_20260712_200433",
+      "scheduled_for": "2026-07-18T17:30:00+07:00",
+      "remaster": "-14 LUFS 2026-07-12"
+    },
+    {
+      "topic": "3 Kesalahan Ini Bikin Uang Pemula Saham Hangus — Nomor 2 Paling Sering #Shorts",
+      "youtube_id": "Pd7edQ9wmPw",
+      "type": "short",
+      "uploaded": "2026-07-12",
+      "run_dir": "output/short_-_20260712_200625",
+      "scheduled_for": "2026-07-19T17:30:00+07:00",
+      "remaster": "-14 LUFS 2026-07-12"
+    },
+    {
+      "topic": "Arti PER & PBV: Cara Tahu Saham Murah atau Mahal (untuk Pemula)",
+      "youtube_id": "z717bvpcCfM",
+      "uploaded": "2026-07-12",
+      "run_dir": null,
+      "scheduled_for": "2026-07-16T17:30:00+07:00"
     }
   ],
   "blocked": null,
@@ -121,7 +228,7 @@
       "status": "script approved sebelumnya, render lama sudah dihapus 2026-07-04 (belum sempat upload). produce_emas.py juga sudah dihapus saat rebuild sistem (2026-07-04) — kalau mau lanjut, naskahnya perlu ditulis ulang ke assets/draft_script_moovon.md format baru (lihat draft BBCA sebagai contoh), lalu render pakai produce.py."
     }
   ],
-  "last_run_dir": "output/run_20260706_202118",
+  "last_run_dir": "output/run_20260712_213556",
   "next_topic": {
     "topic": "bedah saham ANTM (Aneka Tambang)",
     "requested": "2026-07-05",
