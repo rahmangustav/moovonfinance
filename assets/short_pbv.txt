@@ -1,0 +1,5 @@
+TICKER: -
+EYEBROW: KELAS SAHAM
+HOOK: Ada saham yang dijual lebih murah dari kekayaan bersih perusahaannya. Kok bisa?
+BODY: Ini yang diukur perbandingan harga dengan nilai buku, biasa disingkat P B V. Nilai buku itu kekayaan bersih perusahaan, semua aset dikurangi semua utang. Kalau rasionya di bawah satu, kamu membeli perusahaan lebih murah dari kekayaan bersihnya. Ibarat beli dompet berisi uang seratus ribu cuma seharga sembilan puluh ribu. Tapi hati-hati, kadang saham murah karena bisnisnya memang bermasalah. Jadi cek juga labanya masih tumbuh atau tidak, dan utangnya terkendali atau tidak.
+CLOSE: Belajar bareng di channel.

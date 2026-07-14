@@ -1,0 +1,4 @@
+TICKER: BBRI
+HOOK: Laba BRI naik hampir 14 persen. Tapi sahamnya jatuh sekitar 35 persen dari puncak.
+BODY: Kuartal pertama 2026, BRI mencetak laba 15,5 triliun rupiah, tumbuh 13,7 persen. Tapi harga sahamnya sekarang cuma sekitar 2.790 rupiah. Buat pemburu dividen, di sinilah menariknya. Untuk tahun buku 2025, BRI membagi dividen 346 rupiah per saham. Kalau tahun depan segitu lagi, imbal hasilnya di harga sekarang bisa tembus dua belas persen.
+CLOSE: Tapi imbal hasil setinggi itu muncul karena harganya jatuh, jadi ada risikonya. Ini bukan saran jual atau beli. Bedah lengkapnya di channel.

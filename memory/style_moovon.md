@@ -26,3 +26,16 @@ Objektif, terpercaya, analitis tapi dibawain santai — kayak ngobrol sama temen
 - 5 opsi judul: SEO friendly, jujur, gak clickbait murahan.
 - Deskripsi: lengkap dengan timestamp + disclaimer.
 - Tags relevan niche finance Indonesia.
+
+## Anggaran kata naskah Shorts (pelajaran 12 Jul 2026)
+
+Shorts WAJIB <60 dtk. Patokan kecepatan `id-ID-GadisNeural` untuk naskah padat
+angka: **±1,6 kata/detik** — JAUH lebih lambat dari perkiraan intuitif, karena
+angka dibaca panjang ("15,5 triliun" → "lima belas koma lima triliun").
+
+- Target aman: **±85 kata TOTAL** (HOOK + BODY + CLOSE) → ±55 dtk.
+- 115 kata → 72,8 dtk = LEWAT BATAS (kejadian nyata di Short BBRI, harus render ulang).
+- Kalau kepanjangan: buang angka sekunder (pertumbuhan kredit, target analis),
+  bukan memampatkan kalimat. Satu ide besar per Short.
+- `shorts.py` memang memperingatkan bila >58 dtk, tapi TETAP merender — cek
+  durasi di log sebelum lanjut, jangan asal upload.

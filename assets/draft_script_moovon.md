@@ -1,140 +1,169 @@
-# DRAFT SCRIPT — Minyak Menuju $60? Nasib Saham MEDC, PGAS, ELSA
+# DRAFT SCRIPT — Arti PER & PBV: Cara Tahu Saham Murah atau Mahal (untuk Pemula)
+
 **Status:** DRAFT — MENUNGGU REVIEW DATA ("Data aman, lanjut render")
-**Tanggal riset:** 6 Juli 2026
-**Estimasi durasi:** ± 8 menit (~1.500 kata)
-**Format:** Tematik sektor (proyeksi makro → dampak ke 3 emiten) — bukan bedah 1 emiten
-**Visual:** slide on-brand v2.0 + bar proyeksi harga + tabel paparan + 2 snapshot + tabel banding
-**Topic keywords:** proyeksi harga minyak 2026, saham migas Indonesia, MEDC PGAS ELSA
-**Thumbnail text:** Minyak $60? MEDC PGAS ELSA
-**Eyebrow:** SEKTOR ENERGI
+**Tanggal riset:** 12 Juli 2026
+**Estimasi durasi:** ± 8 menit (~1.450 kata)
+**Format:** Edukasi evergreen (konsep → rumus → contoh nyata → cara pakai)
+**Topic keywords:** arti PER PBV saham, cara menilai saham murah atau mahal, valuasi saham untuk pemula, PER adalah, PBV adalah
+**Thumbnail text:** PER & PBV — Saham Murah atau Mahal?
+**Eyebrow:** KELAS SAHAM
 **Ticker:** none
 
 ---
 
-## CATATAN KONTEN — framing WAJIB
-Angka $60 adalah **PROYEKSI**, bukan harga sekarang. Harga spot per 6 Jul 2026:
-Brent ~$71,8 · WTI ~$69. Basis $60 = proyeksi institusi (Citi Brent $60 akhir 2026;
-Goldman Sachs $60 di kuartal IV; konsensus Reuters 34 analis $63,85; EIA/StanChart ~$70).
-Penyebabnya surplus pasokan struktural 2,3–3,0 juta barel/hari + normalisasi Selat
-Hormuz (damai AS–Iran). Narasi HARUS bilang "proyeksi/skenario", tidak boleh
-menyebut $60 sebagai harga hari ini.
+## CATATAN KONTEN — sumber data WAJIB dicek sebelum render
+Angka contoh nyata per pertengahan Juli 2026:
+- BBRI: harga ~Rp2.800–2.840 (Yahoo Finance, 29 Jun 2026), PER ~7,2–8,1×, PBV ~1,5× (sesaham.com & Yahoo Finance, diakses 12 Jul 2026)
+- BBCA: harga ~Rp5.800 (Yahoo Finance, 2 Jul 2026), PER ~12,8×, PBV ~3,1× (sesaham.com, diakses 12 Jul 2026)
+- Rentang 52 minggu BBCA: Rp4.820–8.975 (Yahoo Finance) → turun ~35% dari puncak
+- Ilustrasi perusahaan A/B di Section 1 adalah HIPOTETIS dan dinyatakan sebagai ilustrasi dalam narasi.
+- Patokan "PER di bawah 15× umumnya wajar" dan "PBV di bawah 1× tergolong murah" = rule of thumb umum value investing, disampaikan sebagai patokan kasar, bukan angka pasti.
 
-**Inti edukasi:** tiga saham "migas" bereaksi BEDA ke minyak murah —
-- **MEDC** = produsen minyak → paling terpapar LANGSUNG (laba ikut harga jual), tapi
-  cash cost rendah ~$8,8/boe jadi bantalan.
-- **PGAS** = distributor gas → paling TERLINDUNG, bahkan sebagian biaya pasokan bisa
-  turun; profil defensif + dividen tinggi.
-- **ELSA** = jasa hulu migas → paparan TIDAK LANGSUNG lewat belanja modal klien; porsi
-  distribusi BBM meredam.
-
-**Angka terverifikasi (riset 6 Jul 2026):**
-- MEDC: pendapatan 9M-2025 US$1,76 M (-1,1% yoy) · laba bersih US$85,65 juta (-68,7% yoy) ·
-  cash cost ~US$8,8/boe (guidance US$10) · produksi ~155–174 mboepd · harga ~Rp1.065
-  (-16% sebulan) · target analis buy Rp1.515–1.800.
-- PGAS: pendapatan FY2025 US$3,9 M (+5% yoy) · laba bersih US$215,4 juta (-36,5% yoy) ·
-  PER ~8,9x · dividend yield ~9,8% (DPS Rp182) · tertekan HGBT US$6/MMBTU.
-- ELSA: pendapatan FY2025 Rp14,49 T (+8,3% yoy) · laba bersih Rp718,4 M (+0,7% yoy) ·
-  segmen: distribusi/logistik energi Rp8,94 T, jasa hulu migas Rp4,15 T, penunjang Rp1,88 T ·
-  PER ~5,5x · dividend yield ~8,9% · harga ~Rp490–505.
+Narasi HARUS bilang bahwa ini informasi edukasi, bukan ajakan jual/beli.
 
 ---
 
 ## SCRIPT
 
-### HOOK (0:00–0:35)
-Bayangkan harga minyak dunia yang sekarang di kisaran tujuh puluh dua dolar, pelan-pelan turun ke enam puluh dolar. Sebagian bank besar dunia memang sedang memproyeksikan itu. Nah, banyak orang mengira semua saham minyak dan gas pasti kompak jatuh. Padahal tidak. Tiga saham migas paling populer di bursa kita — Medco, Perusahaan Gas Negara, dan Elnusa — justru punya nasib yang berbeda-beda kalau minyak benar-benar murah. Ada yang langsung kena, ada yang malah relatif aman, ada yang di tengah-tengah. Di video ini kita bedah kenapa. Seperti biasa, konten ini cuma untuk edukasi ya — ini bukan saran jual atau beli.
+### Intro — Harga Saham Itu Menipu (0:00–0:45)
 
-> [VISUAL: hook — teks besar "Minyak ke $60? Tiga Nasib Berbeda"]
+Coba tebak. Ada dua saham. Yang pertama harganya seribu rupiah. Yang kedua harganya sepuluh ribu rupiah. Mana yang lebih murah?
 
-### SECTION 1 — Kenapa Ada Proyeksi Minyak ke $60 (0:35–2:00)
-Pertama, kita luruskan dulu. Enam puluh dolar itu bukan harga hari ini. Saat video ini dibuat, minyak jenis Brent masih di sekitar tujuh puluh dua dolar per barel. Angka enam puluh dolar itu adalah proyeksi ke depan dari sejumlah lembaga besar.
+Kalau jawabanmu yang seribu, kamu baru saja masuk ke jebakan paling klasik di dunia saham. Karena bisa jadi, saham seribu itu justru yang kemahalan, dan saham sepuluh ribu itu justru sedang diskon besar.
 
-Citi, misalnya, memperkirakan Brent bisa menyentuh enam puluh dolar di akhir tahun. Goldman Sachs punya perkiraan mirip untuk kuartal terakhir. Sementara rata-rata dari puluhan analis yang disurvei ada di kisaran enam puluh sampai tujuh puluh dolar.
+Di video ini kita bongkar dua alat paling dasar untuk menilai murah atau mahalnya saham: P E R dan P B V. Pelan-pelan, pakai contoh nyata dari bursa kita. Seperti biasa, konten ini cuma untuk edukasi ya — ini bukan saran jual atau beli.
 
-Kenapa bisa turun? Alasan utamanya satu kata: kelebihan pasokan. Ketegangan di Timur Tengah mereda, jalur pengiriman lewat Selat Hormuz kembali normal, dan produksi global diperkirakan melampaui permintaan. Kalau barang membanjir sementara kebutuhan biasa saja, harga cenderung turun. Itu hukum paling dasar di pasar mana pun.
+### Kenapa Angka Harga Saja Tidak Cukup (0:45–1:45)
 
-Buat kita sebagai investor, yang menarik bukan tebak-tebakan angkanya. Yang menarik adalah: kalau skenario ini benar terjadi, siapa yang paling terpukul, dan siapa yang justru tahan?
+Begini logikanya. Waktu kamu beli saham, kamu bukan beli angka di layar. Kamu beli potongan kecil dari sebuah perusahaan. Jadi pertanyaan yang benar bukan berapa harga per lembarnya, tapi: dapat apa saya dari harga segitu?
 
-> [VISUAL/CHART: bar proyeksi Brent akhir 2026 per lembaga]
+> [VISUAL/CHART: tabel ilustrasi perusahaan A vs B]
 
-### SECTION 2 — Medco: Yang Paling Terpapar Langsung (2:00–3:45)
-Kita mulai dari yang paling gampang ditebak arahnya: Medco Energi, kode sahamnya MEDC. Medco ini produsen. Bisnis intinya menyedot minyak dan gas dari perut bumi, lalu menjualnya dengan harga pasar dunia. Artinya, pendapatannya menempel langsung ke harga minyak. Harga minyak naik, untungnya melonjak. Harga minyak turun, untungnya ikut tertekan.
+Biar kebayang, kita pakai ilustrasi sederhana. Perusahaan A harga sahamnya seribu rupiah, tapi laba per sahamnya cuma lima puluh rupiah setahun. Perusahaan B harga sahamnya sepuluh ribu, tapi laba per sahamnya seribu rupiah setahun. Artinya, di perusahaan A kamu membayar dua puluh kali lipat labanya. Di perusahaan B kamu cuma membayar sepuluh kali lipat labanya. Yang lebih murah justru yang harganya sepuluh ribu.
 
-Seberapa sensitif? Lihat saja tahun lalu. Sampai kuartal ketiga dua ribu dua puluh lima, pendapatan Medco sebenarnya cuma turun tipis, sekitar satu persen. Tapi laba bersihnya anjlok hampir tujuh puluh persen. Turun sedikit di harga jual, tapi labanya rontok. Inilah wajah saham produsen komoditas: labanya berayun jauh lebih liar daripada pendapatannya.
+Nah, perbandingan harga dengan laba inilah yang dirangkum satu angka bernama P E R.
 
-Tapi ada kabar baiknya, dan ini penting. Biaya produksi Medco tergolong sangat rendah, sekitar sembilan dolar untuk setiap barel setara minyak. Jadi walaupun harga jual turun ke enam puluh dolar, jarak antara harga jual dan biaya produksinya masih sangat lebar. Medco tidak akan rugi. Untungnya menipis, iya. Tapi perusahaannya tetap sehat menghasilkan uang. Ini beda jauh dengan produsen berbiaya tinggi yang bisa langsung merugi saat harga jatuh.
+### PER: Berapa Tahun Balik Modal (1:45–3:15)
 
-Harga sahamnya sendiri sudah mendinginkan ekspektasi itu — dalam sebulan terakhir MEDC sudah turun sekitar enam belas persen ke kisaran seribu enam puluh lima rupiah. Sebagian analis masih pasang target beli di atas seribu lima ratus, dengan catatan besar: semua itu sangat bergantung ke arah harga minyak.
+P E R itu singkatan dari rasio harga terhadap laba. Rumusnya sederhana: harga saham dibagi laba bersih per saham selama setahun.
 
-> [VISUAL/CHART: snapshot MEDC — sensitivitas laba & cash cost]
+Cara bacanya juga gampang. Anggap saja P E R itu menjawab pertanyaan: kalau labanya segini terus, butuh berapa tahun sampai laba perusahaan menyamai uang yang kamu bayar? P E R sepuluh kali artinya sepuluh tahun. P E R dua puluh kali artinya dua puluh tahun. Jadi makin kecil angkanya, makin murah harganya dibanding kemampuan mencetak labanya.
 
-### SECTION 3 — Perusahaan Gas Negara: Yang Paling Terlindung (3:45–5:20)
-Sekarang yang menarik. Banyak orang mengira PGAS, Perusahaan Gas Negara, akan sama nasibnya dengan Medco karena sama-sama di sektor energi. Padahal modelnya kebalikannya.
+Sekarang contoh nyata, dengan angka per pertengahan Juli dua ribu dua puluh enam. Bank Rakyat Indonesia, kode sahamnya B B R I, harganya di kisaran dua ribu delapan ratus rupiah, dengan P E R sekitar tujuh sampai delapan kali. Bandingkan dengan Bank Central Asia, kode sahamnya B B C A, yang harganya sekitar lima ribu delapan ratus, dengan P E R sekitar tiga belas kali.
 
-PGAS bukan penjual minyak, tapi penyalur gas. Dia beli gas, lalu menyalurkannya ke industri dan rumah tangga dengan mengambil selisih harga. Nah, di model seperti ini, harga minyak yang turun justru bisa jadi kabar netral, bahkan sebagian menguntungkan. Kenapa? Karena sebagian harga gas yang dia beli terindeks ke harga minyak dunia. Kalau minyak turun, biaya beli gasnya berpotensi ikut turun, sehingga marginnya bisa terjaga.
+> [VISUAL/CHART: bar PER BBRI vs BBCA]
 
-Memang, tahun lalu laba bersih PGAS turun cukup dalam, sekitar tiga puluh enam persen, ke dua ratus lima belas juta dolar. Tapi biang keroknya bukan harga minyak dunia, melainkan kenaikan biaya pembelian gas dan kebijakan harga gas murah untuk industri tertentu. Justru minyak yang lebih murah bisa sedikit meredakan tekanan biaya itu.
+Lihat kan? Harga per lembar B B C A dua kali lipat lebih. Tapi bukan itu ukurannya. Dari kacamata P E R, untuk setiap rupiah laba, kamu membayar sekitar tujuh sampai delapan rupiah di B B R I, dan sekitar tiga belas rupiah di B B C A.
 
-Yang bikin PGAS menarik sebagai saham defensif adalah dividennya. Dengan harga sekarang, imbal hasil dividennya berada di kisaran hampir sepuluh persen — termasuk salah satu yang tertinggi di antara saham besar. Buat investor yang mengejar aliran pendapatan dan tidak ingin terlalu bergantung ke naik-turunnya harga minyak, profil seperti ini punya daya tarik tersendiri.
+Patokan kasarnya, untuk pasar kita, P E R di bawah lima belas kali umumnya masih tergolong wajar. Tapi ingat, ini patokan kasar, bukan harga mati.
 
-> [VISUAL/CHART: snapshot PGAS — laba, dividen, sifat defensif]
+### PER Rendah Tidak Otomatis Lebih Bagus (3:15–4:30)
 
-### SECTION 4 — Elnusa: Yang Berada di Tengah (5:20–6:35)
-Emiten ketiga, Elnusa, kode sahamnya ELSA, posisinya paling menarik karena ada di tengah. Elnusa itu perusahaan jasa. Dia tidak menjual minyak, tapi melayani perusahaan-perusahaan yang mencari dan memproduksi minyak — mulai dari jasa seismik, pengeboran, sampai penunjang lapangan.
+Terus kenapa orang masih mau bayar P E R tiga belas kali untuk B B C A, kalau ada bank besar lain yang cuma tujuh kali?
 
-Di sinilah dampaknya bersifat tidak langsung. Kalau harga minyak murah bertahan lama, para produsen cenderung mengerem belanja eksplorasi dan pengeboran. Kalau order berkurang, pendapatan jasa Elnusa bisa ikut tertekan. Jadi Elnusa tidak kena langsung dari harga jual minyak, tapi kena dari keputusan belanja kliennya.
+Karena pasar tidak cuma menghargai laba hari ini. Pasar menghargai kualitas dan kepastian laba di masa depan. Perusahaan yang labanya stabil, kreditnya sehat, dan jarang bikin kejutan buruk, biasanya dihargai lebih premium. Itu sebabnya bank yang dianggap paling berkualitas hampir selalu punya P E R lebih tinggi dari rata-rata.
 
-Untungnya, Elnusa tidak hanya bergantung ke jasa hulu. Dari total pendapatan sekitar empat belas setengah triliun rupiah tahun lalu, porsi terbesarnya justru datang dari distribusi dan logistik energi, hampir sembilan triliun. Bisnis penyaluran bahan bakar seperti ini relatif lebih stabil dan tidak terlalu sensitif ke naik-turunnya harga minyak dunia. Inilah yang jadi peredam kejutnya.
+Sebaliknya, ada juga yang disebut jebakan saham murah. Sahamnya kelihatan murah karena P E R-nya kecil, padahal kecilnya itu justru karena pasar ragu labanya bisa bertahan. Murah yang seperti ini bukan diskon, tapi diskon barang rusak.
 
-Hasilnya terlihat: sepanjang tahun lalu laba bersih Elnusa tetap tumbuh, walau tipis, ke sekitar tujuh ratus delapan belas miliar rupiah. Dengan harga saham di kisaran lima ratus rupiah, valuasinya termasuk yang paling murah di antara ketiganya, dengan dividen yang juga lumayan.
+Makanya aturan mainnya begini: bandingkan P E R hanya dengan perusahaan sejenis di sektor yang sama, dan selalu tanya kenapa angkanya bisa serendah atau setinggi itu. P E R itu pembuka percakapan, bukan kesimpulan.
 
-> [VISUAL/CHART: bar komposisi pendapatan Elnusa per segmen]
+### PBV: Harga Dibanding Kekayaan Bersih (4:30–6:00)
 
-### SECTION 5 — Menyandingkan Ketiganya (6:35–7:40)
-Jadi mari kita sandingkan. Kalau minyak benar-benar turun ke enam puluh dolar, tiga saham ini bergerak di jalur yang berbeda.
+Alat kedua namanya P B V, rasio harga terhadap nilai buku. Kalau P E R membandingkan harga dengan laba, P B V membandingkan harga dengan kekayaan bersih perusahaan — semua asetnya dikurangi semua utangnya.
 
-Medco adalah taruhan paling langsung ke harga minyak. Kalau kamu yakin harga minyak akan tetap tinggi, dia yang paling diuntungkan. Tapi kalau proyeksi enam puluh dolar terjadi, dia juga yang labanya paling tertekan — walau dengan biaya produksi rendah, dia tetap tidak akan rugi.
+Cara bacanya: P B V satu kali artinya kamu membayar persis senilai kekayaan bersihnya. Di bawah satu kali, kamu membeli perusahaan lebih murah dari kekayaan bersihnya sendiri — ibarat beli dompet berisi seratus ribu dengan harga sembilan puluh ribu. Di atas satu kali, kamu membayar premium di atas kekayaan bersihnya.
 
-Perusahaan Gas Negara adalah yang paling defensif. Modelnya sebagai penyalur, ditambah dividen tinggi, membuatnya paling tidak terganggu, bahkan sebagian bisa diuntungkan dari biaya pasokan yang lebih murah.
+> [VISUAL/CHART: bar PBV BBRI vs BBCA]
 
-Elnusa ada di tengah. Terpapar lewat belanja klien, tapi diredam oleh bisnis distribusinya yang stabil, dengan valuasi paling murah.
+Kembali ke contoh kita. Per pertengahan Juli dua ribu dua puluh enam, P B V B B R I ada di kisaran satu setengah kali. Sedangkan B B C A sekitar tiga kali. Artinya pasar menghargai B B C A tiga kali lipat kekayaan bersihnya — lagi-lagi karena premium kualitas tadi.
 
-Poin besarnya begini: kata "saham migas" itu menyesatkan kalau digebyah-uyah. Produsen, penyalur, dan penyedia jasa punya mesin uang yang berbeda, sehingga bereaksi berbeda ke satu peristiwa yang sama. Memahami model bisnisnya jauh lebih penting daripada sekadar menebak arah harga minyak.
+P B V ini paling cocok dipakai untuk perusahaan yang kekayaannya jelas bentuknya, seperti bank dan perusahaan padat aset. Untuk perusahaan yang nilainya ada di merek atau teknologi, P B V sering kurang bercerita.
 
-> [VISUAL/CHART: tabel banding 3 emiten — paparan, PER, dividen]
+Dan sama seperti P E R, angka rendah perlu dicurigai dulu. P B V di bawah satu memang bisa berarti diskon. Tapi bisa juga pasar sedang bilang: aset perusahaan ini kualitasnya diragukan. Cek dulu labanya masih tumbuh atau tidak, dan utangnya terkendali atau tidak.
 
-### KESIMPULAN (7:40–8:10)
-Rangkumannya: proyeksi minyak ke enam puluh dolar bukan lonceng kematian untuk semua saham energi. Medco paling terpapar tapi berbiaya rendah, Perusahaan Gas Negara paling terlindung dan royal dividen, dan Elnusa di tengah dengan valuasi murah. Yang benar-benar menentukan bukan sekadar harga minyaknya, tapi bagaimana setiap perusahaan menghasilkan uang. Sebagai investor bernilai, tugas kita bukan menebak harga minyak besok, tapi memahami mana bisnis yang tetap kokoh di berbagai skenario.
+### Cara Pakai Keduanya (6:00–7:15)
 
-### CTA (8:10–8:35)
-Kalau video ini bikin kamu lihat sektor energi dengan lebih jernih, bantu dengan like dan subscribe, plus nyalakan lonceng notifikasinya. Menurut kamu, dari ketiga saham tadi, mana yang paling menarik kalau minyak benar-benar turun ke enam puluh dolar? Tulis di komentar, biar bisa kita bahas lebih dalam. Dan kalau mau kita bedah satu per satu emiten ini secara mendalam, kabari juga. Sampai jumpa di video selanjutnya.
+Jadi bagaimana cara pakainya sehari-hari? Tiga langkah.
+
+**Pertama, saring.**
+Pakai P E R dan P B V untuk menyaring. Saham dengan P E R di bawah lima belas kali dan P B V yang tidak jauh di atas satu, layak masuk daftar untuk dipelajari. Sekali lagi: dipelajari, belum tentu dibeli.
+
+**Kedua, bandingkan dengan yang sejenis.**
+Bank dibandingkan dengan bank. Emiten tambang dengan emiten tambang. Dan bandingkan juga dengan sejarah valuasinya sendiri — apakah sekarang lebih murah atau lebih mahal dari biasanya.
+
+**Ketiga, cari tahu ceritanya.**
+Angka murah selalu punya alasan. Tugasmu mencari tahu apakah alasannya sementara — misalnya pasar lagi panik — atau permanen, misalnya bisnisnya memang menurun. Kalau alasannya sementara dan bisnisnya sehat, di situlah peluang muncul. Kalau permanen, itu jebakan.
+
+Dan satu prinsip pamungkas dari value investing: beri jarak pengaman. Jangan beli hanya karena angkanya pas di patokan. Beli ketika harganya jauh di bawah nilai yang kamu hitung, supaya kalau perhitunganmu meleset, kamu masih terlindungi.
+
+### Kesimpulan (7:15–8:00)
+
+Rangkumannya. Harga per lembar saham tidak bercerita apa-apa soal murah atau mahal. P E R membandingkan harga dengan laba — makin kecil makin murah, patokan kasarnya di bawah lima belas kali. P B V membandingkan harga dengan kekayaan bersih — di bawah satu kali tergolong murah. Tapi keduanya cuma pembuka percakapan: angka yang murah harus selalu ditanya kenapa, dan hanya adil dibandingkan dengan perusahaan sejenis.
+
+Kalau video ini bikin kamu makin jernih menilai saham, bantu dengan like dan subscribe, plus nyalakan loncengnya — tiap minggu kita bedah konsep dan emiten satu per satu. Menurut kamu, konsep apa lagi yang bikin bingung waktu mulai belajar saham? Tulis di komentar. Sampai jumpa di video selanjutnya.
 
 ---
 
-## CHARTS: (matplotlib lokal — angka dari riset terverifikasi 6 Jul 2026)
+## CHARTS:
+
 ```json
 [
-  {"type": "bar", "section": "SECTION 1", "judul": "Proyeksi Harga Brent Akhir 2026 (US$/barel)", "sumber": "Citi, Goldman Sachs, Reuters poll, EIA (Jul 2026)",
-   "kategori": ["Spot kini", "EIA", "Reuters (34 analis)", "Goldman/Citi"], "nilai": [71.8, 70.0, 63.85, 60.0]},
-  {"type": "bar", "section": "SECTION 2", "judul": "Bantalan Biaya Medco — Tetap Untung di $60 (US$/barel)", "sumber": "Laporan MEDC 9M-2025 (cash cost ~US$8,8/boe)",
-   "kategori": ["Cash cost", "Skenario $60", "Harga kini ~$72"], "nilai": [8.8, 60.0, 71.8]},
-  {"type": "table", "section": "SECTION 3", "judul": "PGAS — Penyalur Gas, Profil Defensif", "sumber": "Laporan PGAS FY2025; Ajaib/TradingView",
-   "headers": ["Metrik", "Nilai (FY2025)"],
-   "rows": [["Pendapatan", "US$3,9 M (+5%)"], ["Laba bersih", "US$215 jt (-36,5%)"], ["PER", "~8,9x"], ["Dividend yield", "~9,8%"]]},
-  {"type": "bar", "section": "SECTION 4", "judul": "Komposisi Pendapatan Elnusa FY2025 (Rp Triliun)", "sumber": "Laporan keuangan ELSA FY2025",
-   "kategori": ["Distribusi & Logistik", "Jasa Hulu Migas", "Penunjang Migas"], "nilai": [8.94, 4.15, 1.88]},
-  {"type": "table", "section": "SECTION 5", "judul": "Tiga Nasib Berbeda kalau Minyak ke $60", "sumber": "Riset Moovon, 6 Jul 2026",
-   "headers": ["Emiten", "Paparan ke minyak", "PER", "Dividen"],
-   "rows": [["MEDC", "Langsung (produsen)", "-", "kecil"], ["PGAS", "Terlindung (penyalur)", "~8,9x", "~9,8%"], ["ELSA", "Tak langsung (jasa)", "~5,5x", "~8,9%"]]}
+  {
+    "type": "table",
+    "section": "KENAPA ANGKA HARGA",
+    "judul": "Ilustrasi: Harga Tinggi Bisa Lebih Murah",
+    "headers": ["", "Perusahaan A", "Perusahaan B"],
+    "rows": [
+      ["Harga saham", "Rp1.000", "Rp10.000"],
+      ["Laba per saham", "Rp50", "Rp1.000"],
+      ["PER (harga : laba)", "20x", "10x"],
+      ["Kesimpulan", "Lebih mahal", "Lebih murah"]
+    ],
+    "sumber": "Ilustrasi hipotetis — bukan emiten nyata"
+  },
+  {
+    "type": "bar",
+    "section": "PER BERAPA TAHUN",
+    "judul": "PER: BBRI vs BBCA — makin kecil makin murah",
+    "kategori": ["BBRI", "BBCA"],
+    "nilai": [7.6, 12.8],
+    "sumber": "Yahoo Finance & sesaham.com, 12 Jul 2026"
+  },
+  {
+    "type": "bar",
+    "section": "PBV HARGA DIBANDING",
+    "judul": "PBV: BBRI vs BBCA — 1x = setara kekayaan bersih",
+    "kategori": ["BBRI", "BBCA"],
+    "nilai": [1.5, 3.1],
+    "sumber": "Yahoo Finance & sesaham.com, 12 Jul 2026"
+  },
+  {
+    "type": "table",
+    "section": "CARA PAKAI",
+    "judul": "Contoh Nyata — Valuasi per Jul 2026",
+    "headers": ["Emiten", "Harga", "PER", "PBV"],
+    "rows": [
+      ["BBRI", "±2.800", "±7–8x", "±1,5x"],
+      ["BBCA", "±5.800", "±12,8x", "±3,1x"]
+    ],
+    "sumber": "Yahoo Finance & sesaham.com, diakses 12 Jul 2026"
+  }
 ]
 ```
 
-## Sumber (diakses 6 Juli 2026)
-- Kompas / Liputan6 — Citi prediksi Brent US$60 akhir 2026
-- Reuters (via IDNFinancials, fxstreet-id) — analis pangkas proyeksi minyak 2026, surplus pasokan pasca-Hormuz
-- Kontan / Investortrust — MEDC pendapatan & laba 9M-2025, cash cost ~US$8,8/boe, target harga
-- Kontan / IndonesiaKini — PGAS laba FY2025 turun 36,5%, tekanan HGBT US$6/MMBTU
-- Ajaib / TradingView — PGAS PER ~8,9x, dividend yield ~9,8% (DPS Rp182)
-- ANTARA / CNBC Indonesia — ELSA pendapatan Rp14,49 T & laba Rp718,4 M FY2025, komposisi segmen
-- Stockbit / Ajaib — ELSA PER ~5,5x, dividend yield ~8,9%, harga ~Rp490–505
-- Harga spot: Pintu News (2–5 Jul 2026), TradingEconomics Brent
+## SNAPSHOT:
+```json
+{
+  "judul": "PER & PBV — Patokan Kasar",
+  "metrics": [
+    ["PER wajar", "< 15x", "up"],
+    ["PBV murah", "< 1x", "up"],
+    ["PER BBRI", "±7–8x", "neutral"],
+    ["PER BBCA", "±12,8x", "neutral"],
+    ["PBV BBRI", "±1,5x", "neutral"],
+    ["PBV BBCA", "±3,1x", "neutral"]
+  ]
+}
+```
+
+---
