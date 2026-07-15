@@ -120,7 +120,8 @@ Episode berikutnya kita bedah bagian kedua rapor: neraca — cara cek utang peru
     "section": "SECTION 2",
     "judul": "Dari Mana Uang ICBP Datang? (Penjualan 2025)",
     "labels": ["Mi instan", "Dairy", "Makanan ringan", "Penyedap", "Lainnya"],
-    "values": [55.84, 9.81, 4.61, 4.59, 2.78],
+    "persentase": [71.9, 12.6, 5.9, 5.9, 3.6],
+    "catatan_data": "porsi dari total penjualan segmen 77,63 T (sebelum eliminasi antar segmen): 55,84 / 9,81 / 4,61 / 4,59 / 2,78",
     "sumber": "Laporan tahunan ICBP FY2025 via Kontan, 31 Mar 2026"
   },
   {
