@@ -223,7 +223,7 @@ def _render_bg(ticker: str, hook_lines: list[str], out: Path, eyebrow: str = "BE
     return out
 
 
-def _burn(video: Path, srt: Path, out: Path):
+def _burn(video: Path, srt: Path, out: Path, duration: float | None = None):
     import imageio_ffmpeg
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
     # Portrait: libass men-skala font dari PlayResY=288 → faktor 1920/288 ≈ 6,67.
@@ -236,11 +236,24 @@ def _burn(video: Path, srt: Path, out: Path):
         "BorderStyle=1,Outline=0.7,Shadow=0.4,ShadowColour=&H80000000,"
         "MarginV=48,MarginL=70,MarginR=70,Alignment=2,Bold=1"
     )
-    r = subprocess.run(
-        [ffmpeg, "-y", "-i", str(video),
-         "-vf", f"subtitles={srt}:force_style='{style}'",
-         "-c:a", "copy", str(out)],
-        capture_output=True, text=True)
+    subs = f"subtitles={srt}:force_style='{style}'"
+    if duration and duration > 0:
+        # Progress bar citron di TEPI ATAS (bukan bawah seperti video lanskap —
+        # tepi bawah Shorts tertutup UI YouTube: scrubber, judul, tombol).
+        # Teknik sama dgn core/visuals: overlay dengan x per-frame (t = waktu).
+        filter_complex = (
+            f"[0:v]{subs}[v];"
+            f"color=c=0xC6F24E:s={VW}x8:d={duration:.3f}[bar];"
+            f"[v][bar]overlay=x='-w+w*min(t/{duration:.3f}\\,1)':y=0:shortest=1[outv]"
+        )
+        cmd = [ffmpeg, "-y", "-i", str(video),
+               "-filter_complex", filter_complex,
+               "-map", "[outv]", "-map", "0:a?",
+               "-c:a", "copy", str(out)]
+    else:
+        cmd = [ffmpeg, "-y", "-i", str(video),
+               "-vf", subs, "-c:a", "copy", str(out)]
+    r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         raise RuntimeError(f"burn gagal:\n{r.stderr[-500:]}")
 
@@ -297,7 +310,8 @@ def parse_short_script(text: str) -> dict:
 def make_short_from_script(script_path: str):
     """MODE UTAMA: Short mandiri hook-first dari file skrip pendek."""
     from tts import generate_audio
-    from moviepy import AudioFileClip, ImageClip
+    from moviepy import AudioFileClip
+    from visuals import _kinetic_clip
 
     sp = Path(script_path)
     if not sp.exists():
@@ -322,14 +336,15 @@ def make_short_from_script(script_path: str):
     _write_sub_srt(cues, 0.0, dur + 1, sub_srt)
 
     audio = AudioFileClip(str(audio_p))
-    clip = ImageClip(str(bg)).with_duration(audio.duration).with_fps(FPS).with_audio(audio)
+    # push-in pelan sepanjang durasi — Short hidup tanpa mengganggu hook besar
+    clip = _kinetic_clip(str(bg), audio.duration, "in", size=(VW, VH)).with_audio(audio)
     bg_mp4 = rd / "short_bg.mp4"
     clip.write_videofile(str(bg_mp4), fps=FPS, codec="libx264", audio_codec="aac", logger=None)
     audio.close(); clip.close()
 
     out = rd / "short.mp4"
-    print("   \U0001F524 burning subtitle...")
-    _burn(bg_mp4, sub_srt, out)
+    print("   \U0001F524 burning subtitle + progress bar...")
+    _burn(bg_mp4, sub_srt, out, duration=dur)
     print(f"✅ Short: {out}  ({dur:.1f}s, {VW}x{VH})")
     return out
 
@@ -338,7 +353,8 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
                start: float | None = None, ticker: str | None = None,
                eyebrow: str | None = None):
     """MODE PAKAI-ULANG: Short dari jendela HOOK audio video panjang (hook-first)."""
-    from moviepy import AudioFileClip, ImageClip
+    from moviepy import AudioFileClip
+    from visuals import _kinetic_clip
 
     rd = Path(run_dir)
     audio_p = rd / "audio.mp3"
@@ -370,14 +386,14 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
     _write_sub_srt(cues, a0, a1, sub_srt)
 
     audio = AudioFileClip(str(audio_p)).subclipped(a0, a1)
-    clip = (ImageClip(str(bg)).with_duration(a1 - a0).with_fps(FPS).with_audio(audio))
+    clip = _kinetic_clip(str(bg), a1 - a0, "in", size=(VW, VH)).with_audio(audio)
     bg_mp4 = rd / "short_bg.mp4"
     clip.write_videofile(str(bg_mp4), fps=FPS, codec="libx264", audio_codec="aac", logger=None)
     audio.close(); clip.close()
 
     out = rd / "short.mp4"
-    print("   \U0001F524 burning subtitle...")
-    _burn(bg_mp4, sub_srt, out)
+    print("   \U0001F524 burning subtitle + progress bar...")
+    _burn(bg_mp4, sub_srt, out, duration=a1 - a0)
     print(f"✅ Short: {out}  ({a1-a0:.1f}s, {VW}x{VH})")
     return out
 

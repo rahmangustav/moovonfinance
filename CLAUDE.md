@@ -31,6 +31,9 @@ Draft naskah: `assets/draft_script_moovon.md` + `state.json`.
 - `python shorts.py <run_dir> [--start N] [--cut N] [--hook "a|b"]` → pakai-ulang
   audio video panjang, ambil JENDELA mulai kalimat hook (bukan detik 0/intro).
 - Shorts = top-of-funnel utama (data: Shorts 20–34 views vs video panjang 0–7).
+- Sejak 15 Jul 2026: Short juga kinetik — push-in pelan sepanjang durasi
+  (`_kinetic_clip` dari `core/visuals.py`, size 1080x1920) + progress bar citron
+  8px di TEPI ATAS (tepi bawah tertutup UI YouTube Shorts).
 
 **Blok opsional di draft (otomatis jadi slide, angka wajib dari riset):**
 - `## VALUATION:` `{"harga":.., "nilai_wajar":.., "catatan":".."}` → gauge Margin

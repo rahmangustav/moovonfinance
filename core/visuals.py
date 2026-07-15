@@ -14,26 +14,29 @@ FADE = 0.6
 ZOOM = 0.045   # micro-zoom kinetik per slide (4,5% — subtil, chrome tetap terbaca)
 
 
-def _kinetic_clip(img_path: str, duration: float, mode: str = "in") -> VideoClip:
+def _kinetic_clip(img_path: str, duration: float, mode: str = "in",
+                  size: tuple[int, int] | None = None) -> VideoClip:
     """Slide hidup: push-in ('in') / push-out ('out') pelan lewat crop tengah +
     resize per frame. Micro-zoom 4,5% dengan easing smoothstep — cukup untuk
     membunuh kesan statis tanpa mengganggu keterbacaan. PIL BILINEAR dipilih
     sadar: murah di mesin tanpa GPU, softness-nya tak terlihat saat bergerak.
+    `size` opsional untuk kanvas non-lanskap (mis. Shorts 1080x1920).
     (Ini BUKAN Ken Burns foto jalur lama — tetap slide on-brand, hanya kameranya
     yang bernapas.)"""
     import numpy as np
     from PIL import Image
 
+    w, h = size or (WIDTH, HEIGHT)
     src = Image.open(img_path).convert("RGB")
 
     def frame(t):
         p = min(t / max(duration, 0.01), 1.0)        # clamp: aman bila clip diperpanjang
         p = p * p * (3 - 2 * p)                      # smoothstep
         z = 1 + ZOOM * (p if mode == "in" else 1 - p)
-        cw, ch = int(WIDTH / z), int(HEIGHT / z)
-        x0, y0 = (WIDTH - cw) // 2, (HEIGHT - ch) // 2
+        cw, ch = int(w / z), int(h / z)
+        x0, y0 = (w - cw) // 2, (h - ch) // 2
         return np.asarray(
-            src.crop((x0, y0, x0 + cw, y0 + ch)).resize((WIDTH, HEIGHT), Image.BILINEAR)
+            src.crop((x0, y0, x0 + cw, y0 + ch)).resize((w, h), Image.BILINEAR)
         )
 
     return VideoClip(frame, duration=duration).with_fps(FPS)
