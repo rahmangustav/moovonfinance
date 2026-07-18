@@ -333,7 +333,7 @@ def upload(run_dir_arg: str, privacy: str = "public", at: str | None = None):
             "title": meta["title"],
             "description": meta.get("description", ""),
             "tags": meta.get("tags", []),
-            "categoryId": "25",  # News & Politics; ganti kalau perlu
+            "categoryId": "27",  # Education — kanal edukasi analisis saham, bukan berita/politik
             "defaultLanguage": "id",       # bahasa judul/deskripsi
             "defaultAudioLanguage": "id",  # bahasa AUDIO — wajib 'id' biar YouTube tak salah kira Inggris
         },
