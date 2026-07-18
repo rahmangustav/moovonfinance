@@ -1,0 +1,5 @@
+TICKER: -
+EYEBROW: KELAS SAHAM
+HOOK: Prinsip investor kawakan cuma satu kalimat. Beli barang seratus ribu di harga tujuh puluh ribu.
+BODY: Namanya margin pengaman. Caranya begini. Hitung dulu nilai wajar sebuah saham dari laba dan asetnya. Lalu jangan beli di harga wajar itu. Beli hanya kalau harga pasarnya jauh di bawah nilai wajar, minimal diskon lima belas persen. Selisih itulah pengamannya. Kalau hitunganmu meleset, kamu masih dilindungi diskon tadi. Kalau hitunganmu benar, untungmu berlipat. Sederhana, tapi inilah yang membedakan investor sabar dari penjudi.
+CLOSE: Belajar bareng di channel.

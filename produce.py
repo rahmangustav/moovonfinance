@@ -375,7 +375,9 @@ if __name__ == "__main__":
              "  python produce.py upload <run_dir> --at now             # publish SEKETIKA (lewati pengaman jam)\n"
              "  python produce.py upload <run_dir> --at next            # jadwal ke slot berikutnya (17:30 WIB Sel/Rab/Kam)\n"
              '  python produce.py upload <run_dir> --at "2026-07-07 17:30"  # jadwal ke waktu spesifik (WIB)\n'
-             "  python produce.py upload <run_dir> --privacy unlisted   # unlisted/private: publish langsung, tanpa jadwal")
+             "  python produce.py upload <run_dir> --privacy unlisted   # unlisted/private: publish langsung, tanpa jadwal\n"
+             "  python produce.py short <run_dir> [--hook \"a|b\"] [--start N] [--cut N] [--ticker XXXX] [--eyebrow \"TEKS\"]  # Short 9:16 dari HOOK video panjang (pakai-ulang audio)\n"
+             "  python produce.py short script <file.txt>               # Short mandiri (TTS+subtitle baru, hook-first)")
     if len(sys.argv) < 2:
         print(USAGE)
         sys.exit(1)
@@ -404,6 +406,30 @@ if __name__ == "__main__":
                   f"{slot:%A %d %b, %H:%M} WIB.\n    (pakai `--at now` untuk publish seketika, "
                   f"atau `--at \"YYYY-MM-DD HH:MM\"` untuk waktu lain)")
         upload(sys.argv[2], priv, at)
+    elif cmd == "short":
+        # Delegasi ke shorts.py (mesin penemuan 9:16). Dua mode sama persis dgn
+        # CLI shorts.py: 'short script <file>' = Short mandiri (TTS baru),
+        # 'short <run_dir> [flags]' = pakai-ulang audio video panjang.
+        import shorts
+        sargs = sys.argv[2:]
+        if not sargs:
+            print(USAGE)
+            sys.exit(1)
+        if sargs[0] == "script":
+            if len(sargs) < 2:
+                print(USAGE)
+                sys.exit(1)
+            shorts.make_short_from_script(sargs[1])
+        else:
+            run = sargs[0]
+            hook = cut = start = tick = eyeb = None
+            if "--hook" in sargs:   hook  = sargs[sargs.index("--hook") + 1]
+            if "--cut" in sargs:    cut   = float(sargs[sargs.index("--cut") + 1])
+            if "--start" in sargs:  start = float(sargs[sargs.index("--start") + 1])
+            if "--ticker" in sargs: tick  = sargs[sargs.index("--ticker") + 1]
+            if "--eyebrow" in sargs: eyeb = sargs[sargs.index("--eyebrow") + 1]
+            shorts.make_short(run, hook=hook, cut=cut, start=start, ticker=tick,
+                              eyebrow=eyeb)
     else:
         print(f"Command tidak dikenal: {cmd}")
         print(USAGE)
