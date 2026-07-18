@@ -5,7 +5,6 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
 
 SCOPES = [
     "https://www.googleapis.com/auth/youtube.upload",
@@ -34,48 +33,3 @@ def get_youtube_client():
             f.write(creds.to_json())
 
     return build("youtube", "v3", credentials=creds)
-
-
-def upload_video(video_path: str, title: str, description: str, tags: list[str], thumbnail_path: str = None) -> str:
-    youtube = get_youtube_client()
-
-    body = {
-        "snippet": {
-            "title": title,
-            "description": description,
-            "tags": tags,
-            "categoryId": "27",  # Education
-            "defaultLanguage": "id",
-            "defaultAudioLanguage": "id",  # bahasa AUDIO — wajib 'id' biar YouTube tak salah kira Inggris
-        },
-        "status": {
-            "privacyStatus": "public",
-            "selfDeclaredMadeForKids": False,
-        },
-    }
-
-    media = MediaFileUpload(video_path, chunksize=-1, resumable=True, mimetype="video/mp4")
-
-    request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
-
-    response = None
-    while response is None:
-        status, response = request.next_chunk()
-        if status:
-            print(f"Upload progress: {int(status.progress() * 100)}%")
-
-    video_id = response["id"]
-    print(f"Video uploaded: https://youtube.com/watch?v={video_id}")
-
-    if thumbnail_path and Path(thumbnail_path).exists():
-        try:
-            youtube.thumbnails().set(
-                videoId=video_id,
-                media_body=MediaFileUpload(thumbnail_path)
-            ).execute()
-            print("Thumbnail uploaded.")
-        except Exception as e:
-            print(f"⚠️  Thumbnail dilewati: {e}")
-            print("   (Aktifkan verifikasi channel YouTube untuk bisa upload custom thumbnail)")
-
-    return video_id
