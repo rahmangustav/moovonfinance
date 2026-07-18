@@ -1,9 +1,8 @@
-from faster_whisper import WhisperModel
-
 _MODEL = None
 
 
-def _get_model() -> WhisperModel:
+def _get_model():
+    from faster_whisper import WhisperModel
     global _MODEL
     if _MODEL is None:
         print("   📥 Loading Whisper model...")
