@@ -52,7 +52,6 @@ Modul:
   GELAP v2.0 (line/bar/donut/table/timeline).
 - `core/tts.py` (edge-tts `id-ID-GadisNeural` + SRT word-boundary), `core/thumbnail.py`,
   `core/youtube_uploader.py`, `core/subtitle.py` (fallback whisper).
-- `core/image_fetcher.py` — **TIDAK dipakai lagi** (video tanpa foto).
 
 ## Aturan Desain (WAJIB)
 
