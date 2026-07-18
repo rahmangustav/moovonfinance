@@ -78,8 +78,7 @@ def _pick_window(cues, start_override=None, cut_override=None):
                 break
     # tentukan end
     if cut_override is not None:
-        end = start + float(cut_override) if float(cut_override) <= MAX_CUT else float(cut_override)
-        end = min(end, start + MAX_CUT)
+        end = start + min(float(cut_override), MAX_CUT)
     else:
         end = start
         for a, b, _ in cues:
