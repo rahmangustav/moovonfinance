@@ -1,293 +1,10 @@
 import re
-import textwrap
-import numpy as np
 from datetime import datetime
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageOps
-from moviepy import AudioFileClip, VideoClip, ImageClip, concatenate_videoclips, vfx
+from moviepy import AudioFileClip, ImageClip, concatenate_videoclips, vfx
 
-# Brand palette
-DARK_BG = (8, 12, 28)
-BLUE    = (40, 110, 230)
-ACCENT  = (0, 210, 160)
-WHITE   = (255, 255, 255)
-GRAY    = (128, 148, 180)
-
-WIDTH, HEIGHT = 1920, 1080
 FPS    = 24
 FADE   = 0.6
-ZOOM   = 0.07        # Ken Burns zoom headroom (7%) — dipakai hanya untuk title slide
-
-
-# ─── Fonts ────────────────────────────────────────────────────────────────────
-
-def _font(size: int, bold: bool = True) -> ImageFont.FreeTypeFont:
-    candidates = (
-        ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-         "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"]
-        if bold else
-        ["/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-         "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"]
-    )
-    for p in candidates:
-        if Path(p).exists():
-            return ImageFont.truetype(p, size)
-    return ImageFont.load_default()
-
-
-# ─── Shared draw helpers ──────────────────────────────────────────────────────
-
-def _fill_crop(img: Image.Image, w: int, h: int) -> Image.Image:
-    r = img.width / img.height
-    if r > w / h:
-        nw, nh = int(h * r), h
-    else:
-        nw, nh = w, int(w / r)
-    img = img.resize((nw, nh), Image.LANCZOS)
-    return img.crop(((nw - w) // 2, (nh - h) // 2, (nw - w) // 2 + w, (nh - h) // 2 + h))
-
-
-def _draw_header(draw: ImageDraw.ImageDraw, num: int = 0, total: int = 0):
-    draw.rectangle([(0, 0), (WIDTH, 68)], fill=(10, 15, 35))
-    draw.rectangle([(0, 66), (WIDTH, 70)], fill=BLUE)
-    draw.text((38, 34), "MOOVON FINANCE", fill=ACCENT, font=_font(30), anchor="lm")
-    if total > 1:
-        draw.text((WIDTH - 38, 34), f"{num} / {total}", fill=GRAY, font=_font(26, False), anchor="rm")
-
-
-def _draw_footer(draw: ImageDraw.ImageDraw, num: int = 0, total: int = 0):
-    draw.rectangle([(0, HEIGHT - 58), (WIDTH, HEIGHT)], fill=(10, 15, 35))
-    draw.text((38, HEIGHT - 29),
-              "Subscribe untuk update analisis saham terbaru  |  @MoovonFinance",
-              fill=GRAY, font=_font(22, False), anchor="lm")
-    if total > 1:
-        bw, bh, bx = 260, 8, WIDTH - 298
-        by = HEIGHT - 29
-        draw.rounded_rectangle([bx, by - bh // 2, bx + bw, by + bh // 2], radius=4, fill=(28, 38, 72))
-        filled = int(bw * num / total)
-        if filled > 0:
-            draw.rounded_rectangle([bx, by - bh // 2, bx + filled, by + bh // 2], radius=4, fill=ACCENT)
-
-
-def _radial_mask(size: tuple, inner: float = 0.0, outer: float = 1.0) -> Image.Image:
-    """Smooth radial gradient mask (0 at center*inner .. 255 at edge*outer),
-    computed with numpy so it has no ring/banding artifacts."""
-    w, h = size
-    yy, xx = np.mgrid[0:h, 0:w]
-    cx, cy = w / 2, h / 2
-    max_r  = max(np.hypot(cx, cy), 1e-6)
-    d      = np.hypot(xx - cx, yy - cy) / max_r
-    d      = np.clip((d - inner) / max(outer - inner, 1e-6), 0, 1)
-    return Image.fromarray((d * 255).astype(np.uint8), mode="L")
-
-
-def _add_corner_glow(img: Image.Image, xy: tuple, radius: int = 420,
-                      color: tuple = BLUE, intensity: float = 0.5):
-    """Soft blurred glow, brightest at `xy` fading smoothly to nothing."""
-    size   = radius * 2
-    mask   = ImageOps.invert(_radial_mask((size, size)))
-    layer  = Image.new("RGB", (size, size), tuple(int(c * intensity) for c in color))
-    img.paste(layer, (xy[0] - radius, xy[1] - radius), mask)
-
-
-# ─── Ken Burns (dipakai hanya untuk title slide) ──────────────────────────────
-
-def _ken_burns_clip(slide_path: str, duration: float, style: str = "zoom_in") -> VideoClip:
-    orig_pil = Image.open(slide_path).convert("RGB")
-    W, H = orig_pil.size
-    orig = np.array(orig_pil)
-
-    def zoom_frame(t):
-        p = min(t / duration, 1.0)
-        scale = (1.0 + ZOOM * p) if style == "zoom_in" else (1.0 + ZOOM * (1 - p))
-        cw = int(W / scale)
-        ch = int(H / scale)
-        x  = (W - cw) // 2
-        y  = (H - ch) // 2
-        crop = orig[y: y + ch, x: x + cw]
-        return np.array(Image.fromarray(crop).resize((W, H), Image.NEAREST))
-
-    return VideoClip(zoom_frame, duration=duration).with_fps(FPS)
-
-
-# ─── Slide renderers ──────────────────────────────────────────────────────────
-
-def draw_title_slide(title: str, bg_image_path: str | None = None) -> Image.Image:
-    img = Image.new("RGB", (WIDTH, HEIGHT), DARK_BG)
-
-    if bg_image_path:
-        try:
-            bg = _fill_crop(Image.open(bg_image_path).convert("RGB"), WIDTH, HEIGHT)
-            bg = bg.filter(ImageFilter.GaussianBlur(10))
-            bg = ImageEnhance.Brightness(bg).enhance(0.35)
-            img.paste(bg, (0, 0))
-        except Exception:
-            pass
-
-    draw = ImageDraw.Draw(img)
-
-    for x in range(WIDTH // 2 + 40):
-        t = max(0.0, 1 - x / (WIDTH // 2 + 40))
-        draw.line([(x, 0), (x, HEIGHT)], fill=(int(DARK_BG[0] + 4 * t),
-                                                int(DARK_BG[1] + 5 * t),
-                                                int(DARK_BG[2] + 18 * t)))
-
-    _add_corner_glow(img, (WIDTH - 80, -80), radius=420, color=BLUE, intensity=0.45)
-
-    draw.rectangle([(0, 0), (WIDTH, 6)], fill=ACCENT)
-    draw.rectangle([(0, 0), (6, HEIGHT)], fill=BLUE)
-    draw.text((38, 52), "MOOVON FINANCE", fill=ACCENT, font=_font(34), anchor="lm")
-    draw.rectangle([(38, 78), (340, 82)], fill=ACCENT)
-
-    font_big = _font(88)
-    font_sm  = _font(70)
-    wrapped  = textwrap.wrap(title, width=24)
-    use_f    = font_sm if len(title) > 32 else font_big
-    line_h   = 106 if use_f is font_big else 88
-    total_h  = len(wrapped) * line_h
-    y        = (HEIGHT - total_h) // 2 - 20
-
-    for line in wrapped:
-        draw.text((55 + 3, y + 3), line, fill=(0, 0, 0), font=use_f)
-        draw.text((55, y), line, fill=WHITE, font=use_f)
-        y += line_h
-
-    draw.rounded_rectangle([55, y + 16, 400, y + 22], radius=3, fill=ACCENT)
-    draw.text((55, y + 48), "Analisis Saham & Keuangan Indonesia", fill=GRAY, font=_font(36, False))
-    draw.text((55, y + 98), datetime.now().strftime("%d %B %Y"), fill=ACCENT, font=_font(28, False))
-
-    _draw_footer(draw)
-    return img
-
-
-def draw_fullphoto_slide(
-    caption: str,
-    bg_image_path: str | None = None,
-    badge_text: str = "TERKINI",
-    title: str | None = None,
-    num: int = 0,
-    total: int = 0,
-) -> Image.Image:
-    """Full-bleed photo + short caption at bottom (breaking-news/story style).
-    Satu bahasa visual dipakai untuk SEMUA slide non-CTA (dulu section biasa
-    pakai panel teks+foto terpisah yang kebanyakan teks; sekarang seragam
-    foto penuh + judul singkat + 1-2 kalimat highlight saja)."""
-    img = Image.new("RGB", (WIDTH, HEIGHT), DARK_BG)
-
-    if bg_image_path:
-        try:
-            bg = _fill_crop(Image.open(bg_image_path).convert("RGB"), WIDTH, HEIGHT)
-            bg = bg.filter(ImageFilter.GaussianBlur(4))
-            bg = ImageEnhance.Brightness(bg).enhance(0.5)
-            img.paste(bg, (0, 0))
-        except Exception:
-            pass
-    else:
-        _add_corner_glow(img, (WIDTH - 100, 60), radius=520, color=BLUE, intensity=0.35)
-        _add_corner_glow(img, (140, HEIGHT - 700), radius=380, color=ACCENT, intensity=0.18)
-
-    mid      = HEIGHT // 2
-    t        = np.clip((np.arange(HEIGHT) - mid) / (HEIGHT - mid), 0, 1)
-    grad     = (225 * (t ** 1.5)).astype(np.uint8)
-    grad_img = Image.fromarray(np.tile(grad.reshape(-1, 1), (1, WIDTH)), mode="L")
-    img = Image.composite(Image.new("RGB", (WIDTH, HEIGHT), DARK_BG), img, grad_img)
-
-    draw = ImageDraw.Draw(img)
-    draw.rectangle([(0, 0), (WIDTH, 6)], fill=ACCENT)
-    draw.rectangle([(0, 0), (6, HEIGHT)], fill=BLUE)
-    _draw_header(draw, num, total)
-
-    # Badge (angka slide / label pendek — lebar menyesuaikan teksnya)
-    font_badge = _font(28)
-    bbox = draw.textbbox((0, 0), badge_text, font=font_badge)
-    bw   = bbox[2] - bbox[0]
-    block_h   = 450 if title else 370
-    badge_top = HEIGHT - block_h
-    draw.rounded_rectangle([38, badge_top, 38 + bw + 40, badge_top + 38], radius=5, fill=ACCENT)
-    draw.text((38 + (bw + 40) // 2, badge_top + 19), badge_text,
-               fill=DARK_BG, font=font_badge, anchor="mm")
-
-    y = badge_top + 54
-    if title:
-        font_title = _font(50)
-        for wl in textwrap.wrap(title, width=42):
-            if y > HEIGHT - 150:
-                break
-            draw.text((42, y), wl, fill=WHITE, font=font_title)
-            y += 58
-        y += 10
-
-    # Caption: hanya gambar baris yang MUAT PENUH di atas bar footer. Jangan
-    # sampai baris terakhir nabrak bar bawah (HEIGHT-64) / status bar dan putus
-    # di tengah kalimat. Kalau kepanjangan → potong di batas baris + elipsis.
-    font_t   = _font(40, bold=False)
-    LINE_H   = 48
-    CAP_LIMIT = HEIGHT - 88            # sisakan jarak aman dari bar footer (HEIGHT-64)
-    wrapped_caption: list[str] = []
-    for line in caption.split("\n"):
-        stripped = re.sub(r"[#*\[\]]", "", line.strip())
-        if stripped:
-            wrapped_caption.extend(textwrap.wrap(stripped, width=66))
-    max_lines = max(1, (CAP_LIMIT - y) // LINE_H)
-    if len(wrapped_caption) > max_lines:
-        wrapped_caption = wrapped_caption[:max_lines]
-        wrapped_caption[-1] = wrapped_caption[-1].rstrip(" .,;:—–-") + "…"
-    for wl in wrapped_caption:
-        draw.text((42, y), wl, fill=WHITE, font=font_t)
-        y += LINE_H
-
-    draw.rectangle([(0, HEIGHT - 64), (WIDTH, HEIGHT - 58)], fill=ACCENT)
-    _draw_footer(draw, num, total)
-    return img
-
-
-def draw_cta_slide(content: str, bg_image_path: str | None = None) -> Image.Image:
-    """Full-background CTA slide with subscribe call-to-action."""
-    img = Image.new("RGB", (WIDTH, HEIGHT), DARK_BG)
-
-    if bg_image_path:
-        try:
-            bg = _fill_crop(Image.open(bg_image_path).convert("RGB"), WIDTH, HEIGHT)
-            bg = bg.filter(ImageFilter.GaussianBlur(8))
-            bg = ImageEnhance.Brightness(bg).enhance(0.30)
-            img.paste(bg, (0, 0))
-        except Exception:
-            pass
-
-    vignette = _radial_mask((WIDTH, HEIGHT), inner=0.3, outer=1.05)
-    img = Image.composite(Image.new("RGB", (WIDTH, HEIGHT), (2, 3, 10)), img, vignette)
-
-    draw = ImageDraw.Draw(img)
-    draw.rectangle([(0, 0), (WIDTH, 6)], fill=ACCENT)
-    draw.rectangle([(0, 0), (6, HEIGHT)], fill=BLUE)
-    _draw_header(draw)
-
-    lx = WIDTH // 2
-    draw.text((lx, HEIGHT // 2 - 90), "MOOVON FINANCE", fill=ACCENT, font=_font(52), anchor="mm")
-    draw.text((lx, HEIGHT // 2 - 10), "SUBSCRIBE SEKARANG!", fill=WHITE, font=_font(78), anchor="mm")
-    draw.rounded_rectangle([lx - 220, HEIGHT // 2 + 58, lx + 220, HEIGHT // 2 + 66], radius=4, fill=ACCENT)
-
-    font_sub = _font(34, bold=False)
-    clean = re.sub(r"[#*\[\]]", "", content).strip().replace("\n", " ")
-    sentences = re.split(r'(?<=[.!?])\s+', clean)
-    display = ""
-    for s in sentences:
-        candidate = (display + " " + s).strip()
-        if len(textwrap.wrap(candidate, width=58)) <= 3:
-            display = candidate
-        else:
-            break
-    if not display:
-        display = textwrap.wrap(clean, width=58 * 3)[0] if clean else ""
-    lines = textwrap.wrap(display, width=58)
-    y_sub = HEIGHT // 2 + 100
-    for wl in lines:
-        draw.text((lx, y_sub), wl, fill=GRAY, font=font_sub, anchor="mm")
-        y_sub += 48
-
-    _draw_footer(draw)
-    return img
-
 
 
 # ─── Section parsing & keywords ───────────────────────────────────────────────
@@ -305,14 +22,6 @@ def parse_sections(script: str) -> list[dict]:
         sections = [{"label": f"BAGIAN {i + 1}", "content": c} for i, c in enumerate(chunks)]
     return sections
 
-
-_SECTION_PHOTO_HINTS = {
-    "HOOK":        "{topic} stock market crash breaking news",
-    "INTRO":       "{topic} financial analysis Indonesia office",
-    "KESIMPULAN":  "investor saham Indonesia sukses bursa efek analisis",
-    "CTA":         "Indonesia stock market bull growth investment coins",
-}
-_SKIP_WORDS = {"detik", "menit", "utama", "bagian", "hook", "intro", "kesimpulan", "cta", "isi"}
 
 _LABEL_DISPLAY = {
     "HOOK": "TERKINI",
@@ -362,20 +71,6 @@ def _short_content(content: str, max_sentences: int = 3, max_chars: int = 320) -
     return " ".join(picked)
 
 
-def _section_keywords(label: str, content: str, topic: str) -> str:
-    label_upper = label.upper()
-    for key, tmpl in _SECTION_PHOTO_HINTS.items():
-        if key in label_upper:
-            return tmpl.format(topic=topic[:40])
-    label_words = [w for w in re.sub(r"[^\w\s]", " ", label.lower()).split()
-                   if len(w) > 3 and w not in _SKIP_WORDS]
-    # Sengaja TIDAK pakai potongan kalimat narasi mentah di sini: dulu itu
-    # dipakai sebagai bagian query (mis. "harga saham turun...") dan ddgs
-    # sering nyasar ke foto tak relevan/tak pantas (iklan pinjol, dst).
-    # Query generik+aman (topic + label) jauh lebih dapat diprediksi.
-    return f"{' '.join(label_words[:3])} {topic[:40]} professional finance business Indonesia".strip()
-
-
 def _slide_type(label: str) -> str:
     u = label.upper()
     if "HOOK" in u:
@@ -413,17 +108,6 @@ def _match_charts_to_sections(sections: list, charts: list) -> list:
         if not placed:
             per_section[_fallback_index()].append(chart)
     return per_section
-
-
-def _resolve_keyword(label: str, content: str, topic: str, visual_keywords: dict) -> str:
-    """Resolve image search keyword: keyword map first, rule-based fallback."""
-    label_upper = label.upper()
-    if label_upper in visual_keywords:
-        return visual_keywords[label_upper]
-    for key, kw in visual_keywords.items():
-        if key in label_upper:
-            return kw
-    return _section_keywords(label, content, topic)
 
 
 def _burn_subtitles(video_path: str, srt_path: str, output_path: str):
@@ -510,7 +194,6 @@ def create_video(
     sys.path.insert(0, str(root / "core"))
     import render_slides as RS
     import moovon_theme as MT
-    from PIL import Image as _Img, ImageDraw as _Draw
     from subtitle import transcribe, to_srt
     from chart_templates import render_chart
 
