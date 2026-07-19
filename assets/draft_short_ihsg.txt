@@ -1,0 +1,4 @@
+TICKER: IHSG
+HOOK: Asing sudah menarik hampir sembilan puluh triliun rupiah dari bursa tahun ini. Tapi justru itu yang bikin saham Indonesia paling murah dalam enam bulan.
+BODY: IHSG jatuh sekitar tiga puluh persen dari rekornya. Panik? Buat pemburu nilai, ceritanya malah kebalikan. Rasio harga terhadap laba pasar turun dari tujuh belas kali jadi sekitar dua belas kali. Perusahaan yang sama, sekarang dihargai jauh lebih murah dibanding awal tahun. Dan saat asing ramai keluar dari bank besar, diam-diam mereka memungut saham komoditas seperti Antam. Harga paling menarik memang sering muncul pas semua orang lagi takut.
+CLOSE: Ini bukan aba-aba beli ya, cuma edukasi. Bukan saran jual atau beli.

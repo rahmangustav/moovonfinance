@@ -1,0 +1,5 @@
+TICKER: -
+EYEBROW: KELAS SAHAM
+HOOK: Saham seharga seribu itu murah, dan yang sepuluh ribu itu mahal? Salah besar.
+BODY: Murah atau mahalnya saham tidak dilihat dari angka harganya, tapi dari perbandingan harga dengan laba, biasa disingkat P E R. Rumusnya, harga saham dibagi laba bersih per saham. Hasilnya menunjukkan kira-kira berapa tahun laba perusahaan mengembalikan modalmu. Misalnya harga dua ribu rupiah, laba per saham dua ratus rupiah, berarti sepuluh kali. Makin kecil angkanya, makin murah. Di bawah lima belas kali umumnya masih wajar. Tapi jangan dipakai sendirian, selalu bandingkan dengan perusahaan sejenis.
+CLOSE: Belajar bareng di channel.

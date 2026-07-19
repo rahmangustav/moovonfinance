@@ -16,7 +16,7 @@ FONT_DIR = Path(__file__).resolve().parent / "fonts"
 # ─── Kanvas ───────────────────────────────────────────────────────────────────
 WIDTH, HEIGHT       = 1920, 1080
 MARGIN_X, MARGIN_Y  = 112, 92
-SUPERSAMPLE         = 2          # render 2x lalu diperkecil LANCZOS (tepi bersih)
+SUPERSAMPLE = 2          # render 2x lalu diperkecil LANCZOS (tepi bersih)
 
 # ─── Warna ────────────────────────────────────────────────────────────────────
 HEX = {

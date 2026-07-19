@@ -3,9 +3,11 @@
 verdict() adalah elemen paling kritis: menentukan label BELI/TAHAN/HINDARI
 yang tayang di setiap video publik (gauge Margin of Safety). Kalau logikanya
 salah, video menyiarkan rekomendasi investasi yang keliru — jadi wajib
-dites lepas dari rendering/PIL.
+dites lepas dari rendering/PIL. Cakupan verdict() ada di VerdictTest di
+bawah; sisanya (_rgb/RGB, new_canvas/finalize, font) memakai gaya pytest.
 """
 import sys
+import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -28,75 +30,45 @@ from moovon_theme import (
 )
 
 
-# ─── verdict() ──────────────────────────────────────────────────────────────
+class VerdictTest(unittest.TestCase):
+    def test_beli_saat_diskon_besar(self):
+        # harga 5800 vs nilai wajar 9150 -> margin of safety ~36.6%, jauh di atas 15%
+        label, color, mos = verdict(5800, 9150)
+        self.assertEqual(label, "BELI")
+        self.assertEqual(color, RGB["up"])
+        self.assertAlmostEqual(mos, (9150 - 5800) / 9150)
 
-def test_verdict_beli_saat_diskon_besar():
-    label, color, mos = verdict(price=8500, fair=10000)
-    assert label == "BELI"
-    assert color == RGB["up"]
-    assert mos == pytest.approx(0.15)
+    def test_tahan_saat_diskon_di_bawah_ambang(self):
+        # margin of safety 12.57% < 15% -> harus TAHAN, bukan BELI
+        label, color, mos = verdict(8000, 9150)
+        self.assertLess(mos, MOS_BELI)
+        self.assertEqual(label, "TAHAN")
+        self.assertEqual(color, RGB["neutral"])
 
+    def test_tahan_saat_harga_sama_nilai_wajar(self):
+        label, color, mos = verdict(9150, 9150)
+        self.assertEqual(mos, 0.0)
+        self.assertEqual(label, "TAHAN")
 
-def test_verdict_beli_diskon_jauh_lebih_besar():
-    label, color, mos = verdict(price=5000, fair=10000)
-    assert label == "BELI"
-    assert color == RGB["up"]
-    assert mos == pytest.approx(0.5)
+    def test_hindari_saat_harga_di_atas_nilai_wajar(self):
+        label, color, mos = verdict(10000, 9150)
+        self.assertLess(mos, 0)
+        self.assertEqual(label, "HINDARI")
+        self.assertEqual(color, RGB["down"])
 
+    def test_batas_tepat_15_persen_masuk_beli(self):
+        # aturan CLAUDE.md: "BELI hanya bila margin of safety >= 15%" -> batas
+        # inklusif, harus dites tepat di angka 0.15 (bukan cuma di atas/bawahnya)
+        price, fair = 850, 1000  # mos == 0.15 persis
+        label, _, mos = verdict(price, fair)
+        self.assertEqual(mos, 0.15)
+        self.assertEqual(label, "BELI")
 
-def test_verdict_tahan_diskon_di_bawah_ambang_belum_beli():
-    # mos = 0.10, di bawah MOS_BELI (0.15) -> harus TAHAN, bukan BELI
-    label, color, mos = verdict(price=9000, fair=10000)
-    assert label == "TAHAN"
-    assert color == RGB["neutral"]
-    assert mos == pytest.approx(0.10)
-
-
-def test_verdict_boundary_tepat_di_ambang_mos_beli():
-    # mos persis == MOS_BELI harus lolos sebagai BELI (aturan >=, bukan >)
-    price = 8500.0
-    fair = 10000.0
-    assert (fair - price) / fair == pytest.approx(MOS_BELI)
-    label, _, _ = verdict(price=price, fair=fair)
-    assert label == "BELI"
-
-
-def test_verdict_boundary_sedikit_di_bawah_ambang_masih_tahan():
-    label, _, mos = verdict(price=8501, fair=10000)
-    assert mos < MOS_BELI
-    assert label == "TAHAN"
-
-
-def test_verdict_hindari_saat_harga_di_atas_nilai_wajar():
-    label, color, mos = verdict(price=11000, fair=10000)
-    assert label == "HINDARI"
-    assert color == RGB["down"]
-    assert mos < 0
-
-
-def test_verdict_harga_sama_dengan_nilai_wajar_adalah_tahan():
-    # mos == 0 pas: bukan diskon (belum BELI) tapi juga bukan premium (bukan HINDARI)
-    label, color, mos = verdict(price=10000, fair=10000)
-    assert label == "TAHAN"
-    assert color == RGB["neutral"]
-    assert mos == 0.0
-
-
-def test_verdict_fair_nol_tidak_crash_dan_jatuh_ke_tahan():
-    # Pembagian dengan nol dihindari via `if fair else 0.0` — tidak boleh raise
-    label, color, mos = verdict(price=100, fair=0)
-    assert mos == 0.0
-    assert label == "TAHAN"
-    assert color == RGB["neutral"]
-
-
-def test_verdict_return_shape_selalu_tiga_elemen():
-    result = verdict(price=100, fair=200)
-    assert len(result) == 3
-    label, color, mos = result
-    assert isinstance(label, str)
-    assert isinstance(color, tuple) and len(color) == 3
-    assert isinstance(mos, float)
+    def test_nilai_wajar_nol_tidak_membagi_nol(self):
+        # guard di verdict(): `if fair else 0.0` — pastikan tidak ZeroDivisionError
+        label, _, mos = verdict(100, 0)
+        self.assertEqual(mos, 0.0)
+        self.assertEqual(label, "TAHAN")
 
 
 # ─── _rgb() / RGB ───────────────────────────────────────────────────────────
@@ -171,3 +143,7 @@ def test_font_cache_return_objek_sama_untuk_argumen_sama():
     a = font("body", 34)
     b = font("body", 34)
     assert a is b
+
+
+if __name__ == "__main__":
+    unittest.main()

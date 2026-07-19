@@ -78,8 +78,7 @@ def _pick_window(cues, start_override=None, cut_override=None):
                 break
     # tentukan end
     if cut_override is not None:
-        end = start + float(cut_override) if float(cut_override) <= MAX_CUT else float(cut_override)
-        end = min(end, start + MAX_CUT)
+        end = start + min(float(cut_override), MAX_CUT)
     else:
         end = start
         for a, b, _ in cues:
@@ -194,10 +193,23 @@ def _render_bg(ticker: str, hook_lines: list[str], out: Path, eyebrow: str = "BE
     d.line([mx, y + 6 * S, mx + 120 * S, y + 6 * S], fill=brand, width=5 * S)
 
     # ── CTA bawah + disclaimer (di atas zona subtitle) ──
+    # Hierarki: pil SUBSCRIBE = aksi utama (Shorts nyaris tak mengonversi sub
+    # tanpa ajakan eksplisit), baru link ke video panjang, lalu disclaimer.
+    # Zona subtitle mulai ~320px dari bawah (MarginV=48) → pil aman di 235px.
+    pill_f = F("mono_semi", 28)
+    pill_t = "SUBSCRIBE"
+    pw = d.textlength(pill_t, font=pill_f)
+    pad_x, pill_h = 26 * S, 52 * S
+    pill_w = pw + pad_x * 2
+    pill_y = H - 235 * S
+    _rounded(d, [W / 2 - pill_w / 2, pill_y, W / 2 + pill_w / 2, pill_y + pill_h],
+             pill_h / 2, fill=brand)
+    d.text((W / 2, pill_y + pill_h / 2), pill_t, font=pill_f,
+           fill=T.RGB["black"], anchor="mm")
+
     cta_y = H - 150 * S
     cta_f = F("mono_semi", 30)
-    tri = "▶"
-    label = f"{tri}  ANALISIS LENGKAP DI CHANNEL"
+    label = "▶  ANALISIS LENGKAP DI CHANNEL"
     lw = d.textlength(label, font=cta_f)
     d.text((W / 2 - lw / 2, cta_y), label, font=cta_f, fill=brand, anchor="lm")
     disc_f = F("mono_reg", 21)
@@ -210,7 +222,7 @@ def _render_bg(ticker: str, hook_lines: list[str], out: Path, eyebrow: str = "BE
     return out
 
 
-def _burn(video: Path, srt: Path, out: Path):
+def _burn(video: Path, srt: Path, out: Path, duration: float | None = None):
     import imageio_ffmpeg
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
     # Portrait: libass men-skala font dari PlayResY=288 → faktor 1920/288 ≈ 6,67.
@@ -223,11 +235,24 @@ def _burn(video: Path, srt: Path, out: Path):
         "BorderStyle=1,Outline=0.7,Shadow=0.4,ShadowColour=&H80000000,"
         "MarginV=48,MarginL=70,MarginR=70,Alignment=2,Bold=1"
     )
-    r = subprocess.run(
-        [ffmpeg, "-y", "-i", str(video),
-         "-vf", f"subtitles={srt}:force_style='{style}'",
-         "-c:a", "copy", str(out)],
-        capture_output=True, text=True)
+    subs = f"subtitles={srt}:force_style='{style}'"
+    if duration and duration > 0:
+        # Progress bar citron di TEPI ATAS (bukan bawah seperti video lanskap —
+        # tepi bawah Shorts tertutup UI YouTube: scrubber, judul, tombol).
+        # Teknik sama dgn core/visuals: overlay dengan x per-frame (t = waktu).
+        filter_complex = (
+            f"[0:v]{subs}[v];"
+            f"color=c=0xC6F24E:s={VW}x8:d={duration:.3f}[bar];"
+            f"[v][bar]overlay=x='-w+w*min(t/{duration:.3f}\\,1)':y=0:shortest=1[outv]"
+        )
+        cmd = [ffmpeg, "-y", "-i", str(video),
+               "-filter_complex", filter_complex,
+               "-map", "[outv]", "-map", "0:a?",
+               "-c:a", "copy", str(out)]
+    else:
+        cmd = [ffmpeg, "-y", "-i", str(video),
+               "-vf", subs, "-c:a", "copy", str(out)]
+    r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         raise RuntimeError(f"burn gagal:\n{r.stderr[-500:]}")
 
@@ -284,7 +309,8 @@ def parse_short_script(text: str) -> dict:
 def make_short_from_script(script_path: str):
     """MODE UTAMA: Short mandiri hook-first dari file skrip pendek."""
     from tts import generate_audio
-    from moviepy import AudioFileClip, ImageClip
+    from moviepy import AudioFileClip
+    from visuals import _kinetic_clip
 
     sp = Path(script_path)
     if not sp.exists():
@@ -309,22 +335,25 @@ def make_short_from_script(script_path: str):
     _write_sub_srt(cues, 0.0, dur + 1, sub_srt)
 
     audio = AudioFileClip(str(audio_p))
-    clip = ImageClip(str(bg)).with_duration(audio.duration).with_fps(FPS).with_audio(audio)
+    # push-in pelan sepanjang durasi — Short hidup tanpa mengganggu hook besar
+    clip = _kinetic_clip(str(bg), audio.duration, "in", size=(VW, VH)).with_audio(audio)
     bg_mp4 = rd / "short_bg.mp4"
     clip.write_videofile(str(bg_mp4), fps=FPS, codec="libx264", audio_codec="aac", logger=None)
     audio.close(); clip.close()
 
     out = rd / "short.mp4"
-    print("   \U0001F524 burning subtitle...")
-    _burn(bg_mp4, sub_srt, out)
+    print("   \U0001F524 burning subtitle + progress bar...")
+    _burn(bg_mp4, sub_srt, out, duration=dur)
     print(f"✅ Short: {out}  ({dur:.1f}s, {VW}x{VH})")
     return out
 
 
 def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
-               start: float | None = None, ticker: str | None = None):
+               start: float | None = None, ticker: str | None = None,
+               eyebrow: str | None = None):
     """MODE PAKAI-ULANG: Short dari jendela HOOK audio video panjang (hook-first)."""
-    from moviepy import AudioFileClip, ImageClip
+    from moviepy import AudioFileClip
+    from visuals import _kinetic_clip
 
     rd = Path(run_dir)
     audio_p = rd / "audio.mp3"
@@ -350,19 +379,20 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
     print(f"\U0001F3AC Short {ticker}: jendela {a0:.1f}→{a1:.1f}s ({a1-a0:.1f}s) | "
           f"hook: {' / '.join(hook_lines)}")
 
-    bg = _render_bg(ticker, hook_lines, rd / "short_bg.png")
+    bg = _render_bg(ticker, hook_lines, rd / "short_bg.png",
+                    eyebrow=eyebrow or "BEDAH SAHAM")
     sub_srt = rd / "short.srt"
     _write_sub_srt(cues, a0, a1, sub_srt)
 
     audio = AudioFileClip(str(audio_p)).subclipped(a0, a1)
-    clip = (ImageClip(str(bg)).with_duration(a1 - a0).with_fps(FPS).with_audio(audio))
+    clip = _kinetic_clip(str(bg), a1 - a0, "in", size=(VW, VH)).with_audio(audio)
     bg_mp4 = rd / "short_bg.mp4"
     clip.write_videofile(str(bg_mp4), fps=FPS, codec="libx264", audio_codec="aac", logger=None)
     audio.close(); clip.close()
 
     out = rd / "short.mp4"
-    print("   \U0001F524 burning subtitle...")
-    _burn(bg_mp4, sub_srt, out)
+    print("   \U0001F524 burning subtitle + progress bar...")
+    _burn(bg_mp4, sub_srt, out, duration=a1 - a0)
     print(f"✅ Short: {out}  ({a1-a0:.1f}s, {VW}x{VH})")
     return out
 
@@ -381,7 +411,7 @@ if __name__ == "__main__":
 
     # Mode PAKAI-ULANG
     run = args[0]
-    hook = cut = start = tick = None
+    hook = cut = start = tick = eyeb = None
     if "--hook" in args:
         hook = args[args.index("--hook") + 1]
     if "--cut" in args:
@@ -390,4 +420,6 @@ if __name__ == "__main__":
         start = float(args[args.index("--start") + 1])
     if "--ticker" in args:
         tick = args[args.index("--ticker") + 1]
-    make_short(run, hook=hook, cut=cut, start=start, ticker=tick)
+    if "--eyebrow" in args:
+        eyeb = args[args.index("--eyebrow") + 1]
+    make_short(run, hook=hook, cut=cut, start=start, ticker=tick, eyebrow=eyeb)

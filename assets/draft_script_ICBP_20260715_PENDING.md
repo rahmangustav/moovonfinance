@@ -159,3 +159,38 @@ Episode berikutnya kita bedah bagian kedua rapor: neraca — cara cek utang peru
 ```
 
 ---
+
+---
+
+## VERIFIKASI ULANG INDEPENDEN — 18 Juli 2026
+
+Seluruh angka di draft ini dicek ulang lewat pencarian web baru (bukan mengandalkan
+catatan riset 15 Juli). **Hasil: 10 dari 10 angka COCOK, tidak ada koreksi.**
+
+| Klaim di draft | Hasil verifikasi |
+|---|---|
+| Penjualan neto 2025 Rp74,85 T (+3,1% dari Rp72,59 T) | cocok |
+| Beban pokok penjualan Rp48,49 T (+6,1% dari Rp45,70 T) | cocok |
+| Laba kotor Rp26,36 T (dari Rp26,89 T) | cocok |
+| Margin kotor 35,2% | cocok |
+| Margin laba usaha 22,2% | cocok |
+| Laba bersih induk Rp9,22 T (+30,3% dari Rp7,08 T) | cocok |
+| EPS Rp791 | cocok — tambahan: naik dari Rp607 di 2024 |
+| **Core profit TURUN ~4%** | cocok — Rp9,98 T dari Rp10,41 T |
+| Pendapatan lain Rp1,31 T | cocok — melonjak dari Rp485,33 M |
+| Segmen: mi Rp55,84 T · dairy Rp9,81 T · snack Rp4,61 T · penyedap Rp4,59 T | cocok |
+
+**Catatan pemeriksaan:**
+- Angka "pendapatan lain Rp1,31 T" kebetulan sama persis dengan segmen "nutrisi dan
+  makanan Rp1,31 T". Sempat dicurigai salah salin — dicek terpisah, ternyata dua pos
+  berbeda yang nilainya kebetulan sama. Draft sudah benar.
+- Konsistensi internal juga lolos: 74,85 − 48,49 = 26,36 (laba kotor); 26,36 ÷ 74,85 =
+  35,2% (margin kotor); 22,2% × 74,85 ≈ 16,6 T (laba usaha, sudah ditandai "sekitar").
+- Angka "entitas asosiasi Rp236 M" TIDAK berhasil diverifikasi ulang dari sumber publik.
+  Nilainya kecil dan tidak menopang kesimpulan mana pun — **saran: hapus saja dari narasi**
+  daripada menyebut angka yang tak bisa dipertanggungjawabkan.
+- Penyebab lonjakan laba bersih terkonfirmasi: faktor tidak berulang + selisih kurs.
+  Framing draft ("pos di luar bisnis inti", tanpa mengklaim satu penyebab tunggal) sudah tepat.
+
+**Status: data bersih, siap dirender begitu pemilik menyetujui.**
+Render menunggu kalimat persis: "Data aman, lanjut render".
