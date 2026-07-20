@@ -91,13 +91,15 @@ def _short_content(content: str, max_sentences: int = 3, max_chars: int = 320) -
     sentences = re.split(r'(?<=[.!?])\s+', clean)
     picked, total = [], 0
     for s in sentences:
+        if len(picked) >= max_sentences:
+            break
         # Kalimat pembuka basa-basi pendek ("Nah, ini bagian intinya.") tidak
         # boleh berhenti sendirian tanpa isi — paksa ambil kalimat berikutnya
         # walau sedikit lewat budget karakter, daripada caption kosong makna.
-        is_short_opener = not picked and len(s) < 40
-        if len(picked) >= max_sentences:
-            break
-        if picked and not is_short_opener and total + len(s) > max_chars:
+        # Dicek dari isi `picked` SEBELUM kalimat ini ditambahkan, supaya cuma
+        # berlaku sekali (tepat setelah pembuka pendek), bukan seterusnya.
+        after_short_opener = len(picked) == 1 and len(picked[0]) < 40
+        if picked and not after_short_opener and total + len(s) > max_chars:
             break
         picked.append(s)
         total += len(s)
