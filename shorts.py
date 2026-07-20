@@ -80,11 +80,11 @@ def _pick_window(cues, start_override=None, cut_override=None):
     if cut_override is not None:
         end = start + min(float(cut_override), MAX_CUT)
     else:
-        end = start
+        matched_end = None
         for a, b, _ in cues:
             if a >= start and b <= start + 44:
-                end = b
-        end = min(end or (start + 38.0), start + MAX_CUT)
+                matched_end = b
+        end = min(matched_end if matched_end is not None else (start + 38.0), start + MAX_CUT)
     return start, end
 
 
