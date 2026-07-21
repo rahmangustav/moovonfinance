@@ -147,6 +147,30 @@ class FencedJsonAfterTest(unittest.TestCase):
         )
         self.assertEqual(_fenced_json_after(text, "SNAPSHOT"), [1, 2, 3])
 
+    def test_tidak_mencuri_blok_json_section_berikutnya(self):
+        # regresi: kalau heading yang dicari TIDAK punya blok json sendiri
+        # (draft belum lengkap), pencarian dulu melewati batas heading '##'
+        # berikutnya dan salah mengambil blok json milik section lain.
+        text = (
+            "## VALUATION:\n"
+            "(lupa isi json di sini)\n\n"
+            "## SNAPSHOT:\n```json\n{\"judul\": \"BBCA\", \"metrics\": []}\n```\n"
+        )
+        self.assertIsNone(_fenced_json_after(text, "VALUATION"))
+        self.assertEqual(
+            _fenced_json_after(text, "SNAPSHOT"),
+            {"judul": "BBCA", "metrics": []},
+        )
+
+    def test_blok_json_di_heading_terakhir_tanpa_heading_berikutnya(self):
+        # heading terakhir di file (tak ada '##' sesudahnya) tetap harus
+        # menemukan blok json miliknya sendiri.
+        text = "## VALUATION:\n```json\n{\"harga\": 1, \"nilai_wajar\": 2}\n```\n"
+        self.assertEqual(
+            _fenced_json_after(text, "VALUATION"),
+            {"harga": 1, "nilai_wajar": 2},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
