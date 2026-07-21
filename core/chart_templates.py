@@ -64,7 +64,7 @@ def _parse_num(text) -> float | None:
         neg, t = True, t[1:-1]
     for sym in ("Rp", "rp", "$", "%", " "):
         t = t.replace(sym, "")
-    if t[:1] in "+-":
+    if t[:1] in ("+", "-"):
         neg = neg or t[0] == "-"
         t = t[1:]
     if not t:
