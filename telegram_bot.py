@@ -98,6 +98,18 @@ async def _run_step(produce_script: str, step: str) -> tuple[bool, str]:
     return proc.returncode == 0, tail
 
 
+def parse_topic_command(text: str) -> str | None:
+    """Ekstrak nama topik dari 'mulai topik: <nama>' / 'mulai topik <nama>'.
+    None kalau teks bukan perintah ini; string kosong kalau perintahnya ada
+    tapi tanpa nama topik."""
+    low = text.lower()
+    if low.startswith("mulai topik:"):
+        return text[len("mulai topik:"):].strip()
+    if low.startswith("mulai topik "):
+        return text[len("mulai topik "):].strip()
+    return None
+
+
 @owner_only
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (update.message.text or "").strip()
@@ -123,8 +135,8 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    if low.startswith("mulai topik:") or low.startswith("mulai topik "):
-        topic = text.split(":", 1)[1].strip() if ":" in text else text[len("mulai topik "):].strip()
+    topic = parse_topic_command(text)
+    if topic is not None:
         if not topic:
             await update.message.reply_text("Formatnya: \"mulai topik: <nama topik>\"")
             return
