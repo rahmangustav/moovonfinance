@@ -32,6 +32,7 @@ sys.path.insert(0, str(Path(__file__).parent / "core"))
 
 from produce import parse_draft  # noqa: E402
 import visuals  # noqa: E402
+from moovon_theme import verdict  # noqa: E402
 
 BATAS_JUDUL = 100          # batas keras YouTube
 BATAS_DESKRIPSI = 4900     # ambang aman (batas asli 5000)
@@ -138,8 +139,10 @@ def main() -> None:
         harga, wajar = val.get("harga"), val.get("nilai_wajar")
         cek("valuation punya harga & nilai_wajar", bool(harga and wajar), "salah satu kosong")
         if harga and wajar:
-            mos = (float(wajar) - float(harga)) / float(harga) * 100
-            print(f"      margin of safety {mos:+.1f}% — pastikan nilai_wajar dari riset, bukan karangan")
+            label, _, mos = verdict(float(harga), float(wajar))
+            print(f"      margin of safety {mos * 100:+.1f}% → verdict: {label} "
+                  f"(sama seperti yang akan dirender di gauge)")
+            print("      pastikan nilai_wajar dari riset, bukan karangan")
     else:
         print("  (tanpa blok VALUATION — wajar untuk video edukasi)")
     snap = d.get("snapshot")
