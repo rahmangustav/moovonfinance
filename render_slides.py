@@ -206,6 +206,11 @@ def render_closing(ticker, headline="Terima kasih sudah nonton."):
 
 # ─── SLIDE: VALUASI + GAUGE MARGIN OF SAFETY ─────────────────────────────────
 def render_valuation(ticker, harga, nilai_wajar, catatan=""):
+    if nilai_wajar <= 0:
+        raise ValueError(
+            f"nilai_wajar harus > 0 untuk {ticker or 'ticker kosong'}, "
+            f"dapat {nilai_wajar!r} — cek blok ## VALUATION: di draft."
+        )
     img, d, S = T.new_canvas()
     _chrome(d, S, ticker, status_right="VALUASI")
     label, vcolor, mos = T.verdict(harga, nilai_wajar)
