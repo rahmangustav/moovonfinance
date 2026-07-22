@@ -1,7 +1,10 @@
-"""Test elemen tanda tangan verdict() — aturan BELI/TAHAN/HINDARI di moovon_theme.py.
+"""Test unit untuk moovon_theme.py — SUMBER KEBENARAN desain.
 
-Ini logika bisnis inti (dipakai render_valuation di setiap slide valuasi),
-tapi belum pernah punya test. Jalankan: python -m unittest discover -s tests
+verdict() adalah elemen paling kritis: menentukan label BELI/TAHAN/HINDARI
+yang tayang di setiap video publik (gauge Margin of Safety). Kalau logikanya
+salah, video menyiarkan rekomendasi investasi yang keliru — jadi wajib
+dites lepas dari rendering/PIL. Cakupan verdict() ada di VerdictTest di
+bawah; sisanya (_rgb/RGB, new_canvas/finalize, font) memakai gaya pytest.
 """
 import sys
 import unittest
@@ -9,7 +12,22 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from moovon_theme import verdict, RGB, MOS_BELI
+import pytest
+
+from moovon_theme import (
+    RGB,
+    HEX,
+    WIDTH,
+    HEIGHT,
+    SUPERSAMPLE,
+    MOS_BELI,
+    FONT_FILES,
+    _rgb,
+    verdict,
+    new_canvas,
+    finalize,
+    font,
+)
 
 
 class VerdictTest(unittest.TestCase):
@@ -51,6 +69,80 @@ class VerdictTest(unittest.TestCase):
         label, _, mos = verdict(100, 0)
         self.assertEqual(mos, 0.0)
         self.assertEqual(label, "TAHAN")
+
+
+# ─── _rgb() / RGB ───────────────────────────────────────────────────────────
+
+def test_rgb_konversi_hex_dengan_pagar():
+    assert _rgb("#0F1311") == (15, 19, 17)
+
+
+def test_rgb_konversi_hex_tanpa_pagar():
+    assert _rgb("C6F24E") == (198, 242, 78)
+
+
+def test_rgb_hitam_dan_putih():
+    assert _rgb("#000000") == (0, 0, 0)
+    assert _rgb("#FFFFFF") == (255, 255, 255)
+
+
+def test_rgb_dict_mencakup_semua_key_hex():
+    assert set(RGB.keys()) == set(HEX.keys())
+    for name, hexval in HEX.items():
+        assert RGB[name] == _rgb(hexval)
+
+
+def test_rgb_signal_up_down_neutral_berbeda():
+    # Sinyal warna tidak boleh bentrok satu sama lain (dipakai bedakan BELI/HINDARI/TAHAN)
+    assert RGB["up"] != RGB["down"]
+    assert RGB["up"] != RGB["neutral"]
+    assert RGB["down"] != RGB["neutral"]
+
+
+# ─── new_canvas() / finalize() ─────────────────────────────────────────────
+
+def test_new_canvas_ukuran_sesuai_supersample():
+    img, draw, s = new_canvas()
+    assert s == SUPERSAMPLE
+    assert img.size == (WIDTH * SUPERSAMPLE, HEIGHT * SUPERSAMPLE)
+
+
+def test_new_canvas_latar_warna_bg():
+    img, _, _ = new_canvas()
+    assert img.getpixel((0, 0)) == RGB["bg"]
+
+
+def test_finalize_perkecil_ke_ukuran_final():
+    img, _, _ = new_canvas()
+    out = finalize(img)
+    assert out.size == (WIDTH, HEIGHT)
+
+
+def test_finalize_idempoten_saat_sudah_ukuran_final():
+    from PIL import Image
+    img = Image.new("RGB", (WIDTH, HEIGHT), RGB["bg"])
+    out = finalize(img)
+    assert out.size == (WIDTH, HEIGHT)
+    assert out is img
+
+
+# ─── font() ─────────────────────────────────────────────────────────────────
+
+def test_font_role_tidak_dikenal_raise_keyerror():
+    with pytest.raises(KeyError):
+        font("role-tidak-ada", 40)
+
+
+def test_font_semua_role_termuat():
+    for role in FONT_FILES:
+        f = font(role, 32)
+        assert f.size == 32
+
+
+def test_font_cache_return_objek_sama_untuk_argumen_sama():
+    a = font("body", 34)
+    b = font("body", 34)
+    assert a is b
 
 
 if __name__ == "__main__":
