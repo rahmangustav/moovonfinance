@@ -16,6 +16,7 @@ LANGKAH 2 (dengan kode/URL sebagai argumen) — tukar jadi token.json:
 Setelah token.json jadi, jalankan:  .venv/bin/python backfill_audio_lang.py
 """
 import json
+import os
 import sys
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
@@ -75,6 +76,7 @@ def step2_exchange(arg: str):
     code = _extract_code(arg)
     flow.fetch_token(code=code)
     TOKEN_FILE.write_text(flow.credentials.to_json())
+    os.chmod(TOKEN_FILE, 0o600)
     PENDING.unlink(missing_ok=True)
     print(f"✅ Token tersimpan di {TOKEN_FILE}")
     print("   Lanjut:  .venv/bin/python backfill_audio_lang.py")

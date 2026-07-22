@@ -31,5 +31,6 @@ def get_youtube_client():
             creds = flow.run_local_server(port=0)
         with open(TOKEN_FILE, "w") as f:
             f.write(creds.to_json())
+        os.chmod(TOKEN_FILE, 0o600)
 
     return build("youtube", "v3", credentials=creds)
