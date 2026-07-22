@@ -82,6 +82,24 @@ class ParseNumTest(unittest.TestCase):
     def test_spasi_di_pinggir_dan_tengah_diabaikan(self):
         self.assertEqual(_parse_num("  1.500  "), 1500.0)
 
+    def test_sufiks_triliun(self):
+        # Format resmi channel utk angka finansial besar, lihat CLAUDE.md &
+        # assets/draft_script_*.md: "14,7 T", "Rp1,54 triliun" ditulis "1,54 T".
+        self.assertEqual(_parse_num("14,7 T"), 14.7e12)
+        self.assertEqual(_parse_num("-32,4 T"), -32.4e12)
+
+    def test_sufiks_miliar(self):
+        self.assertEqual(_parse_num("144,9 M"), 144.9e9)
+
+    def test_sufiks_tanpa_spasi(self):
+        self.assertEqual(_parse_num("14,7T"), 14.7e12)
+
+    def test_sufiks_dengan_notasi_akuntansi_negatif(self):
+        self.assertEqual(_parse_num("(14,7 T)"), -14.7e12)
+
+    def test_sufiks_dengan_prefix_rupiah(self):
+        self.assertEqual(_parse_num("Rp9,22 T"), 9.22e12)
+
     def test_num_dan_parse_num_round_trip_untuk_ribuan(self):
         # angka yang diformat _num() harus bisa dibaca balik oleh _parse_num()
         # -- keduanya dipakai bersama di comparison_table untuk mewarnai sel
