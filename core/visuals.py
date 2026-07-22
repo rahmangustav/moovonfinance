@@ -219,6 +219,21 @@ def _guess_ticker(*texts: str) -> str:
     return "IDX"
 
 
+ITEM_MIN_DUR = 4.0  # target ideal keterbacaan per slide item, BUKAN batas keras
+
+
+def _item_duration(remaining: float, n_items: int) -> float:
+    """Durasi per item (section/chart/valuation/snapshot) dari sisa waktu audio
+    setelah cover. Idealnya >= ITEM_MIN_DUR detik untuk keterbacaan, TAPI baris
+    ini TIDAK BOLEH memaksa total durasi visual (per_item * n_items) melebihi
+    `remaining` — kalau dipaksa, video.subclipped(0, total_duration) di akhir
+    create_video memotong dari EKOR concatenate_videoclips, yang berisiko
+    memangkas atau menghapus slide penutup (CTA + DISCLAIMER wajib per
+    CLAUDE.md) tanpa peringatan apa pun. Jadi item dikompres di bawah
+    ITEM_MIN_DUR kalau perlu, bukan sebaliknya."""
+    return remaining / max(n_items, 1)
+
+
 def _first_sentence(text: str, max_chars: int = 120) -> str:
     clean = re.sub(r"[#*\[\]]", "", text or "").strip()
     clean = re.sub(r"\s+", " ", clean)
@@ -325,7 +340,12 @@ def create_video(
         print(f"   📊 {n_charts} chart data (tema gelap v2.0) disisipkan sebagai slide")
 
     remaining = total_duration - 10
-    per_item  = max(4.0, remaining / max(len(items), 1))
+    per_item  = _item_duration(remaining, len(items))
+    if per_item < ITEM_MIN_DUR:
+        print(f"   ⚠️  {len(items)} item visual untuk {remaining:.1f} detik sisa durasi — "
+              f"tiap slide dikompres jadi {per_item:.1f} detik (di bawah {ITEM_MIN_DUR:.0f} "
+              "detik ideal) supaya CTA/disclaimer penutup tidak ikut terpotong. "
+              "Pertimbangkan kurangi jumlah chart/snapshot atau perpanjang narasi.")
 
     for item in items:
         if item["kind"] == "valuation":
