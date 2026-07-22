@@ -391,7 +391,12 @@ def upload(run_dir_arg: str, privacy: str = "public", at: str | None = None):
     st = _load_state()
     st.setdefault("history", []).append({
         "topic": meta["title"], "youtube_id": video_id,
-        "uploaded": datetime.now().strftime("%Y-%m-%d"), "run_dir": None,
+        "uploaded": datetime.now().strftime("%Y-%m-%d"),
+        # run_dir_arg = folder run lokal yang barusan diupload -- WAJIB dicatat
+        # apa adanya, bukan di-hardcode None, biar video yang sudah live tetap
+        # bisa ditelusuri balik ke script/audio/slide/chart sumbernya (dulu
+        # selalu None di sini, jadi tiap entri di state.json ditambal manual).
+        "run_dir": run_dir_arg,
         "scheduled_for": (slot_wib.isoformat() if slot_wib else None),
     })
     st["phase"] = "idle"
