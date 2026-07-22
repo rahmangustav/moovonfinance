@@ -96,18 +96,25 @@ _HEADING_RE = re.compile(
 
 
 def _fenced_json_after(text: str, heading_kw: str):
-    """Ambil blok ```json ...``` PERTAMA setelah heading '## <heading_kw>'.
-    Return objek/list Python, atau None kalau heading/blok tak ada atau JSON rusak.
+    """Ambil blok ```json ...``` PERTAMA setelah heading '## <heading_kw>', tapi
+    TIDAK melewati heading '##' berikutnya. Return objek/list Python, atau None
+    kalau heading/blok tak ada atau JSON rusak.
     Dipakai untuk blok opsional CHARTS / VALUATION / SNAPSHOT — anchored ke heading
-    biar tidak saling rebutan (mis. array metrics snapshot dikira charts)."""
-    m = re.search(
-        rf"^##\s*{heading_kw}\b.*?```json\s*(.+?)\s*```",
-        text, re.MULTILINE | re.DOTALL,
-    )
+    biar tidak saling rebutan (mis. array metrics snapshot dikira charts). Section
+    dibatasi ke heading berikutnya supaya kalau section ini TIDAK punya blok json
+    sendiri (draft belum lengkap), pencarian tidak "mencuri" blok json milik
+    section lain yang muncul belakangan di teks."""
+    m = re.search(rf"^##\s*{heading_kw}\b.*$", text, re.MULTILINE)
     if not m:
         return None
+    rest = text[m.end():]
+    next_heading = re.search(r"^##\s", rest, re.MULTILINE)
+    section = rest[:next_heading.start()] if next_heading else rest
+    block = re.search(r"```json\s*(.+?)\s*```", section, re.DOTALL)
+    if not block:
+        return None
     try:
-        return json.loads(m.group(1))
+        return json.loads(block.group(1))
     except json.JSONDecodeError:
         return None
 
