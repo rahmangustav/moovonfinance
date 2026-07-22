@@ -64,7 +64,7 @@ def _parse_num(text) -> float | None:
         neg, t = True, t[1:-1]
     for sym in ("Rp", "rp", "$", "%", " "):
         t = t.replace(sym, "")
-    if t[:1] in "+-":
+    if t[:1] in ("+", "-"):
         neg = neg or t[0] == "-"
         t = t[1:]
     if not t:
@@ -182,6 +182,17 @@ def bar_chart(kategori, nilai, judul, sumber, nama_file, horizontal=False):
 
 
 # ─── 3. Donut chart ───────────────────────────────────────────────────────────
+def _donut_center_text(persentase) -> str:
+    """Teks di tengah lubang donut: total persentase, SELALU diakhiri '%'.
+    Angka bulat (mis. '100%') kalau totalnya ~100 atau kurang; format ID
+    dengan desimal (mis. '100,4%') kalau total lebih dari 100 (data belum
+    dinormalisasi/salah ketik riset)."""
+    total = sum(persentase)
+    if abs(total - 100) < 1e-6 or total <= 100:
+        return f"{round(total)}%"
+    return f"{_num(total)}%"
+
+
 def donut_chart(labels, persentase, judul, sumber, nama_file):
     """Donut chart (pengganti pie). Warna berurutan dari palet CLAUDE.md.
     Total ditampilkan di tengah lubang donut.
@@ -200,8 +211,7 @@ def donut_chart(labels, persentase, judul, sumber, nama_file):
         t.set_fontweight("bold")
         t.set_fontsize(11)
 
-    total = sum(persentase)
-    center = f"{round(total)}%" if abs(total - 100) < 1e-6 or total <= 100 else _num(total)
+    center = _donut_center_text(persentase)
     ax.text(0, 0, center, ha="center", va="center",
             fontsize=22, fontweight="bold", color=COLORS["text"])
 

@@ -96,18 +96,25 @@ _HEADING_RE = re.compile(
 
 
 def _fenced_json_after(text: str, heading_kw: str):
-    """Ambil blok ```json ...``` PERTAMA setelah heading '## <heading_kw>'.
-    Return objek/list Python, atau None kalau heading/blok tak ada atau JSON rusak.
+    """Ambil blok ```json ...``` PERTAMA setelah heading '## <heading_kw>', tapi
+    TIDAK melewati heading '##' berikutnya. Return objek/list Python, atau None
+    kalau heading/blok tak ada atau JSON rusak.
     Dipakai untuk blok opsional CHARTS / VALUATION / SNAPSHOT — anchored ke heading
-    biar tidak saling rebutan (mis. array metrics snapshot dikira charts)."""
-    m = re.search(
-        rf"^##\s*{heading_kw}\b.*?```json\s*(.+?)\s*```",
-        text, re.MULTILINE | re.DOTALL,
-    )
+    biar tidak saling rebutan (mis. array metrics snapshot dikira charts). Section
+    dibatasi ke heading berikutnya supaya kalau section ini TIDAK punya blok json
+    sendiri (draft belum lengkap), pencarian tidak "mencuri" blok json milik
+    section lain yang muncul belakangan di teks."""
+    m = re.search(rf"^##\s*{heading_kw}\b.*$", text, re.MULTILINE)
     if not m:
         return None
+    rest = text[m.end():]
+    next_heading = re.search(r"^##\s", rest, re.MULTILINE)
+    section = rest[:next_heading.start()] if next_heading else rest
+    block = re.search(r"```json\s*(.+?)\s*```", section, re.DOTALL)
+    if not block:
+        return None
     try:
-        return json.loads(m.group(1))
+        return json.loads(block.group(1))
     except json.JSONDecodeError:
         return None
 
@@ -281,6 +288,42 @@ def render():
     print(f"   python produce.py upload {run_dir.relative_to(ROOT)}")
 
 
+def _tags_combined_length(tags: list) -> int:
+    """Panjang gabungan tags sesuai aturan YouTube Data API: tag yang
+    mengandung spasi diperlakukan seolah diapit tanda kutip (+2 karakter),
+    lalu semua tag dipisah koma (+1 karakter tiap pemisah)."""
+    if not tags:
+        return 0
+    total = sum(len(t) + (2 if " " in t else 0) for t in tags)
+    return total + (len(tags) - 1)
+
+
+def _validate_metadata(meta: dict) -> str | None:
+    """Cek metadata.json terhadap batas YouTube Data API sebelum upload
+    (invalidTitle dkk). Return pesan error, atau None kalau lolos.
+    Gagal cepat sebelum mengunggah puluhan MB, biar jelas apa yang harus
+    diperbaiki."""
+    title = (meta.get("title") or "").strip()
+    if not title:
+        return "field 'title' kosong. Isi judul dulu."
+    if len(title) > 100:
+        return (f"judul {len(title)} karakter — batas YouTube 100. Perpendek 'title' "
+                "(title_options berisi alternatif yang lebih pendek).")
+
+    description = meta.get("description", "") or ""
+    desc_bytes = len(description.encode("utf-8"))
+    if desc_bytes > 5000:
+        return f"deskripsi {desc_bytes} byte (UTF-8) — batas YouTube 5000 byte. Perpendek 'description'."
+
+    tags = meta.get("tags", []) or []
+    tags_len = _tags_combined_length(tags)
+    if tags_len > 500:
+        return (f"total panjang tags {tags_len} karakter — batas YouTube 500 "
+                "(tag berspasi dihitung +2 utk tanda kutip). Kurangi jumlah/panjang 'tags'.")
+
+    return None
+
+
 def upload(run_dir_arg: str, privacy: str = "public", at: str | None = None):
     """Upload video. Kalau `at` diisi ('next' atau 'YYYY-MM-DD HH:MM' WIB),
     video di-upload sebagai TERJADWAL: privasi 'private' + publishAt, lalu
@@ -299,15 +342,9 @@ def upload(run_dir_arg: str, privacy: str = "public", at: str | None = None):
     video_path = run_dir / "video.mp4"
     thumb_path = run_dir / "thumbnail.jpg"
 
-    # Guard: YouTube menolak judul kosong atau > 100 karakter (error invalidTitle).
-    # Gagal cepat sebelum mengunggah 16 MB, biar jelas apa yang harus diperbaiki.
-    title = (meta.get("title") or "").strip()
-    if not title:
-        print("❌ metadata.json: field 'title' kosong. Isi judul dulu.")
-        return
-    if len(title) > 100:
-        print(f"❌ Judul {len(title)} karakter — batas YouTube 100. Perpendek 'title' di "
-              f"{meta_path} (title_options berisi alternatif yang lebih pendek).")
+    err = _validate_metadata(meta)
+    if err:
+        print(f"❌ {meta_path}: {err}")
         return
 
     # Penjadwalan: video harus di-upload 'private' + publishAt (UTC RFC3339).
@@ -361,7 +398,12 @@ def upload(run_dir_arg: str, privacy: str = "public", at: str | None = None):
     st = _load_state()
     st.setdefault("history", []).append({
         "topic": meta["title"], "youtube_id": video_id,
-        "uploaded": datetime.now().strftime("%Y-%m-%d"), "run_dir": None,
+        "uploaded": datetime.now().strftime("%Y-%m-%d"),
+        # run_dir_arg = folder run lokal yang barusan diupload -- WAJIB dicatat
+        # apa adanya, bukan di-hardcode None, biar video yang sudah live tetap
+        # bisa ditelusuri balik ke script/audio/slide/chart sumbernya (dulu
+        # selalu None di sini, jadi tiap entri di state.json ditambal manual).
+        "run_dir": run_dir_arg,
         "scheduled_for": (slot_wib.isoformat() if slot_wib else None),
     })
     st["phase"] = "idle"

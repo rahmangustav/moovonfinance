@@ -36,6 +36,12 @@ FPS = 24
 MAX_CUT = 56.0               # Shorts wajib < 60 dtk
 DEFAULT_CLOSE = "Analisis lengkap di channel."
 
+# Akronim keuangan/makro 4 huruf yang BUKAN kode saham — dipakai buat
+# menyaring auto-deteksi ticker (lihat parse_short_script) biar tak salah
+# nangkep istilah umum channel ini (lihat CLAUDE.md, memory/kamus_istilah.md)
+# sebagai kode emiten sungguhan.
+_NON_TICKER_ACRONYMS = {"BUMN", "IHSG", "APBN", "RUPS"}
+
 
 # ─── util SRT ─────────────────────────────────────────────────────────────────
 def _parse_srt(path: Path):
@@ -80,11 +86,11 @@ def _pick_window(cues, start_override=None, cut_override=None):
     if cut_override is not None:
         end = start + min(float(cut_override), MAX_CUT)
     else:
-        end = start
+        matched_end = None
         for a, b, _ in cues:
             if a >= start and b <= start + 44:
-                end = b
-        end = min(end or (start + 38.0), start + MAX_CUT)
+                matched_end = b
+        end = min(matched_end if matched_end is not None else (start + 38.0), start + MAX_CUT)
     return start, end
 
 
@@ -296,8 +302,8 @@ def parse_short_script(text: str) -> dict:
     eyebrow = fields.get("EYEBROW", "").strip() or "BEDAH SAHAM"
     ticker = fields.get("TICKER", "").strip().upper()
     if "TICKER" not in fields:                        # auto-ekstrak hanya bila tak diisi
-        m = re.search(r"\b([A-Z]{4})\b", hook + " " + body)
-        ticker = m.group(1) if m else "-"
+        candidates = re.findall(r"\b([A-Z]{4})\b", hook + " " + body)
+        ticker = next((c for c in candidates if c not in _NON_TICKER_ACRONYMS), "-")
 
     def _end(s):                                      # pastikan diakhiri titik
         return s if s.rstrip().endswith((".", "?", "!")) else s.rstrip() + "."
@@ -344,6 +350,7 @@ def make_short_from_script(script_path: str):
     out = rd / "short.mp4"
     print("   \U0001F524 burning subtitle + progress bar...")
     _burn(bg_mp4, sub_srt, out, duration=dur)
+    Path(bg_mp4).unlink(missing_ok=True)   # duplikat mentah, sudah menyatu ke `out`
     print(f"✅ Short: {out}  ({dur:.1f}s, {VW}x{VH})")
     return out
 
@@ -393,6 +400,7 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
     out = rd / "short.mp4"
     print("   \U0001F524 burning subtitle + progress bar...")
     _burn(bg_mp4, sub_srt, out, duration=a1 - a0)
+    Path(bg_mp4).unlink(missing_ok=True)   # duplikat mentah, sudah menyatu ke `out`
     print(f"✅ Short: {out}  ({a1-a0:.1f}s, {VW}x{VH})")
     return out
 

@@ -65,6 +65,32 @@ class TestPickWindowAutoDeteksiHook(unittest.TestCase):
         start, end = _pick_window(cues)
         self.assertEqual(start, 0.0)
 
+    def test_tanpa_cut_override_cue_hook_tunggal_panjang_tak_menghasilkan_jendela_nol(self):
+        # Regresi: sebelum perbaikan, `end = end or (start + 38.0)` memakai `end`
+        # yang sudah diinisialisasi ke `start` (bukan 0/None) sebagai penanda
+        # "belum ada cue cocok". Kalau `start` bukan nol (kasus normal — hook
+        # jarang mulai di detik 0) dan TIDAK ADA cue yang durasinya muat di
+        # bawah 44 detik dari `start` (mis. satu cue tunggal yang sangat
+        # panjang), `end` tetap sama dengan `start` — jendela nol detik, yang
+        # bikin AudioFileClip.subclipped(a0, a1) gagal atau merender Short kosong.
+        cues = [
+            (0.0, 6.0, "Disclaimer dulu."),
+            (6.0, 60.0, "Kenapa bank ini masih murah?"),  # cue tunggal, jauh melebihi start+44
+        ]
+        start, end = _pick_window(cues)
+        self.assertGreater(end, start)
+        self.assertAlmostEqual(end - start, 38.0, places=3)
+
+    def test_tanpa_cut_override_cue_cocok_dipilih_yang_terakhir_dalam_jendela_44dtk(self):
+        cues = [
+            (0.0, 6.0, "Disclaimer dulu."),
+            (6.0, 9.5, "Kenapa bank ini masih murah?"),
+            (9.5, 20.0, "Lanjutan pembahasan."),
+            (20.0, 70.0, "Cue jauh di luar jendela 44 detik."),
+        ]
+        start, end = _pick_window(cues)
+        self.assertEqual(end, 20.0)
+
 
 if __name__ == "__main__":
     unittest.main()
