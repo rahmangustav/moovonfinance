@@ -56,8 +56,10 @@ Modul:
   menumpang pass subtitle) — anti-monoton tanpa keluar brand.
 - `core/chart_templates.py` + `core/moovon_style.py` — chart matplotlib tema
   GELAP v2.0 (line/bar/donut/table/timeline).
-- `core/tts.py` (edge-tts `id-ID-GadisNeural` + SRT word-boundary), `core/thumbnail.py`,
-  `core/youtube_uploader.py`, `core/subtitle.py` (fallback whisper).
+- `core/tts.py` (edge-tts `id-ID-GadisNeural` + SRT word-boundary),
+  `core/youtube_uploader.py`, `core/subtitle.py` (fallback whisper). Thumbnail
+  TIDAK punya modul sendiri — dibuat inline di `produce.py` (crop `slide_cover.png`
+  hasil render `create_video` jadi JPG 1280x720).
 
 ## Aturan Desain (WAJIB)
 
