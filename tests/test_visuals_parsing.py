@@ -175,6 +175,17 @@ class GuessTickerTest(unittest.TestCase):
     def test_cek_beberapa_teks_berurutan(self):
         self.assertEqual(_guess_ticker("", "ICBP naik terus"), "ICBP")
 
+    def test_akronim_generik_sebelum_ticker_asli_tidak_ikut_terpilih(self):
+        # Sebelum perbaikan: kecocokan 4-huruf kapital PERTAMA langsung dipakai,
+        # jadi "IHSG"/"BUMN" (istilah umum channel ini) salah kepilih jadi
+        # ticker kapsul yang tampil di setiap slide, padahal ticker asli
+        # ("BBRI") disebut setelahnya.
+        title = "IHSG Menguat, Tapi BUMN Karya Rugi — BBRI Justru Cetak Laba Rekor"
+        self.assertEqual(_guess_ticker(title, title), "BBRI")
+
+    def test_hanya_akronim_generik_tanpa_ticker_asli_jatuh_ke_idx(self):
+        self.assertEqual(_guess_ticker("BUMN kompak menguat, IHSG dan APBN jadi sorotan"), "IDX")
+
 
 class FirstSentenceTest(unittest.TestCase):
     def test_ambil_kalimat_pertama_saja(self):
