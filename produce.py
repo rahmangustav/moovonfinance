@@ -281,6 +281,42 @@ def render():
     print(f"   python produce.py upload {run_dir.relative_to(ROOT)}")
 
 
+def _tags_combined_length(tags: list) -> int:
+    """Panjang gabungan tags sesuai aturan YouTube Data API: tag yang
+    mengandung spasi diperlakukan seolah diapit tanda kutip (+2 karakter),
+    lalu semua tag dipisah koma (+1 karakter tiap pemisah)."""
+    if not tags:
+        return 0
+    total = sum(len(t) + (2 if " " in t else 0) for t in tags)
+    return total + (len(tags) - 1)
+
+
+def _validate_metadata(meta: dict) -> str | None:
+    """Cek metadata.json terhadap batas YouTube Data API sebelum upload
+    (invalidTitle dkk). Return pesan error, atau None kalau lolos.
+    Gagal cepat sebelum mengunggah puluhan MB, biar jelas apa yang harus
+    diperbaiki."""
+    title = (meta.get("title") or "").strip()
+    if not title:
+        return "field 'title' kosong. Isi judul dulu."
+    if len(title) > 100:
+        return (f"judul {len(title)} karakter — batas YouTube 100. Perpendek 'title' "
+                "(title_options berisi alternatif yang lebih pendek).")
+
+    description = meta.get("description", "") or ""
+    desc_bytes = len(description.encode("utf-8"))
+    if desc_bytes > 5000:
+        return f"deskripsi {desc_bytes} byte (UTF-8) — batas YouTube 5000 byte. Perpendek 'description'."
+
+    tags = meta.get("tags", []) or []
+    tags_len = _tags_combined_length(tags)
+    if tags_len > 500:
+        return (f"total panjang tags {tags_len} karakter — batas YouTube 500 "
+                "(tag berspasi dihitung +2 utk tanda kutip). Kurangi jumlah/panjang 'tags'.")
+
+    return None
+
+
 def upload(run_dir_arg: str, privacy: str = "public", at: str | None = None):
     """Upload video. Kalau `at` diisi ('next' atau 'YYYY-MM-DD HH:MM' WIB),
     video di-upload sebagai TERJADWAL: privasi 'private' + publishAt, lalu
@@ -299,15 +335,9 @@ def upload(run_dir_arg: str, privacy: str = "public", at: str | None = None):
     video_path = run_dir / "video.mp4"
     thumb_path = run_dir / "thumbnail.jpg"
 
-    # Guard: YouTube menolak judul kosong atau > 100 karakter (error invalidTitle).
-    # Gagal cepat sebelum mengunggah 16 MB, biar jelas apa yang harus diperbaiki.
-    title = (meta.get("title") or "").strip()
-    if not title:
-        print("❌ metadata.json: field 'title' kosong. Isi judul dulu.")
-        return
-    if len(title) > 100:
-        print(f"❌ Judul {len(title)} karakter — batas YouTube 100. Perpendek 'title' di "
-              f"{meta_path} (title_options berisi alternatif yang lebih pendek).")
+    err = _validate_metadata(meta)
+    if err:
+        print(f"❌ {meta_path}: {err}")
         return
 
     # Penjadwalan: video harus di-upload 'private' + publishAt (UTC RFC3339).
