@@ -344,6 +344,7 @@ def make_short_from_script(script_path: str):
     out = rd / "short.mp4"
     print("   \U0001F524 burning subtitle + progress bar...")
     _burn(bg_mp4, sub_srt, out, duration=dur)
+    Path(bg_mp4).unlink(missing_ok=True)   # duplikat mentah, sudah menyatu ke `out`
     print(f"✅ Short: {out}  ({dur:.1f}s, {VW}x{VH})")
     return out
 
@@ -393,6 +394,7 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
     out = rd / "short.mp4"
     print("   \U0001F524 burning subtitle + progress bar...")
     _burn(bg_mp4, sub_srt, out, duration=a1 - a0)
+    Path(bg_mp4).unlink(missing_ok=True)   # duplikat mentah, sudah menyatu ke `out`
     print(f"✅ Short: {out}  ({a1-a0:.1f}s, {VW}x{VH})")
     return out
 
