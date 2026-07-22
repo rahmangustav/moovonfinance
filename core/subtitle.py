@@ -1,4 +1,5 @@
 _MODEL = None
+_MAX_SECS = 6.0   # batas wall-clock per segmen — sinkron dgn core.tts._boundaries_to_segments
 
 
 def _get_model():
@@ -10,38 +11,47 @@ def _get_model():
     return _MODEL
 
 
+def _group_words(words) -> list[dict]:
+    """Kelompokkan word-boundary whisper (objek ber-atribut .start/.end/.word)
+    jadi segmen subtitle {start, end, text}. Dipenggal per kalimat (. ! ?),
+    baris kepanjangan (>72 char), atau saat sudah >= _MAX_SECS detik — tanpa
+    batas waktu, jeda bicara panjang tanpa tanda baca bisa membuat satu
+    subtitle menggantung lama di layar."""
+    result = []
+    buf = []
+
+    for word in words:
+        buf.append(word)
+        text = "".join(w.word for w in buf).strip()
+        is_boundary = text.endswith(('.', '!', '?'))
+        is_long = len(text) > 72
+        is_slow = (buf[-1].end - buf[0].start) >= _MAX_SECS
+
+        if is_boundary or is_long or is_slow:
+            result.append({
+                'start': buf[0].start,
+                'end':   buf[-1].end,
+                'text':  text,
+            })
+            buf = []
+
+    if buf:
+        result.append({
+            'start': buf[0].start,
+            'end':   buf[-1].end,
+            'text':  "".join(w.word for w in buf).strip(),
+        })
+
+    return result
+
+
 def transcribe(audio_path: str) -> list[dict]:
     """Transcribe audio → list of {start, end, text} subtitle segments."""
     try:
         model = _get_model()
         segments, _ = model.transcribe(audio_path, word_timestamps=True, language="id")
-
-        result = []
-        buf = []
-
-        for seg in segments:
-            for word in (seg.words or []):
-                buf.append(word)
-                text = "".join(w.word for w in buf).strip()
-                is_boundary = text.endswith(('.', '!', '?'))
-                is_long = len(text) > 72
-
-                if (is_boundary or is_long) and buf:
-                    result.append({
-                        'start': buf[0].start,
-                        'end':   buf[-1].end,
-                        'text':  text,
-                    })
-                    buf = []
-
-        if buf:
-            result.append({
-                'start': buf[0].start,
-                'end':   buf[-1].end,
-                'text':  "".join(w.word for w in buf).strip(),
-            })
-
-        return result
+        words = [w for seg in segments for w in (seg.words or [])]
+        return _group_words(words)
 
     except Exception as e:
         print(f"   ⚠️  Transcription failed: {e}")
