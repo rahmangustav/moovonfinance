@@ -36,6 +36,12 @@ FPS = 24
 MAX_CUT = 56.0               # Shorts wajib < 60 dtk
 DEFAULT_CLOSE = "Analisis lengkap di channel."
 
+# Akronim keuangan/makro 4 huruf yang BUKAN kode saham — dipakai buat
+# menyaring auto-deteksi ticker (lihat parse_short_script) biar tak salah
+# nangkep istilah umum channel ini (lihat CLAUDE.md, memory/kamus_istilah.md)
+# sebagai kode emiten sungguhan.
+_NON_TICKER_ACRONYMS = {"BUMN", "IHSG", "APBN", "RUPS"}
+
 
 # ─── util SRT ─────────────────────────────────────────────────────────────────
 def _parse_srt(path: Path):
@@ -296,8 +302,8 @@ def parse_short_script(text: str) -> dict:
     eyebrow = fields.get("EYEBROW", "").strip() or "BEDAH SAHAM"
     ticker = fields.get("TICKER", "").strip().upper()
     if "TICKER" not in fields:                        # auto-ekstrak hanya bila tak diisi
-        m = re.search(r"\b([A-Z]{4})\b", hook + " " + body)
-        ticker = m.group(1) if m else "-"
+        candidates = re.findall(r"\b([A-Z]{4})\b", hook + " " + body)
+        ticker = next((c for c in candidates if c not in _NON_TICKER_ACRONYMS), "-")
 
     def _end(s):                                      # pastikan diakhiri titik
         return s if s.rstrip().endswith((".", "?", "!")) else s.rstrip() + "."
