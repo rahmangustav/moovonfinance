@@ -21,6 +21,38 @@ KEEP = {"LLg7NYh0lXE", "ymRoSeUyPO8", "4cB59WQqSQo"}  # jangan disentuh
 TARGETS = OFFNICHE + list(DUPLIKAT.keys())
 
 
+def classify_target(vid, info, keep_set):
+    """Tentukan aksi untuk satu video target.
+
+    Return (action, video) dengan action salah satu dari
+    'keep' | 'missing' | 'skip' | 'unlist'. `video` adalah item mentah dari
+    videos().list() (None untuk 'keep'/'missing').
+    """
+    if vid in keep_set:
+        return "keep", None
+    v = info.get(vid)
+    if not v:
+        return "missing", None
+    if v["status"]["privacyStatus"] != "public":
+        return "skip", v
+    return "unlist", v
+
+
+def build_unlist_body(vid, status):
+    """Bangun body videos().update() yang cuma ubah privacy ke unlisted,
+    field lain dipertahankan dari status video saat ini."""
+    return {
+        "id": vid,
+        "status": {
+            "privacyStatus": "unlisted",
+            "selfDeclaredMadeForKids": status.get("selfDeclaredMadeForKids", False),
+            "embeddable": status.get("embeddable", True),
+            "publicStatsViewable": status.get("publicStatsViewable", True),
+            "license": status.get("license", "youtube"),
+        },
+    }
+
+
 def main():
     yt = get_youtube_client()
     unlisted, skipped, missing = [], [], []
@@ -34,31 +66,20 @@ def main():
             info[v["id"]] = v
 
     for vid in TARGETS:
-        if vid in KEEP:
+        action, v = classify_target(vid, info, KEEP)
+        if action == "keep":
             continue
-        v = info.get(vid)
-        if not v:
+        if action == "missing":
             missing.append(vid)
             print(f"[MISSING] {vid} — tak ditemukan (mungkin sudah dihapus)")
             continue
         title = v["snippet"]["title"][:55]
-        cur = v["status"]["privacyStatus"]
-        if cur != "public":
+        if action == "skip":
+            cur = v["status"]["privacyStatus"]
             skipped.append(vid)
             print(f"[SKIP {cur:<8}] {vid}  {title}")
             continue
-        # Bangun body status: ubah privacy, pertahankan field lain
-        status = v["status"]
-        body = {
-            "id": vid,
-            "status": {
-                "privacyStatus": "unlisted",
-                "selfDeclaredMadeForKids": status.get("selfDeclaredMadeForKids", False),
-                "embeddable": status.get("embeddable", True),
-                "publicStatsViewable": status.get("publicStatsViewable", True),
-                "license": status.get("license", "youtube"),
-            },
-        }
+        body = build_unlist_body(vid, v["status"])
         yt.videos().update(part="status", body=body).execute()
         unlisted.append(vid)
         tag = DUPLIKAT.get(vid, "off-niche")
