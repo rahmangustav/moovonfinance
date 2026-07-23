@@ -116,9 +116,25 @@ def main() -> None:
             # menulis angka tengah donut dari sum(persentase) yang dibulatkan,
             # jadi jumlah 99,9 aman (tampil 100%) tapi 99,0 akan tampil "99%".
             pers = c.get("persentase") or []
-            total = sum(float(x) for x in pers) if pers else 0.0
+            # matplotlib ax.pie() (dipakai chart_templates.donut_chart) WAJIB
+            # angka JSON polos (int/float) — nilai berbentuk teks ("45", "45,5",
+            # "45%") membuat render_chart gagal dan chart itu DIAM-DIAM dilewati
+            # dari video (lihat render_chart: exception ditangkap, return None).
+            # float(x) di bawah dulu meledak (ValueError/TypeError) tanpa
+            # tertangkap begitu ada satu nilai teks — seluruh pemeriksaan ini
+            # (termasuk bagian sesudahnya) ikut berhenti dgn traceback mentah,
+            # padahal justru pemeriksaan inilah yang seharusnya menangkap kasus
+            # itu SEBELUM render. Jadi pisahkan nilai numerik vs bukan dulu.
+            non_numerik = [x for x in pers if not isinstance(x, (int, float))]
+            cek(f"chart {i} donut persentase berupa angka polos JSON",
+                not non_numerik,
+                f"nilai berbentuk teks: {non_numerik!r} — tulis angka polos "
+                "(mis. 45 atau 45.5), bukan string; kalau tidak, chart ini gagal "
+                "render dan dilewati diam-diam dari video")
+            numerik = [float(x) for x in pers if isinstance(x, (int, float))]
+            total = sum(numerik) if numerik else 0.0
             cek(f"chart {i} donut berjumlah ~100 (kini {total:g})",
-                abs(round(total) - 100) < 1,
+                not non_numerik and abs(round(total) - 100) < 1,
                 f"jumlah {total:g} — angka tengah donut akan tampil salah")
             cek(f"chart {i} label vs nilai sama banyak",
                 len(c.get("labels") or []) == len(pers),
