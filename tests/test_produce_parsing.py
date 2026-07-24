@@ -124,6 +124,26 @@ class ParseDraftTest(unittest.TestCase):
             draft = parse_draft(_write(tmp, text))
         self.assertEqual(draft["ticker_override"], "BBCA")
 
+    def test_charts_fallback_tanpa_heading_json_valid(self):
+        # Draft tanpa heading '## CHARTS' — parse_draft jatuh ke fallback lama
+        # (array json pertama di mana pun di teks) dan tetap harus terparse.
+        text = DRAFT_MINIMAL + '\n```json\n[{"type": "line"}]\n```\n'
+        with tempfile.TemporaryDirectory() as tmp:
+            draft = parse_draft(_write(tmp, text))
+        self.assertEqual(draft["charts"], [{"type": "line"}])
+
+    def test_charts_fallback_json_rusak_tidak_crash(self):
+        # Regresi: sebelum fix, blok json rusak di jalur fallback (draft tanpa
+        # heading '## CHARTS') melempar json.JSONDecodeError mentah dan
+        # menghentikan parse_draft() — dipanggil di awal render() DAN
+        # cek_draft.py, jadi crash ini menggagalkan pemeriksaan pra-render itu
+        # sendiri, bukan cuma render. Sekarang harus degradasi ke [] seperti
+        # _fenced_json_after() untuk blok json rusak lainnya.
+        text = DRAFT_MINIMAL + "\n```json\n[1, 2, tidak valid,]\n```\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            draft = parse_draft(_write(tmp, text))
+        self.assertEqual(draft["charts"], [])
+
 
 class FencedJsonAfterTest(unittest.TestCase):
     def test_json_rusak_kembalikan_none_bukan_exception(self):
