@@ -108,6 +108,13 @@ def verdict(price: float, fair: float) -> tuple[str, tuple[int, int, int], float
     Aturan: BELI hanya bila diskon (margin of safety) >= 15%.
             HINDARI bila harga di atas nilai wajar (premium).
             TAHAN selebihnya."""
+    try:
+        price, fair = float(price), float(fair)
+    except (TypeError, ValueError):
+        raise ValueError(
+            f"harga/nilai_wajar harus angka, dapat harga={price!r} "
+            f"nilai_wajar={fair!r} — cek blok ## VALUATION: di draft."
+        )
     mos = (fair - price) / fair if fair else 0.0
     if mos >= MOS_BELI:
         return "BELI", RGB["up"], mos
