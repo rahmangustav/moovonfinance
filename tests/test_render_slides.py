@@ -135,6 +135,18 @@ class RenderSlideSmokeTest(unittest.TestCase):
         img = render_valuation("BMRI", harga=10000, nilai_wajar=9150)
         self._assert_valid_slide(img)
 
+    def test_render_valuation_nilai_wajar_nol_raises_valueerror(self):
+        # nilai_wajar=0 (placeholder draft belum diisi/salah ketik) sebelumnya
+        # bikin ZeroDivisionError mentah di gauge (lo == hi == 0) — meledak
+        # SETELAH TTS selesai, membuang satu run render penuh. Harus gagal
+        # cepat & jelas, bukan crash kriptik di tengah render.
+        with self.assertRaises(ValueError):
+            render_valuation("BBCA", harga=5800, nilai_wajar=0)
+
+    def test_render_valuation_nilai_wajar_negatif_raises_valueerror(self):
+        with self.assertRaises(ValueError):
+            render_valuation("BBCA", harga=5800, nilai_wajar=-100)
+
     def test_render_snapshot(self):
         img = render_snapshot(
             "BBCA", "BBCA — Kuartal I 2026",
