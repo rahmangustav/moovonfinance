@@ -310,7 +310,13 @@ def render_snapshot(ticker, judul, metrics):
                             fill=T.RGB["panel"], outline=T.RGB["line"], width=max(1, S))
         d.text((cx + 34 * S, cy + 34 * S), lbl.upper(),
                font=T.font("mono_med", T.SIZE["label"] * S), fill=T.RGB["text_dim"], anchor="lt")
-        col = T.RGB[ck] if ck else T.RGB["text"]
+        # `ck` datang mentah dari JSON draft (## SNAPSHOT:) — kalau ada salah
+        # ketik/nilai di luar kontrak "up"/"down"/"neutral"/null (mis. "positive",
+        # "green", atau tipe bukan string), JANGAN biarkan KeyError mentah
+        # meledakkan render_snapshot di tengah create_video (setelah TTS
+        # selesai — lihat render_valuation nilai_wajar<=0 utk pola serupa).
+        # Fallback aman: warna netral (T.RGB["text"]), bukan crash.
+        col = T.RGB.get(ck, T.RGB["text"]) if isinstance(ck, str) and ck else T.RGB["text"]
         d.text((cx + 34 * S, cy + chh - 34 * S), val,
                font=T.font("mono", 66 * S), fill=col, anchor="lb")
     return T.finalize(img)
