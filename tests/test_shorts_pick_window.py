@@ -49,6 +49,59 @@ class TestPickWindowStartOverride(unittest.TestCase):
         self.assertEqual(start, 0.0)
 
 
+class TestPickWindowTotalDuration(unittest.TestCase):
+    """`total_duration` menjepit jendela ke durasi audio SUNGGUHAN.
+
+    Regresi: sebelum ada param ini, `--start`/`--cut` manual (atau fallback
+    auto start+38 saat tak ada cue yang pas dalam jendela 44 dtk) bisa
+    menghasilkan `end` MELEBIHI panjang audio video panjang yang sebenarnya —
+    MAX_CUT cuma membatasi PANJANG jendela yang diminta, bukan posisinya
+    relatif ke durasi sumber. Ini baru ketahuan jauh di ujung pipeline saat
+    `AudioFileClip(...).subclipped(a0, a1)` di shorts.make_short() meledak
+    dengan `ValueError: end_time (...) should be smaller or equal to the
+    clip's duration (...)` — dibuktikan langsung lewat moviepy nyata (audio
+    ffmpeg 50 dtk + start=20, cut=45 -> end=65 > 50.05 -> ValueError).
+    """
+
+    def test_cut_manual_melebihi_durasi_asli_dijepit(self):
+        # --start 20 --cut 45 pada audio yang aslinya cuma 50 dtk: tanpa
+        # total_duration, end = 65 (jauh melebihi 50) -> crash di moviepy.
+        start, end = _pick_window([], start_override=20, cut_override=45,
+                                   total_duration=50.0)
+        self.assertEqual(start, 20.0)
+        self.assertLessEqual(end, 50.0)
+        self.assertGreater(end, start)
+
+    def test_start_manual_melebihi_durasi_asli_dijepit(self):
+        # --start jauh melampaui durasi asli (mis. salah baca timestamp) tidak
+        # boleh menghasilkan jendela yang seluruhnya di luar audio.
+        start, end = _pick_window([], start_override=500, cut_override=30,
+                                   total_duration=50.0)
+        self.assertLess(start, 50.0)
+        self.assertLessEqual(end, 50.0)
+        self.assertGreater(end, start)
+
+    def test_fallback_auto_melebihi_durasi_asli_dijepit(self):
+        # Jendela auto (tanpa cut_override) juga tak boleh lolos dari
+        # total_duration, termasuk lewat jalur fallback start+38.
+        cues = [(0.0, 6.0, "Disclaimer dulu."), (6.0, 12.0, "Kenapa mahal?")]
+        start, end = _pick_window(cues, total_duration=15.0)
+        self.assertLessEqual(end, 15.0)
+        self.assertGreater(end, start)
+
+    def test_tanpa_total_duration_perilaku_lama_tak_berubah(self):
+        # total_duration opsional -- default None harus tetap berperilaku
+        # persis seperti sebelum perbaikan (tak ada regresi untuk pemanggil
+        # yang belum tahu durasi sumber, mis. mode skrip mandiri).
+        start, end = _pick_window([], start_override=20, cut_override=45)
+        self.assertEqual((start, end), (20.0, 65.0))
+
+    def test_total_duration_tidak_mengubah_jendela_yang_sudah_valid(self):
+        start, end = _pick_window([], start_override=10, cut_override=30,
+                                   total_duration=1000.0)
+        self.assertEqual((start, end), (10.0, 40.0))
+
+
 class TestPickWindowAutoDeteksiHook(unittest.TestCase):
     def test_tanpa_override_pakai_kalimat_tanya_pertama_setelah_detik_6(self):
         cues = [

@@ -74,12 +74,20 @@ def _fmt(sec: float) -> str:
     return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
 
 
-def _pick_window(cues, start_override=None, cut_override=None):
+def _pick_window(cues, start_override=None, cut_override=None, total_duration=None):
     """Jendela HOOK-FIRST [start, end] dari audio panjang.
 
     start = awal kalimat hook (pertanyaan pertama) MINUS lead-in kecil, biar
     Short langsung masuk ke inti — BUKAN dari detik 0 yang isinya intro/disclaimer.
     end   = start + hingga ~44 dtk, dipatok ke batas kalimat & MAX_CUT.
+
+    `total_duration` (opsional) = durasi sungguhan audio video panjang (detik).
+    Tanpa ini, `--start`/`--cut` manual (atau fallback auto saat tak ada cue
+    yang cocok dalam jendela 44 dtk) bisa menghasilkan `end` MELEBIHI audio
+    yang sungguhan ada — MAX_CUT cuma membatasi PANJANG jendela yang diminta,
+    bukan posisinya relatif ke durasi sumber. Downstream (AudioFileClip.
+    subclipped(a0, a1) di make_short) melempar ValueError mentah kalau itu
+    terjadi. Kalau `total_duration` diisi, start & end dijepit ke situ.
     """
     # tentukan start
     if start_override is not None:
@@ -90,6 +98,9 @@ def _pick_window(cues, start_override=None, cut_override=None):
             if a >= 6 and txt.rstrip().endswith("?"):
                 start = max(0.0, a - 0.35)          # lead-in tipis sebelum hook
                 break
+    if total_duration is not None:
+        # start tak boleh sampai kehabisan ruang jendela (minimal 1 dtk tersisa)
+        start = min(start, max(0.0, total_duration - 1.0))
     # tentukan end
     if cut_override is not None:
         end = start + min(float(cut_override), MAX_CUT)
@@ -99,6 +110,8 @@ def _pick_window(cues, start_override=None, cut_override=None):
             if a >= start and b <= start + 44:
                 matched_end = b
         end = min(matched_end if matched_end is not None else (start + 38.0), start + MAX_CUT)
+    if total_duration is not None:
+        end = min(end, total_duration)
     return start, end
 
 
@@ -389,7 +402,14 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
     hook_lines = [h.strip() for h in hook.split("|")] if hook else _default_hook(title)
 
     cues = _parse_srt(srt_p)
-    a0, a1 = _pick_window(cues, start_override=start, cut_override=cut)
+    # Durasi SUNGGUHAN dari file audio (bukan cuma cue terakhir di SRT) dipakai
+    # buat menjepit jendela -- tanpa ini, --start/--cut manual (atau fallback
+    # auto saat tak ada cue yang pas dalam 44 dtk) bisa hasilkan `end` melebihi
+    # panjang audio asli, dan AudioFileClip.subclipped() di bawah meledak
+    # dengan ValueError mentah (lihat shorts._pick_window untuk detail).
+    full_audio = AudioFileClip(str(audio_p))
+    a0, a1 = _pick_window(cues, start_override=start, cut_override=cut,
+                          total_duration=full_audio.duration)
     print(f"\U0001F3AC Short {ticker}: jendela {a0:.1f}→{a1:.1f}s ({a1-a0:.1f}s) | "
           f"hook: {' / '.join(hook_lines)}")
 
@@ -398,7 +418,7 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
     sub_srt = rd / "short.srt"
     _write_sub_srt(cues, a0, a1, sub_srt)
 
-    audio = AudioFileClip(str(audio_p)).subclipped(a0, a1)
+    audio = full_audio.subclipped(a0, a1)
     clip = _kinetic_clip(str(bg), a1 - a0, "in", size=(VW, VH)).with_audio(audio)
     bg_mp4 = rd / "short_bg.mp4"
     clip.write_videofile(str(bg_mp4), fps=FPS, codec="libx264", audio_codec="aac", logger=None)
