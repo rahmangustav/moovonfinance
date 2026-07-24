@@ -154,7 +154,19 @@ def main() -> None:
     if val:
         harga, wajar = val.get("harga"), val.get("nilai_wajar")
         cek("valuation punya harga & nilai_wajar", bool(harga and wajar), "salah satu kosong")
-        if harga and wajar:
+        # harga/nilai_wajar wajib angka JSON polos (int/float). Kalau penulis draft
+        # tak sengaja menulisnya sebagai teks (mis. "8000 (penutupan)" karena
+        # menambah catatan di angka, bukan di field 'catatan'), float() di bawah
+        # akan meledak (ValueError) tak tertangkap dan menghentikan SISA
+        # pemeriksaan (termasuk blok SNAPSHOT & kesimpulan) dengan traceback
+        # mentah — pola bug yang sama persis dengan persentase donut di atas.
+        # Jadi pisahkan cek tipe numerik dulu sebelum float().
+        non_numerik = [k for k, v in (("harga", harga), ("nilai_wajar", wajar))
+                       if v is not None and not isinstance(v, (int, float))]
+        cek("valuation harga & nilai_wajar berupa angka polos JSON", not non_numerik,
+            f"field berbentuk teks: {non_numerik!r} — tulis angka polos (mis. 8000), "
+            "catatan tambahan taruh di field 'catatan', bukan di angka")
+        if harga and wajar and not non_numerik:
             label, _, mos = verdict(float(harga), float(wajar))
             print(f"      margin of safety {mos * 100:+.1f}% → verdict: {label} "
                   f"(sama seperti yang akan dirender di gauge)")
