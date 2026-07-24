@@ -180,9 +180,16 @@ def parse_draft(path: Path) -> dict:
 
     charts = _fenced_json_after(text, "CHARTS")
     if charts is None:
-        # fallback lama: array json pertama di mana pun (draft tanpa heading CHARTS)
+        # fallback lama: array json pertama di mana pun (draft tanpa heading CHARTS).
+        # Sama seperti _fenced_json_after di atas: JSON rusak -> [] (bukan crash
+        # mentah), supaya draft tanpa heading '## CHARTS' yang tak sengaja
+        # menyenggol blok json tak valid di tempat lain tetap bisa diperiksa
+        # cek_draft.py sampai selesai, bukan berhenti di tengah jalan.
         charts_m = re.search(r"```json\s*(\[.*?\])\s*```", text, re.DOTALL)
-        charts = json.loads(charts_m.group(1)) if charts_m else []
+        try:
+            charts = json.loads(charts_m.group(1)) if charts_m else []
+        except json.JSONDecodeError:
+            charts = []
 
     # Blok opsional elemen tanda tangan v2.0 (boleh tidak ada):
     #   ## VALUATION:  ```json {"harga":.., "nilai_wajar":.., "catatan":".."} ```
