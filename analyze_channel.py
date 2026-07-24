@@ -1,9 +1,42 @@
 """Audit cepat channel YouTube Moovon: statistik channel + per-video.
 Pakai token OAuth yang sudah ada (scope youtube.readonly cukup).
 """
+import re
 import sys
 from datetime import datetime, timezone
 from core.youtube_uploader import get_youtube_client
+
+# Shorts eligibility YouTube saat ini: durasi <= 3 menit (berubah dari 60 detik
+# sejak Okt 2024). Durasi saja bukan syarat penuh (YouTube juga mensyaratkan
+# rasio vertikal/persegi), tapi contentDetails API tidak expose aspect ratio,
+# jadi ini tetap proxy kasar — namun jauh lebih akurat dari cutoff 60 detik lama.
+SHORTS_MAX_SECONDS = 180
+
+_DURATION_RE = re.compile(
+    r"^P(?:(?P<days>\d+)D)?"
+    r"(?:T(?:(?P<hours>\d+)H)?(?:(?P<minutes>\d+)M)?(?:(?P<seconds>\d+(?:\.\d+)?)S)?)?$"
+)
+
+
+def parse_duration_seconds(dur: str) -> int:
+    """Konversi durasi ISO 8601 YouTube (mis. 'PT8M11S') ke total detik.
+
+    Mengembalikan 0 kalau format tak dikenali (bukan crash) — dur kosong/aneh
+    dianggap konservatif sebagai video panjang (bukan Short).
+    """
+    m = _DURATION_RE.match(dur or "")
+    if not m:
+        return 0
+    days = int(m.group("days") or 0)
+    hours = int(m.group("hours") or 0)
+    minutes = int(m.group("minutes") or 0)
+    seconds = float(m.group("seconds") or 0)
+    return int(days * 86400 + hours * 3600 + minutes * 60 + seconds)
+
+
+def is_short(dur: str) -> bool:
+    """True kalau durasi masuk ambang batas Shorts YouTube (<= 3 menit)."""
+    return 0 < parse_duration_seconds(dur) <= SHORTS_MAX_SECONDS
 
 
 def main():
@@ -53,7 +86,6 @@ def main():
             s = v["statistics"]
             snip = v["snippet"]
             dur = v["contentDetails"]["duration"]
-            is_short = "S" in dur and "M" not in dur and "H" not in dur  # kasar: durasi < 1 menit
             rows.append({
                 "id": v["id"],
                 "title": snip["title"],
@@ -63,7 +95,7 @@ def main():
                 "comments": int(s.get("commentCount", 0)),
                 "privacy": v["status"]["privacyStatus"],
                 "dur": dur,
-                "short": is_short,
+                "short": is_short(dur),
             })
 
     rows.sort(key=lambda x: x["published"], reverse=True)
