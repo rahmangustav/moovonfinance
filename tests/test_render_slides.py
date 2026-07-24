@@ -180,6 +180,26 @@ class RenderSlideSmokeTest(unittest.TestCase):
         )
         self._assert_valid_slide(img)
 
+    def test_render_snapshot_nilai_bukan_string_tidak_crash(self):
+        # Regresi: penulis draft kadang lupa kutip angka murni di JSON
+        # ## SNAPSHOT: (mis. ["ROE", 22.4, "up"] alih-alih ["ROE", "22,4%",
+        # "up"]) — tetap JSON valid, lolos cek_draft.py, tapi dulu meledak
+        # TypeError di PIL ImageDraw.text (butuh str, bukan float).
+        img = render_snapshot(
+            "BBCA", "BBCA — Kuartal I 2026",
+            metrics=[("ROE", 22.4, "up")],
+        )
+        self._assert_valid_slide(img)
+
+    def test_render_snapshot_label_none_tidak_crash(self):
+        # Regresi: label None (mis. json.load hasil "null" bukan string)
+        # dulu meledak AttributeError di lbl.upper().
+        img = render_snapshot(
+            "BBCA", "BBCA — Kuartal I 2026",
+            metrics=[(None, "22,4%", "up")],
+        )
+        self._assert_valid_slide(img)
+
     def test_render_closing(self):
         img = render_closing("BBCA")
         self._assert_valid_slide(img)

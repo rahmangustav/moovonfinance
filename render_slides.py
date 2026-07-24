@@ -308,7 +308,13 @@ def render_snapshot(ticker, judul, metrics):
         cy = top + r * (chh + 26 * S)
         d.rounded_rectangle([cx, cy, cx + cw, cy + chh], radius=16 * S,
                             fill=T.RGB["panel"], outline=T.RGB["line"], width=max(1, S))
-        d.text((cx + 34 * S, cy + 34 * S), lbl.upper(),
+        # `lbl`/`val` datang mentah dari JSON draft (## SNAPSHOT:) — penulis
+        # konten kadang lupa memberi tanda kutip pada angka murni (mis.
+        # ["ROE", 22.4, "up"] alih-alih ["ROE", "22,4%", "up"]), yang tetap
+        # JSON valid dan lolos cek_draft.py tapi meledak di PIL (ImageDraw.text
+        # butuh str, bukan float/None). str() paksa supaya tidak crash di
+        # tengah create_video (setelah TTS selesai — pola sama seperti `ck`).
+        d.text((cx + 34 * S, cy + 34 * S), str(lbl).upper(),
                font=T.font("mono_med", T.SIZE["label"] * S), fill=T.RGB["text_dim"], anchor="lt")
         # `ck` datang mentah dari JSON draft (## SNAPSHOT:) — kalau ada salah
         # ketik/nilai di luar kontrak "up"/"down"/"neutral"/null (mis. "positive",
@@ -317,7 +323,7 @@ def render_snapshot(ticker, judul, metrics):
         # selesai — lihat render_valuation nilai_wajar<=0 utk pola serupa).
         # Fallback aman: warna netral (T.RGB["text"]), bukan crash.
         col = T.RGB.get(ck, T.RGB["text"]) if isinstance(ck, str) and ck else T.RGB["text"]
-        d.text((cx + 34 * S, cy + chh - 34 * S), val,
+        d.text((cx + 34 * S, cy + chh - 34 * S), str(val),
                font=T.font("mono", 66 * S), fill=col, anchor="lb")
     return T.finalize(img)
 
