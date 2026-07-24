@@ -147,6 +147,27 @@ class RenderSlideSmokeTest(unittest.TestCase):
         )
         self._assert_valid_slide(img)
 
+    def test_render_snapshot_warna_key_tak_dikenal_tidak_crash(self):
+        # Regresi: `ck` mentah dari JSON draft (## SNAPSHOT:) — kalau ada
+        # salah ketik di luar kontrak "up"/"down"/"neutral"/null (mis.
+        # "positive"), render_snapshot dulu melempar KeyError mentah lewat
+        # T.RGB[ck], mematikan create_video SETELAH TTS selesai. Sekarang
+        # harus fallback ke warna netral, bukan crash.
+        img = render_snapshot(
+            "BBCA", "BBCA — Kuartal I 2026",
+            metrics=[("Laba bersih", "14,7 T", "positive")],
+        )
+        self._assert_valid_slide(img)
+
+    def test_render_snapshot_warna_key_tipe_salah_tidak_crash(self):
+        # JSON draft yang malformed bisa memuat elemen ke-3 bukan string
+        # (mis. list/number) — pastikan itu juga tidak crash.
+        img = render_snapshot(
+            "BBCA", "BBCA — Kuartal I 2026",
+            metrics=[("Laba bersih", "14,7 T", 123)],
+        )
+        self._assert_valid_slide(img)
+
     def test_render_closing(self):
         img = render_closing("BBCA")
         self._assert_valid_slide(img)
