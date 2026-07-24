@@ -55,7 +55,12 @@ def _num(v) -> str:
 
 
 def _parse_num(text) -> float | None:
-    """Ekstrak nilai numerik dari sel tabel (mendukung Rp/$/%/+/-/(...))."""
+    """Ekstrak nilai numerik dari sel tabel (mendukung Rp/$/%/+/-/(...)/T/M).
+
+    Sufiks "T" (triliun, x1e12) dan "M" (miliar, x1e9) mengikuti format resmi
+    channel dipakai di seluruh SNAPSHOT/draft naskah, mis. "14,7 T", "144,9 M"
+    (lihat CLAUDE.md, render_slides.py, assets/draft_script_*.md).
+    """
     t = str(text).strip()
     if not t:
         return None
@@ -64,6 +69,11 @@ def _parse_num(text) -> float | None:
         neg, t = True, t[1:-1]
     for sym in ("Rp", "rp", "$", "%", " "):
         t = t.replace(sym, "")
+    mult = 1.0
+    if t[-1:] in ("T", "t"):
+        mult, t = 1e12, t[:-1]
+    elif t[-1:] in ("M", "m"):
+        mult, t = 1e9, t[:-1]
     if t[:1] in ("+", "-"):
         neg = neg or t[0] == "-"
         t = t[1:]
@@ -78,7 +88,7 @@ def _parse_num(text) -> float | None:
         if len(parts) > 1 and all(len(p) == 3 for p in parts[1:]):
             t = t.replace(".", "")                     # 1.234.567 → ribuan
     try:
-        val = float(t)
+        val = float(t) * mult
     except ValueError:
         return None
     return -val if neg else val
