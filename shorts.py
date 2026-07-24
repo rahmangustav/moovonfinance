@@ -60,9 +60,18 @@ def _ts(s: str) -> float:
 
 
 def _fmt(sec: float) -> str:
-    h = int(sec // 3600); m = int((sec % 3600) // 60)
-    s = sec % 60
-    return f"{h:02d}:{m:02d}:{s:06.3f}".replace(".", ",")
+    """Format detik -> timestamp SRT 'HH:MM:SS,mmm'.
+
+    Pakai PEMOTONGAN (bukan pembulatan) ke milidetik, sama seperti
+    core/subtitle._ts. `f"{s:06.3f}"` pada versi lama membulatkan, jadi
+    detik mepet ke atas (mis. 59,9999) bisa naik jadi "60,000" -- timestamp
+    SRT tak valid (field detik semestinya 00-59) yang bikin ffmpeg gagal
+    atau salah menafsirkan subtitle saat di-burn ke video Short."""
+    ms_total = int(sec * 1000)          # potong ke milidetik (lantai)
+    h, rem = divmod(ms_total, 3_600_000)
+    m, rem = divmod(rem, 60_000)
+    s, ms = divmod(rem, 1_000)
+    return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
 
 
 def _pick_window(cues, start_override=None, cut_override=None):
