@@ -206,6 +206,14 @@ def render_closing(ticker, headline="Terima kasih sudah nonton."):
 
 # ─── SLIDE: VALUASI + GAUGE MARGIN OF SAFETY ─────────────────────────────────
 def render_valuation(ticker, harga, nilai_wajar, catatan=""):
+    try:
+        harga, nilai_wajar = float(harga), float(nilai_wajar)
+    except (TypeError, ValueError):
+        raise ValueError(
+            f"harga/nilai_wajar harus angka untuk {ticker or 'ticker kosong'}, "
+            f"dapat harga={harga!r} nilai_wajar={nilai_wajar!r} — "
+            "cek blok ## VALUATION: di draft."
+        )
     if nilai_wajar <= 0:
         raise ValueError(
             f"nilai_wajar harus > 0 untuk {ticker or 'ticker kosong'}, "

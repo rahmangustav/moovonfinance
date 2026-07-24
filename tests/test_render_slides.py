@@ -143,6 +143,18 @@ class RenderSlideSmokeTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             render_valuation("BBCA", harga=5800, nilai_wajar=0)
 
+    def test_render_valuation_harga_nilai_wajar_teks_angka_tetap_jalan(self):
+        # blok ## VALUATION: draft ditulis manual manusia — "5800"/"9150"
+        # berkutip (typo umum) sebelumnya bikin TypeError mentah ('<=' str vs
+        # int di guard nilai_wajar, lalu str - str di verdict()) SETELAH TTS
+        # selesai. Harus tetap render normal, sama seperti versi angka.
+        img = render_valuation("BBCA", harga="5800", nilai_wajar="9150", catatan="Diskon lebar.")
+        self._assert_valid_slide(img)
+
+    def test_render_valuation_harga_bukan_angka_raises_valueerror_jelas(self):
+        with self.assertRaises(ValueError):
+            render_valuation("BBCA", harga="abc", nilai_wajar=9150)
+
     def test_render_valuation_nilai_wajar_negatif_raises_valueerror(self):
         with self.assertRaises(ValueError):
             render_valuation("BBCA", harga=5800, nilai_wajar=-100)

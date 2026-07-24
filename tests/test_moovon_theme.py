@@ -70,6 +70,23 @@ class VerdictTest(unittest.TestCase):
         self.assertEqual(mos, 0.0)
         self.assertEqual(label, "TAHAN")
 
+    def test_harga_nilai_wajar_berbentuk_teks_angka_tetap_jalan(self):
+        # draft naskah ditulis manual manusia — "5800"/"9150" berkutip (typo
+        # umum) sebelumnya bikin TypeError str - str, harus tetap jalan sama
+        # seperti versi angka (int/float).
+        label, color, mos = verdict("5800", "9150")
+        self.assertEqual(label, "BELI")
+        self.assertEqual(color, RGB["up"])
+        self.assertAlmostEqual(mos, (9150 - 5800) / 9150)
+
+    def test_harga_atau_nilai_wajar_bukan_angka_raise_valueerror_jelas(self):
+        # bukan traceback TypeError mentah di tengah render — pesan jelas
+        # menyebut nilai mentah supaya penulis draft tahu apa yang salah.
+        with self.assertRaises(ValueError):
+            verdict("abc", 9150)
+        with self.assertRaises(ValueError):
+            verdict(5800, "xyz")
+
 
 # ─── _rgb() / RGB ───────────────────────────────────────────────────────────
 
