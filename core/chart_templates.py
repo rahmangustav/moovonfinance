@@ -110,6 +110,9 @@ def line_chart(x, y_dict, judul, sumber, nama_file):
     fig, ax = plt.subplots()
 
     gray_dashes = ["--", ":", "-.", (0, (3, 1, 1, 1))]
+    for name, vals in y_dict.items():
+        if not vals:
+            raise ValueError(f"line_chart: series {name!r} kosong (tidak ada data)")
     for i, (name, vals) in enumerate(y_dict.items()):
         if i == 0:
             color, lw, ls = COLORS["primary"], 3.0, "-"
@@ -238,6 +241,12 @@ def comparison_table(headers, rows, judul, sumber, nama_file):
     ax.set_ylim(0, 1)
 
     n_cols = len(headers)
+    for r, row in enumerate(rows):
+        if len(row) != n_cols:
+            raise ValueError(
+                f"comparison_table: baris ke-{r} punya {len(row)} kolom, "
+                f"header punya {n_cols} kolom — jumlah harus sama"
+            )
     n_rows = len(rows) + 1                              # + header
     x0, x1 = 0.035, 0.965
     weights = [1.7] + [1.0] * (n_cols - 1) if n_cols > 1 else [1.0]
@@ -366,7 +375,7 @@ def render_chart(spec: dict, out_dir=None) -> str | None:
     _OUTPUT_OVERRIDE = str(out_dir) if out_dir else None
     try:
         return fn(spec)
-    except (KeyError, ValueError, TypeError) as e:
+    except (KeyError, ValueError, TypeError, IndexError) as e:
         print(f"   ⚠️  Chart '{spec.get('type')}' gagal dirender: {e}")
         return None
     finally:
