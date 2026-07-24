@@ -36,11 +36,10 @@ FPS = 24
 MAX_CUT = 56.0               # Shorts wajib < 60 dtk
 DEFAULT_CLOSE = "Analisis lengkap di channel."
 
-# Akronim keuangan/makro 4 huruf yang BUKAN kode saham — dipakai buat
-# menyaring auto-deteksi ticker (lihat parse_short_script) biar tak salah
-# nangkep istilah umum channel ini (lihat CLAUDE.md, memory/kamus_istilah.md)
-# sebagai kode emiten sungguhan.
-_NON_TICKER_ACRONYMS = {"BUMN", "IHSG", "APBN", "RUPS"}
+# Sumber kebenaran: moovon_theme.NON_TICKER_ACRONYMS (dipakai juga oleh
+# core/visuals._guess_ticker) — biar tak salah nangkep istilah umum channel
+# ini (BUMN, IHSG, dst) sebagai kode emiten sungguhan.
+_NON_TICKER_ACRONYMS = T.NON_TICKER_ACRONYMS
 
 
 # ─── util SRT ─────────────────────────────────────────────────────────────────
@@ -360,7 +359,7 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
                eyebrow: str | None = None):
     """MODE PAKAI-ULANG: Short dari jendela HOOK audio video panjang (hook-first)."""
     from moviepy import AudioFileClip
-    from visuals import _kinetic_clip
+    from visuals import _kinetic_clip, _guess_ticker
 
     rd = Path(run_dir)
     audio_p = rd / "audio.mp3"
@@ -376,8 +375,7 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
         import json
         title = json.loads(meta.read_text(encoding="utf-8")).get("title", "")
     if not ticker:
-        m = re.search(r"\b([A-Z]{4})\b", title) or re.search(r"\b([A-Z]{4})\b", rd.name.upper())
-        ticker = m.group(1) if m else "IDX"
+        ticker = _guess_ticker(title, rd.name.upper())
 
     hook_lines = [h.strip() for h in hook.split("|")] if hook else _default_hook(title)
 

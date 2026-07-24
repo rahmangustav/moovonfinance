@@ -121,5 +121,11 @@ DISCLAIMER = (
     "ada di tangan kamu sendiri."
 )
 
+# Akronim keuangan/makro 4 huruf yang BUKAN kode saham — dipakai buat menyaring
+# auto-deteksi ticker (shorts.parse_short_script, shorts.make_short,
+# core/visuals._guess_ticker) biar tak salah nangkep istilah umum channel ini
+# (lihat memory/kamus_istilah.md) sebagai kode emiten sungguhan.
+NON_TICKER_ACRONYMS = {"BUMN", "IHSG", "APBN", "RUPS"}
+
 BRAND_NAME = "MOOVON"
 BRAND_SUB  = "FINANCE"

@@ -212,11 +212,12 @@ def _id_date(dt=None) -> str:
 
 
 def _guess_ticker(*texts: str) -> str:
-    """Tebak kode emiten (4 huruf kapital) dari judul/topik; fallback 'IDX'."""
-    for t in texts:
-        for m in re.findall(r"\b[A-Z]{4}\b", t or ""):
-            return m
-    return "IDX"
+    """Tebak kode emiten (4 huruf kapital) dari judul/topik; fallback 'IDX'.
+    Menyaring akronim non-ticker (IHSG, BUMN, dst — moovon_theme.NON_TICKER_ACRONYMS)
+    biar judul yang menyebutnya duluan tak salah dikira kode emiten."""
+    import moovon_theme as MT
+    candidates = [m for t in texts for m in re.findall(r"\b[A-Z]{4}\b", t or "")]
+    return next((c for c in candidates if c not in MT.NON_TICKER_ACRONYMS), "IDX")
 
 
 ITEM_MIN_DUR = 4.0  # target ideal keterbacaan per slide item, BUKAN batas keras
