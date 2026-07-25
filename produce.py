@@ -302,20 +302,40 @@ def _validate_metadata(meta: dict) -> str | None:
     """Cek metadata.json terhadap batas YouTube Data API sebelum upload
     (invalidTitle dkk). Return pesan error, atau None kalau lolos.
     Gagal cepat sebelum mengunggah puluhan MB, biar jelas apa yang harus
-    diperbaiki."""
-    title = (meta.get("title") or "").strip()
+    diperbaiki.
+
+    metadata.json diketik manual oleh pemilik channel (lihat docstring modul),
+    jadi title/description/tags rawan salah ketik jadi tipe bukan string (mis.
+    tag tahun "2026" tanpa tanda kutip). Tipe salah dicek LEBIH DULU dan
+    dilaporkan lewat pesan jelas — bukan dibiarkan meledak sebagai
+    TypeError/AttributeError mentah dari .strip()/.encode()/len() di bawahnya,
+    yang justru menggagalkan tujuan fungsi ini (gagal cepat SEBELUM upload,
+    bukan traceback membingungkan)."""
+    title = meta.get("title")
+    if title is not None and not isinstance(title, str):
+        return (f"field 'title' harus teks, dapat {type(title).__name__} ({title!r}) "
+                "— beri tanda kutip di metadata.json.")
+    title = (title or "").strip()
     if not title:
         return "field 'title' kosong. Isi judul dulu."
     if len(title) > 100:
         return (f"judul {len(title)} karakter — batas YouTube 100. Perpendek 'title' "
                 "(title_options berisi alternatif yang lebih pendek).")
 
-    description = meta.get("description", "") or ""
+    description = meta.get("description")
+    if description is not None and not isinstance(description, str):
+        return (f"field 'description' harus teks, dapat {type(description).__name__} "
+                f"({description!r}) — beri tanda kutip di metadata.json.")
+    description = description or ""
     desc_bytes = len(description.encode("utf-8"))
     if desc_bytes > 5000:
         return f"deskripsi {desc_bytes} byte (UTF-8) — batas YouTube 5000 byte. Perpendek 'description'."
 
     tags = meta.get("tags", []) or []
+    bukan_teks = [t for t in tags if not isinstance(t, str)]
+    if bukan_teks:
+        return (f"'tags' berisi nilai bukan teks: {bukan_teks!r} — tiap tag harus string "
+                "berkutip di metadata.json (mis. \"2026\", bukan 2026).")
     tags_len = _tags_combined_length(tags)
     if tags_len > 500:
         return (f"total panjang tags {tags_len} karakter — batas YouTube 500 "
