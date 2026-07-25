@@ -23,6 +23,9 @@ def main():
 
     # Ambil semua video dari playlist uploads channel sendiri
     ch = yt.channels().list(part="contentDetails", mine=True).execute()
+    if not ch.get("items"):
+        print("Tidak ada channel untuk akun ini. Cek apakah login pakai akun Google yang benar (yang punya channel Moovon Finance).")
+        return
     pl = ch["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
     vids, tok = [], None
     while True:
