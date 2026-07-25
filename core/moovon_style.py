@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import re as _re
+import sys as _sys
 from pathlib import Path
 
 import matplotlib as _mpl
@@ -17,22 +18,32 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import findfont, FontProperties
 from matplotlib.ticker import FuncFormatter
 
+# moovon_theme.py (di root proyek, satu level di atas core/) adalah SUMBER
+# KEBENARAN warna (CLAUDE.md: "jangan hard-code warna ... di tempat lain").
+# Tarik HEX dari sana alih-alih menyalin nilainya di sini, supaya kalau brand
+# citron/sinyal up-down diubah di moovon_theme.py, chart matplotlib ikut
+# berubah otomatis -- bukan diam-diam menyimpang dari slide PIL.
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in _sys.path:
+    _sys.path.insert(0, str(_ROOT))
+from moovon_theme import HEX as _THEME_HEX  # noqa: E402
+
 # ─── 1. Palet warna v2.0 "SINYAL" — tema GELAP, senada slide on-brand ─────────
 # Selaras dengan moovon_theme.py (latar hitam-hangat, aksen citron, sinyal
 # hijau/merah/amber). Chart tampil sebagai kartu data GELAP di dalam video.
 COLORS = {
-    "background":  "#0F1311",  # hitam-hangat (= bg slide)
-    "panel":       "#181E1A",  # kartu
-    "panel_2":     "#1F2621",  # header tabel / kartu tumpuk
-    "text":        "#ECEDE3",  # ivory hangat
-    "text_soft":   "#AAB2A5",  # sekunder
-    "primary":     "#78A6C8",  # biru-debu — data utama / netral
-    "positive":    "#34D399",  # hijau — profit / naik
-    "negative":    "#EF6D6A",  # merah — rugi / turun
-    "benchmark":   "#3C443D",  # bar pembanding redup
-    "accent":      "#C6F24E",  # CITRON — highlight / header
-    "gridline":    "#2C332E",  # hairline
-    "watermark":   "#6F776C",  # branding & sumber
+    "background":  _THEME_HEX["bg"],         # hitam-hangat (= bg slide)
+    "panel":       _THEME_HEX["panel"],      # kartu
+    "panel_2":     _THEME_HEX["panel_2"],    # header tabel / kartu tumpuk
+    "text":        _THEME_HEX["text"],       # ivory hangat
+    "text_soft":   _THEME_HEX["text_soft"],  # sekunder
+    "primary":     "#78A6C8",  # biru-debu — data utama / netral (chart-only, tak ada di moovon_theme)
+    "positive":    _THEME_HEX["up"],         # hijau — profit / naik
+    "negative":    _THEME_HEX["down"],       # merah — rugi / turun
+    "benchmark":   "#3C443D",  # bar pembanding redup (chart-only, tak ada di moovon_theme)
+    "accent":      _THEME_HEX["brand"],      # CITRON — highlight / header
+    "gridline":    _THEME_HEX["line"],       # hairline
+    "watermark":   _THEME_HEX["text_dim"],   # branding & sumber
 }
 
 # ─── Path proyek ──────────────────────────────────────────────────────────────
