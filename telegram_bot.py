@@ -23,6 +23,8 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
+from produce import WIB
+
 load_dotenv()
 
 ROOT        = Path(__file__).resolve().parent
@@ -110,6 +112,17 @@ def parse_topic_command(text: str) -> str | None:
     return None
 
 
+def _new_topic_entry(topic: str) -> dict:
+    """Bangun entri antrian topik dengan jam WIB, bukan jam lokal server.
+
+    Bot ini jalan sebagai proses panjang terpisah (lihat docstring modul),
+    biasanya di server yang bisa saja berzona UTC — `datetime.now()` naive
+    di sana akan mencatat waktu UTC tapi ditampilkan seolah WIB di /status,
+    meleset sampai 7 jam. Sama seperti `_next_upload_slot` di produce.py,
+    WIB harus eksplisit."""
+    return {"topic": topic, "requested_at": datetime.now(WIB).strftime("%Y-%m-%d %H:%M")}
+
+
 @owner_only
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (update.message.text or "").strip()
@@ -142,7 +155,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
         st = _load_state()
         queue = st.setdefault("requested_topics_telegram", [])
-        queue.append({"topic": topic, "requested_at": datetime.now().strftime("%Y-%m-%d %H:%M")})
+        queue.append(_new_topic_entry(topic))
         _save_state(st)
         await update.message.reply_text(
             f"📝 Topik \"{topic}\" sudah dicatat.\n"
