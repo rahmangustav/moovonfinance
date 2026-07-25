@@ -342,6 +342,10 @@ def upload(run_dir_arg: str, privacy: str = "public", at: str | None = None):
     video_path = run_dir / "video.mp4"
     thumb_path = run_dir / "thumbnail.jpg"
 
+    if not video_path.exists():
+        print(f"❌ {video_path} belum ada. Jalankan dulu 'python produce.py render'.")
+        return
+
     err = _validate_metadata(meta)
     if err:
         print(f"❌ {meta_path}: {err}")
