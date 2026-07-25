@@ -16,6 +16,34 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "core"))
 
 from core import moovon_style as ms
+import moovon_theme as theme
+
+
+class ColorsMatchThemeTest(unittest.TestCase):
+    """COLORS harus ditarik dari moovon_theme.HEX (sumber kebenaran desain),
+    bukan hex literal terpisah — supaya chart matplotlib dan slide PIL tidak
+    diam-diam berbeda warna kalau brand/sinyal diubah di moovon_theme.py."""
+
+    # key COLORS (moovon_style) -> key HEX (moovon_theme) yang jadi acuannya
+    SHARED_KEYS = {
+        "background": "bg",
+        "panel": "panel",
+        "panel_2": "panel_2",
+        "text": "text",
+        "text_soft": "text_soft",
+        "positive": "up",
+        "negative": "down",
+        "accent": "brand",
+        "gridline": "line",
+        "watermark": "text_dim",
+    }
+
+    def test_warna_bersama_sama_persis_dengan_moovon_theme(self):
+        for style_key, theme_key in self.SHARED_KEYS.items():
+            self.assertEqual(
+                ms.COLORS[style_key], theme.HEX[theme_key],
+                f"COLORS['{style_key}'] menyimpang dari moovon_theme.HEX['{theme_key}']"
+            )
 
 
 class RupiahTest(unittest.TestCase):
