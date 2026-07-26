@@ -314,6 +314,11 @@ def timeline_chart(events, dates, judul, sumber, nama_file):
     """Timeline peristiwa keuangan (krisis, regulasi, dsb). Label berselang
     di atas & bawah garis waktu agar tidak bertabrakan.
     """
+    if len(events) != len(dates):
+        raise ValueError(
+            f"timeline_chart: {len(events)} event vs {len(dates)} tanggal — "
+            "jumlah harus sama (cek field 'events'/'dates' di draft)"
+        )
     apply_style()
     fig = plt.figure()
     ax = fig.add_axes([0, 0, 1, 1])
