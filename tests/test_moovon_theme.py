@@ -27,6 +27,7 @@ from moovon_theme import (
     new_canvas,
     finalize,
     font,
+    ffmpeg_hex,
 )
 
 
@@ -90,6 +91,21 @@ def test_rgb_dict_mencakup_semua_key_hex():
     assert set(RGB.keys()) == set(HEX.keys())
     for name, hexval in HEX.items():
         assert RGB[name] == _rgb(hexval)
+
+
+# ─── ffmpeg_hex() ───────────────────────────────────────────────────────────
+# Dipakai core/visuals.py & shorts.py untuk warna progress bar citron di
+# filter ffmpeg (color=c=...) -- harus selalu ikut HEX['brand'], bukan
+# literal disalin manual di skrip render (lihat aturan desain di CLAUDE.md).
+
+def test_ffmpeg_hex_brand_cocok_dengan_hex():
+    assert ffmpeg_hex("brand") == "0x" + HEX["brand"].lstrip("#")
+    assert ffmpeg_hex("brand") == "0xC6F24E"
+
+
+def test_ffmpeg_hex_key_tak_dikenal_raise_keyerror():
+    with pytest.raises(KeyError):
+        ffmpeg_hex("bukan_warna")
 
 
 def test_rgb_signal_up_down_neutral_berbeda():

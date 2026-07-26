@@ -256,7 +256,7 @@ def _burn(video: Path, srt: Path, out: Path, duration: float | None = None):
         # Teknik sama dgn core/visuals: overlay dengan x per-frame (t = waktu).
         filter_complex = (
             f"[0:v]{subs}[v];"
-            f"color=c=0xC6F24E:s={VW}x8:d={duration:.3f}[bar];"
+            f"color=c={T.ffmpeg_hex('brand')}:s={VW}x8:d={duration:.3f}[bar];"
             f"[v][bar]overlay=x='-w+w*min(t/{duration:.3f}\\,1)':y=0:shortest=1[outv]"
         )
         cmd = [ffmpeg, "-y", "-i", str(video),

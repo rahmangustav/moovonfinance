@@ -3,6 +3,8 @@ from datetime import datetime
 from pathlib import Path
 from moviepy import AudioFileClip, VideoClip, concatenate_videoclips, vfx
 
+from moovon_theme import ffmpeg_hex
+
 # Video FULL ON-BRAND v2.0 "SINYAL": semua slide dirender oleh render_slides.py
 # (cover + section + valuasi/gauge + snapshot + penutup) + chart tema gelap.
 # TIDAK ADA lagi foto/ddgs/Ken Burns — jalur lama (draw_*_slide, image_fetcher,
@@ -183,10 +185,9 @@ def _burn_subtitles(video_path: str, srt_path: str, output_path: str,
         # Progress bar: strip citron full-width digeser masuk dari kiri lewat
         # overlay (ekspresi x dengan variabel waktu 't' dievaluasi per frame —
         # drawbox TIDAK bisa: di sana 't' berarti thickness, bukan timestamp).
-        # Warna = brand citron #C6F24E (moovon_theme RGB['brand']).
         filter_complex = (
             f"[0:v]{subs}[v];"
-            f"color=c=0xC6F24E:s={WIDTH}x6:d={duration:.3f}[bar];"
+            f"color=c={ffmpeg_hex('brand')}:s={WIDTH}x6:d={duration:.3f}[bar];"
             f"[v][bar]overlay=x='-w+w*min(t/{duration:.3f}\\,1)':y=H-6:shortest=1[out]"
         )
         cmd = [ffmpeg, "-y", "-i", video_path,
