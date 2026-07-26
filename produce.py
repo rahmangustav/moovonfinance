@@ -68,12 +68,29 @@ def _next_upload_slot(hour=DEFAULT_SLOT_HOUR, minute=DEFAULT_SLOT_MINUTE,
 
 
 def _parse_slot(value: str) -> datetime:
-    """'next' -> slot terdekat; atau 'YYYY-MM-DD HH:MM' (dianggap WIB)."""
+    """'next' -> slot terdekat; atau 'YYYY-MM-DD HH:MM' (dianggap WIB).
+    Validasi format & jarak minimal ke sekarang di sini, BUKAN belakangan
+    di YouTube API -- gagal cepat sebelum upload puluhan MB, konsisten
+    dengan _validate_metadata()."""
     v = value.strip()
     if v.lower() == "next":
         return _next_upload_slot()
-    dt = datetime.strptime(v, "%Y-%m-%d %H:%M")
-    return dt.replace(tzinfo=WIB)
+    try:
+        dt = datetime.strptime(v, "%Y-%m-%d %H:%M")
+    except ValueError:
+        raise ValueError(
+            f"format waktu '{value}' tidak dikenali. Pakai 'YYYY-MM-DD HH:MM' "
+            "(mis. '2026-07-07 17:30')."
+        )
+    slot = dt.replace(tzinfo=WIB)
+    now = datetime.now(WIB)
+    if slot <= now + timedelta(minutes=15):
+        raise ValueError(
+            f"waktu {slot:%Y-%m-%d %H:%M} WIB sudah lewat atau kurang dari 15 menit "
+            "dari sekarang -- YouTube butuh jeda buat memproses sebelum publishAt. "
+            "Pilih waktu lain, atau pakai '--at now' buat publish seketika."
+        )
+    return slot
 
 
 def _to_publish_at(dt_wib: datetime) -> str:
@@ -351,7 +368,11 @@ def upload(run_dir_arg: str, privacy: str = "public", at: str | None = None):
     # 'now' = escape-hatch untuk publish seketika (jarang dipakai).
     slot_wib = publish_at = None
     if at and at.strip().lower() != "now":
-        slot_wib = _parse_slot(at)
+        try:
+            slot_wib = _parse_slot(at)
+        except ValueError as e:
+            print(f"❌ --at: {e}")
+            return
         publish_at = _to_publish_at(slot_wib)
 
     status = {"privacyStatus": "private" if publish_at else privacy}
