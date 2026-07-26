@@ -133,6 +133,8 @@ def _match_charts_to_sections(sections: list, charts: list) -> list:
         return len(sections) - 1
 
     for chart in charts or []:
+        if not isinstance(chart, dict):
+            continue
         target = str(chart.get("section", "")).upper().strip()
         placed = False
         if target:

@@ -164,6 +164,15 @@ class MatchChartsToSectionsTest(unittest.TestCase):
         result = _match_charts_to_sections(self.sections, None)
         self.assertEqual(result, [[], [], []])
 
+    def test_elemen_bukan_dict_dilewati_bukan_crash(self):
+        # Draft CHARTS ditulis manual sebagai JSON array; elemen non-dict bisa
+        # lolos json.loads (sintaks tetap valid) walau isinya salah. Dulu
+        # chart.get(...) meledak AttributeError begitu ada elemen non-dict —
+        # terutama celah kalau cek_draft.py (gerbang sebelum render) terlewat.
+        charts = ["oops_bukan_objek", {"type": "bar"}]
+        result = _match_charts_to_sections(self.sections, charts)
+        self.assertEqual(result[1], [{"type": "bar"}])
+
 
 class GuessTickerTest(unittest.TestCase):
     def test_temukan_ticker_4_huruf_kapital(self):
