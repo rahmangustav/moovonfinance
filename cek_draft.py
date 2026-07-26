@@ -108,6 +108,15 @@ def main() -> None:
     print("\nChart")
     charts = d.get("charts") or []
     print(f"  ({len(charts)} chart)")
+    # Blok CHARTS ditulis manual sebagai JSON array — sintaksnya bisa valid
+    # (lolos json.loads) walau salah satu elemennya bukan objek {...} (mis.
+    # penulis draft khilaf menaruh string atau lupa kurung kurawal). Saring
+    # dulu sebelum loop mana pun memanggil .get(), supaya AttributeError
+    # mentah tidak meledak di sini atau nanti di _match_charts_to_sections.
+    bukan_dict = [i for i, c in enumerate(charts, 1) if not isinstance(c, dict)]
+    cek("semua entri chart berupa objek JSON", not bukan_dict,
+        f"entri ke-{bukan_dict} bukan objek {{...}} — cek koma/kurung di blok CHARTS")
+    charts = [c for c in charts if isinstance(c, dict)]
     for i, c in enumerate(charts, 1):
         tipe = c.get("type", "?")
         cek(f"chart {i} ({tipe}) punya judul", bool(str(c.get("judul", "")).strip()),
