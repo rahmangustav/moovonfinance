@@ -5,8 +5,7 @@ Bot Telegram untuk kontrol pipeline Moovon Finance dari luar sesi Claude Code.
 Command yang didukung:
   /status                  -> cek fase, topik, blocked, antrian
   /help                    -> daftar command
-  "Data aman, lanjut render" -> jalankan step1+step2 dari produce_script yang
-                                 tercatat di state.json (approval gate SOP)
+  "Data aman, lanjut render" -> jalankan `produce.py render` (approval gate SOP)
   "mulai topik: <nama>"    -> catat topik baru ke antrian (riset tetap manual
                                  lewat Claude Code, tidak bisa otomatis)
 
@@ -76,7 +75,7 @@ async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Perintah yang tersedia:\n\n"
         "/status — cek status pipeline\n\n"
         "\"Data aman, lanjut render\" — approve & mulai render video yang lagi "
-        "nunggu (jalanin produce_script di state.json step1 lalu step2)\n\n"
+        "nunggu (jalanin `produce.py render`)\n\n"
         "\"mulai topik: <nama>\" — catat topik baru ke antrian. Riset & draft "
         "naskah tetap harus lewat sesi Claude Code (butuh riset web, tidak "
         "bisa otomatis dari bot)."
