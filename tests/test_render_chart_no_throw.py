@@ -74,6 +74,24 @@ class RenderChartNoThrowTest(unittest.TestCase):
         result = render_chart(spec)  # tidak boleh raise apa pun
         self.assertIsNone(result)
 
+    def test_render_chart_judul_bukan_string_tidak_crash(self):
+        # spec.setdefault("nama_file", _slugify(spec.get("judul", "chart")))
+        # dieksekusi SEBELUM try/except render_chart() bahkan mulai. Kalau
+        # draft riset kebetulan menulis field judul sebagai angka mentah
+        # (bukan string berkutip) di JSON, _slugify() lempar AttributeError
+        # ('int' object has no attribute 'lower') mentah -- lolos sama sekali
+        # dari jaring pengaman "Aman dipanggil pipeline" yang dijanjikan
+        # docstring render_chart(). y_dict sengaja dibuat kosong supaya
+        # render tetap gagal (ValueError tertangkap) TANPA menulis file PNG
+        # sungguhan, sama seperti test series-kosong di atas.
+        spec = {
+            "type": "line", "judul": 2024,
+            "x": ["2024"], "y_dict": {"BBCA": []},
+            # sengaja TIDAK diisi nama_file -> harus lewat jalur setdefault()
+        }
+        result = render_chart(spec)  # tidak boleh raise AttributeError
+        self.assertIsNone(result)
+
     def test_render_chart_menangkap_index_error_generik(self):
         # Simulasi kelas bug ini secara umum: fungsi dispatch mana pun yang
         # melempar IndexError harus tetap ditangkap render_chart(), bukan

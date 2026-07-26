@@ -371,7 +371,7 @@ def render_chart(spec: dict, out_dir=None) -> str | None:
     if fn is None:
         print(f"   ⚠️  Tipe chart tak dikenal: {spec.get('type')!r}")
         return None
-    spec.setdefault("nama_file", _slugify(spec.get("judul", "chart")))
+    spec.setdefault("nama_file", _slugify(str(spec.get("judul", "chart"))))
     _OUTPUT_OVERRIDE = str(out_dir) if out_dir else None
     try:
         return fn(spec)
