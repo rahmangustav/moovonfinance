@@ -72,7 +72,9 @@ class ParseSlotTest(unittest.TestCase):
         self.assertEqual(slot.weekday(), 1)
 
     def test_tanggal_spesifik_dianggap_wib(self):
-        slot = _parse_slot("2026-07-07 17:30")
+        now = datetime(2026, 7, 6, 10, 0, tzinfo=WIB)  # sebelum 7 Juli -> valid & masih di masa depan
+        with _fake_now(now):
+            slot = _parse_slot("2026-07-07 17:30")
         self.assertEqual(slot, datetime(2026, 7, 7, 17, 30, tzinfo=WIB))
 
     def test_whitespace_dan_case_next_dimaafkan(self):
@@ -80,6 +82,29 @@ class ParseSlotTest(unittest.TestCase):
         with _fake_now(now):
             slot = _parse_slot("  NEXT  ")
         self.assertEqual(slot.weekday(), 1)
+
+    def test_format_salah_pesan_indonesia_bukan_traceback_mentah(self):
+        with self.assertRaises(ValueError) as ctx:
+            _parse_slot("2026-07-07 17.30")
+        self.assertIn("format waktu", str(ctx.exception))
+
+    def test_tanggal_sudah_lewat_ditolak(self):
+        now = datetime(2026, 7, 26, 10, 0, tzinfo=WIB)
+        with _fake_now(now), self.assertRaises(ValueError) as ctx:
+            _parse_slot("2020-01-01 09:00")
+        self.assertIn("sudah lewat", str(ctx.exception))
+
+    def test_kurang_dari_15_menit_dari_sekarang_ditolak(self):
+        now = datetime(2026, 7, 7, 17, 20, tzinfo=WIB)
+        with _fake_now(now), self.assertRaises(ValueError) as ctx:
+            _parse_slot("2026-07-07 17:30")  # cuma 10 menit lagi
+        self.assertIn("15 menit", str(ctx.exception))
+
+    def test_lebih_dari_15_menit_dari_sekarang_diterima(self):
+        now = datetime(2026, 7, 7, 17, 0, tzinfo=WIB)
+        with _fake_now(now):
+            slot = _parse_slot("2026-07-07 17:30")  # 30 menit lagi
+        self.assertEqual(slot, datetime(2026, 7, 7, 17, 30, tzinfo=WIB))
 
 
 class ToPublishAtTest(unittest.TestCase):
