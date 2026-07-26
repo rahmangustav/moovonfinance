@@ -44,6 +44,11 @@ def _rgb(h: str) -> tuple[int, int, int]:
 
 RGB = {name: _rgb(val) for name, val in HEX.items()}
 
+
+def ffmpeg_hex(name: str) -> str:
+    """Format warna HEX untuk filter ffmpeg (mis. 'brand' -> '0xC6F24E')."""
+    return "0x" + HEX[name].lstrip("#")
+
 # ─── Font ─────────────────────────────────────────────────────────────────────
 # Archivo = judul & bodi (varian Expanded utk angka/judul hero).
 # JetBrains Mono = SEMUA angka & ticker.
