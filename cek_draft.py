@@ -154,7 +154,20 @@ def main() -> None:
     if val:
         harga, wajar = val.get("harga"), val.get("nilai_wajar")
         cek("valuation punya harga & nilai_wajar", bool(harga and wajar), "salah satu kosong")
-        if harga and wajar:
+        # Kunci ada tapi ditulis sebagai TEKS (mis. "harga": "9800" berkutip di
+        # draft JSON) lolos float()-konversi lokal di bawah tanpa masalah, jadi
+        # tanpa cek terpisah ini gerbang akan bilang "aman" — padahal jalur
+        # render sungguhan (core/visuals.create_video -> moovon_theme.verdict)
+        # memakai nilainya APA ADANYA tanpa konversi, dan meledak TypeError
+        # ("unsupported operand type(s) for -: 'str' and 'str'") di tengah
+        # render, setelah TTS ~10 menit selesai.
+        bukan_angka = [k for k in ("harga", "nilai_wajar")
+                       if val.get(k) is not None and not isinstance(val.get(k), (int, float))]
+        cek("valuation harga & nilai_wajar berupa angka JSON polos", not bukan_angka,
+            f"{', '.join(f'{k}={val.get(k)!r}' for k in bukan_angka)} berbentuk teks — "
+            "tulis angka polos tanpa tanda kutip (mis. 9800), bukan string; kalau tidak, "
+            "render akan crash TypeError di verdict()")
+        if harga and wajar and not bukan_angka:
             label, _, mos = verdict(float(harga), float(wajar))
             print(f"      margin of safety {mos * 100:+.1f}% → verdict: {label} "
                   f"(sama seperti yang akan dirender di gauge)")

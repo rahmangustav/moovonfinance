@@ -273,6 +273,15 @@ def create_video(
     from chart_templates import render_chart
 
     charts          = charts or []
+    if valuation is not None:
+        for _k in ("harga", "nilai_wajar"):
+            _v = valuation.get(_k)
+            if _v is not None and (isinstance(_v, bool) or not isinstance(_v, (int, float))):
+                raise ValueError(
+                    f"blok ## VALUATION: '{_k}' harus angka JSON polos (int/float), "
+                    f"dapat {_v!r} ({type(_v).__name__}) — tulis tanpa tanda kutip di "
+                    f"draft, mis. \"{_k}\": 9800, bukan \"{_k}\": \"9800\"."
+                )
     sections        = parse_sections(script)
     out_dir         = Path(output_path).parent
     audio           = AudioFileClip(audio_path)
