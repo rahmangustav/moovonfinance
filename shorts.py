@@ -412,6 +412,31 @@ def make_short(run_dir: str, hook: str | None = None, cut: float | None = None,
     return out
 
 
+def _flag_value(args: list, flag: str) -> str | None:
+    """Ambil nilai setelah flag semacam '--foo bar' dari list argumen CLI.
+    None kalau flag tak ada. Keluar dengan pesan jelas (bukan IndexError
+    mentah) kalau flag ditulis tapi lupa diisi nilainya (mis. jadi argumen
+    terakhir)."""
+    if flag not in args:
+        return None
+    i = args.index(flag) + 1
+    if i >= len(args):
+        sys.exit(f"❌ Argumen {flag} butuh nilai setelahnya.")
+    return args[i]
+
+
+def _flag_float(args: list, flag: str) -> float | None:
+    """Sama seperti _flag_value tapi langsung dikonversi ke float, dengan
+    pesan jelas (bukan ValueError mentah) kalau nilainya bukan angka."""
+    v = _flag_value(args, flag)
+    if v is None:
+        return None
+    try:
+        return float(v)
+    except ValueError:
+        sys.exit(f"❌ Argumen {flag} harus berupa angka, dapat '{v}'.")
+
+
 if __name__ == "__main__":
     args = sys.argv[1:]
     if not args:
@@ -425,16 +450,10 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Mode PAKAI-ULANG
-    run = args[0]
-    hook = cut = start = tick = eyeb = None
-    if "--hook" in args:
-        hook = args[args.index("--hook") + 1]
-    if "--cut" in args:
-        cut = float(args[args.index("--cut") + 1])
-    if "--start" in args:
-        start = float(args[args.index("--start") + 1])
-    if "--ticker" in args:
-        tick = args[args.index("--ticker") + 1]
-    if "--eyebrow" in args:
-        eyeb = args[args.index("--eyebrow") + 1]
+    run   = args[0]
+    hook  = _flag_value(args, "--hook")
+    cut   = _flag_float(args, "--cut")
+    start = _flag_float(args, "--start")
+    tick  = _flag_value(args, "--ticker")
+    eyeb  = _flag_value(args, "--eyebrow")
     make_short(run, hook=hook, cut=cut, start=start, ticker=tick, eyebrow=eyeb)
