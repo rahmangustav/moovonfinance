@@ -222,6 +222,33 @@ def _audio_with_retry(script: str, audio_path: str, tries: int = 60, wait: int =
     raise RuntimeError("TTS gagal setelah banyak percobaan (jaringan mati terus)")
 
 
+# ─── Argumen CLI ──────────────────────────────────────────────────────────────
+
+def _flag_value(args: list, flag: str) -> str | None:
+    """Ambil nilai setelah flag semacam '--foo bar' dari list argumen CLI.
+    None kalau flag tak ada. Keluar dengan pesan jelas (bukan IndexError
+    mentah) kalau flag ditulis tapi lupa diisi nilainya (mis. jadi argumen
+    terakhir)."""
+    if flag not in args:
+        return None
+    i = args.index(flag) + 1
+    if i >= len(args):
+        sys.exit(f"❌ Argumen {flag} butuh nilai setelahnya.")
+    return args[i]
+
+
+def _flag_float(args: list, flag: str) -> float | None:
+    """Sama seperti _flag_value tapi langsung dikonversi ke float, dengan
+    pesan jelas (bukan ValueError mentah) kalau nilainya bukan angka."""
+    v = _flag_value(args, flag)
+    if v is None:
+        return None
+    try:
+        return float(v)
+    except ValueError:
+        sys.exit(f"❌ Argumen {flag} harus berupa angka, dapat '{v}'.")
+
+
 # ─── Commands ─────────────────────────────────────────────────────────────────
 
 def render():
@@ -431,12 +458,8 @@ if __name__ == "__main__":
         if len(sys.argv) < 3:
             print(USAGE)
             sys.exit(1)
-        priv = "public"
-        if "--privacy" in sys.argv:
-            priv = sys.argv[sys.argv.index("--privacy") + 1]
-        at = None
-        if "--at" in sys.argv:
-            at = sys.argv[sys.argv.index("--at") + 1]
+        priv = _flag_value(sys.argv, "--privacy") or "public"
+        at = _flag_value(sys.argv, "--at")
         # PENGAMAN JAM: upload PUBLIK tanpa --at gampang keceplosan publish jam
         # jelek (mis. tengah malam -> 0 views). Default-kan ke slot prime
         # berikutnya (17:30 WIB Sel/Rab/Kam). Pakai `--at now` kalau memang
@@ -464,12 +487,11 @@ if __name__ == "__main__":
             shorts.make_short_from_script(sargs[1])
         else:
             run = sargs[0]
-            hook = cut = start = tick = eyeb = None
-            if "--hook" in sargs:   hook  = sargs[sargs.index("--hook") + 1]
-            if "--cut" in sargs:    cut   = float(sargs[sargs.index("--cut") + 1])
-            if "--start" in sargs:  start = float(sargs[sargs.index("--start") + 1])
-            if "--ticker" in sargs: tick  = sargs[sargs.index("--ticker") + 1]
-            if "--eyebrow" in sargs: eyeb = sargs[sargs.index("--eyebrow") + 1]
+            hook  = _flag_value(sargs, "--hook")
+            cut   = _flag_float(sargs, "--cut")
+            start = _flag_float(sargs, "--start")
+            tick  = _flag_value(sargs, "--ticker")
+            eyeb  = _flag_value(sargs, "--eyebrow")
             shorts.make_short(run, hook=hook, cut=cut, start=start, ticker=tick,
                               eyebrow=eyeb)
     else:
