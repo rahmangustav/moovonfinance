@@ -180,6 +180,28 @@ class RenderSlideSmokeTest(unittest.TestCase):
         )
         self._assert_valid_slide(img)
 
+    def test_render_snapshot_dua_elemen_tanpa_warna_tidak_crash(self):
+        # Regresi: cek_draft.py "format metrics benar" cuma mensyaratkan
+        # len(x) >= 2 (warna_key memang opsional per docstring render_snapshot),
+        # jadi baris SNAPSHOT 2 elemen (tanpa warna) lolos gerbang pra-render.
+        # Unpack kaku 3-tuple lama meledak `ValueError: not enough values to
+        # unpack` untuk kasus persis ini — mematikan create_video di tengah
+        # jalan (render_snapshot dipanggil tanpa try/except di core/visuals.py).
+        img = render_snapshot(
+            "BBCA", "BBCA — Kuartal I 2026",
+            metrics=[("Laba bersih", "14,7 T"), ("PBV", "2,5x")],
+        )
+        self._assert_valid_slide(img)
+
+    def test_render_snapshot_lebih_dari_tiga_elemen_tidak_crash(self):
+        # Simetris dengan kasus di atas: baris kelebihan elemen tak boleh
+        # meledak `ValueError: too many values to unpack` juga.
+        img = render_snapshot(
+            "BBCA", "BBCA — Kuartal I 2026",
+            metrics=[("Laba bersih", "14,7 T", "up", "abaikan")],
+        )
+        self._assert_valid_slide(img)
+
     def test_render_closing(self):
         img = render_closing("BBCA")
         self._assert_valid_slide(img)

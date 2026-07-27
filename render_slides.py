@@ -289,7 +289,8 @@ def render_valuation(ticker, harga, nilai_wajar, catatan=""):
 
 # ─── SLIDE: SNAPSHOT (grid metrik) ────────────────────────────────────────────
 def render_snapshot(ticker, judul, metrics):
-    """metrics = list of (label, nilai, warna_key|None)."""
+    """metrics = list of (label, nilai, warna_key|None). Elemen ke-3
+    (warna_key) opsional — baris 2 elemen (tanpa warna) juga diterima."""
     img, d, S = T.new_canvas()
     _chrome(d, S, ticker, status_right="SNAPSHOT")
     x = T.MARGIN_X * S
@@ -302,7 +303,16 @@ def render_snapshot(ticker, judul, metrics):
     cw = (total_w - gutter) // cols
     chh = 150 * S
     top = 470 * S
-    for i, (lbl, val, ck) in enumerate(metrics):
+    for i, m in enumerate(metrics):
+        # cek_draft.py cuma mensyaratkan minimal 2 elemen ("format metrics
+        # benar" -> len(x) >= 2, warna_key memang opsional per kontrak di
+        # atas) — jadi baris 2 elemen (tanpa warna) LOLOS gerbang pra-render.
+        # Unpack kaku 3-tuple lama meledak ValueError persis untuk kasus itu,
+        # mematikan create_video di tengah jalan (dipanggil tanpa try/except
+        # di core/visuals.py, beda dari render_chart yang sudah dibungkus).
+        # Jangan tuntut 3 elemen; ambil ck cuma kalau memang ada.
+        lbl, val = m[0], m[1]
+        ck = m[2] if len(m) > 2 else None
         r, c = divmod(i, cols)
         cx = x + c * (cw + gutter)
         cy = top + r * (chh + 26 * S)
