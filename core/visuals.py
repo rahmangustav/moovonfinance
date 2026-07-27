@@ -273,6 +273,12 @@ def create_video(
     from chart_templates import render_chart
 
     charts          = charts or []
+    if valuation is not None and ("harga" not in valuation or "nilai_wajar" not in valuation):
+        raise ValueError(
+            f"blok ## VALUATION: kurang field 'harga'/'nilai_wajar': {valuation!r}"
+        )
+    if snapshot is not None and "metrics" not in snapshot:
+        raise ValueError(f"blok ## SNAPSHOT: kurang field 'metrics': {snapshot!r}")
     sections        = parse_sections(script)
     out_dir         = Path(output_path).parent
     audio           = AudioFileClip(audio_path)
