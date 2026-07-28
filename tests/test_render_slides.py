@@ -115,6 +115,17 @@ class RenderSlideSmokeTest(unittest.TestCase):
         img = render_section(1, 5, "Fundamental Solid", "Laba tumbuh dua digit.", "BMRI")
         self._assert_valid_slide(img)
 
+    def test_render_section_judul_sangat_panjang_tetap_muat(self):
+        # Sebelumnya judul section tidak punya batas baris atau auto-fit
+        # (beda dari render_cover yang sudah auto-fit) -- judul
+        # panjang bikin PIL terus menggambar baris baru sampai jauh keluar
+        # kanvas 1080px, menabrak lead text dan status bar. Bukan crash
+        # (PIL diam-diam clip di luar kanvas), jadi cuma ketahuan lewat
+        # visualisasi langsung, bukan traceback.
+        judul = " ".join(["Kata"] * 40)
+        img = render_section(1, 5, judul, "Lead pendukung singkat.", "BBRI")
+        self._assert_valid_slide(img)
+
     def test_render_section_mode_statement_judul_kosong(self):
         img = render_section(2, 5, "", "Kutipan besar tanpa judul terpisah.", "BMRI")
         self._assert_valid_slide(img)
