@@ -99,6 +99,18 @@ def _eyebrow(d: ImageDraw.ImageDraw, S: int, x: int, y: int, text: str):
         tx += d.textlength(ch, font=f) + 5 * S
 
 
+def _fit_one_line(d: ImageDraw.ImageDraw, text: str, role: str, sizes_px, max_w: int):
+    """Cari ukuran font terbesar dari `sizes_px` yang bikin `text` muat dalam
+    satu baris selebar `max_w`. Fallback ke ukuran terkecil kalau tak ada yang
+    muat (silent-overflow tetap lebih baik daripada crash)."""
+    f = T.font(role, sizes_px[-1])
+    for px in sizes_px:
+        f = T.font(role, px)
+        if d.textlength(text, font=f) <= max_w:
+            break
+    return f
+
+
 def _chrome(d, S, ticker, status_left="MOOVON FINANCE // ANALISIS SAHAM", status_right=""):
     _logo(d, S, T.MARGIN_X * S, (T.MARGIN_Y - 6) * S)
     if ticker:
@@ -294,8 +306,16 @@ def render_snapshot(ticker, judul, metrics):
     _chrome(d, S, ticker, status_right="SNAPSHOT")
     x = T.MARGIN_X * S
     _eyebrow(d, S, x, 300 * S, "Snapshot Fundamental")
-    d.text((x, 344 * S), judul, font=T.font("title", T.SIZE["title"] * S),
-           fill=T.RGB["text"], anchor="lt")
+
+    # `judul` (mis. "BBCA — Kuartal I 2026") digambar SATU baris tanpa _wrap()
+    # (grid metrik di bawahnya sudah fixed di y=470*S, tak ada ruang buat 2
+    # baris). Judul panjang sebelumnya diam-diam tembus tepi kanan kanvas
+    # (PIL tak clip/error, cuma kepotong visual) — auto-fit ukuran font turun
+    # dulu sebelum digambar, pola sama dengan render_cover()/render_section().
+    content_w = (T.WIDTH - 2 * T.MARGIN_X) * S
+    sizes_px = [px * S for px in (T.SIZE["title"], 52, 46, 40, 34)]
+    ft_judul = _fit_one_line(d, judul, "title", sizes_px, content_w)
+    d.text((x, 344 * S), judul, font=ft_judul, fill=T.RGB["text"], anchor="lt")
 
     cols, gutter = 2, 32 * S
     total_w = (T.WIDTH - 2 * T.MARGIN_X) * S
