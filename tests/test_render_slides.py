@@ -180,6 +180,32 @@ class RenderSlideSmokeTest(unittest.TestCase):
         )
         self._assert_valid_slide(img)
 
+    def test_render_snapshot_judul_panjang_tidak_tembus_tepi_kanvas(self):
+        # Beda dari render_cover()/render_section(), judul di sini digambar
+        # SATU baris tanpa _wrap() sama sekali (grid metrik di bawahnya
+        # posisinya fixed). Judul panjang dulu diam-diam tembus tepi kanan
+        # kanvas (bukan crash — PIL cuma menggambar lebih lebar dari lebar
+        # konten tanpa peduli batas 1920px). Pastikan sekarang textlength-nya
+        # muat di dalam content_w setelah auto-fit turun ukuran font.
+        judul = "PT Bank Rakyat Indonesia (Persero) Tbk — Laporan Kuartal I Tahun 2026 Lengkap"
+        img = render_snapshot(
+            "BBRI", judul,
+            metrics=[("Laba bersih", "14,7 T", "up"), ("NPL", "1,8%", "up")],
+        )
+        self._assert_valid_slide(img)
+
+        # Panggil langsung helper produksi (bukan re-implementasi logikanya)
+        # supaya test ini benar-benar gagal kalau auto-fit-nya rusak/dihapus.
+        content_w = T.WIDTH - 2 * T.MARGIN_X
+        from PIL import Image, ImageDraw
+        from render_slides import _fit_one_line
+        probe = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+        fitted = _fit_one_line(
+            probe, judul, "title",
+            [T.SIZE["title"], 52, 46, 40, 34], content_w,
+        )
+        self.assertLessEqual(probe.textlength(judul, font=fitted), content_w)
+
     def test_render_closing(self):
         img = render_closing("BBCA")
         self._assert_valid_slide(img)
