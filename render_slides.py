@@ -151,11 +151,19 @@ def render_section(index, total, judul, lead, ticker, eyebrow="Analisis"):
     _eyebrow(d, S, x, 296 * S, eyebrow)
 
     if judul:
-        ft = T.font("title", T.SIZE["title"] * S)
+        # Auto-fit sama seperti render_cover: judul section biasanya pendek,
+        # tapi tanpa batas eksplisit judul panjang dulu tembus lead dan
+        # status bar (PIL diam-diam terus menggambar di luar kanvas 1080px,
+        # tidak crash — makanya bug ini lolos sampai divisualkan langsung).
+        for px in (T.SIZE["title"], 52, 46, 40):
+            ft = T.font("title", px * S)
+            judul_lines = _wrap(d, judul, ft, content_w)
+            if len(judul_lines) <= 2:
+                break
         y = 344 * S
-        for ln in _wrap(d, judul, ft, content_w):
+        for ln in judul_lines:
             d.text((x, y), ln, font=ft, fill=T.RGB["text"], anchor="lt")
-            y += int(T.SIZE["title"] * 1.12) * S
+            y += int(px * 1.12) * S
         d.rectangle([x, y + 10 * S, x + 110 * S, y + 16 * S], fill=T.RGB["brand"])
         y += 56 * S
         fl = T.font("body", T.SIZE["lead"] * S)
