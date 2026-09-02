@@ -389,6 +389,23 @@ def upload(run_dir_arg: str, privacy: str = "public", at: str | None = None):
         except Exception as e:
             print(f"⚠️  Thumbnail dilewati: {e}")
 
+    # Caption track: video.srt sudah dibuat create_video() buat burn-in subtitle,
+    # tapi sebelum ini tak pernah diunggah sebagai caption track YouTube --
+    # video panjang jadi tak punya CC yang bisa dicari/diindeks/diterjemahkan
+    # otomatis oleh YouTube, padahal filenya sudah ada gratis di run_dir.
+    srt_path = run_dir / "video.srt"
+    if srt_path.exists():
+        try:
+            youtube.captions().insert(
+                part="snippet",
+                body={"snippet": {"videoId": video_id, "language": "id",
+                                   "name": "Indonesia", "isDraft": False}},
+                media_body=MediaFileUpload(str(srt_path)),
+            ).execute()
+            print("Caption (subtitle) diunggah.")
+        except Exception as e:
+            print(f"⚠️  Caption dilewati: {e}")
+
     if publish_at:
         print(f"\n✅ TERJADWAL: https://youtube.com/watch?v={video_id}")
         print(f"   Akan publik otomatis {slot_wib:%a %d %b %H:%M} WIB. Ubah/awal-kan lewat YouTube Studio kalau perlu.")

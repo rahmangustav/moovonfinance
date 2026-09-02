@@ -10,7 +10,8 @@ SCOPES = [
     "https://www.googleapis.com/auth/youtube.upload",
     "https://www.googleapis.com/auth/youtube.readonly",
     # force-ssl = izin kelola video (perlu untuk edit metadata video lama,
-    # mis. koreksi defaultAudioLanguage lewat videos.update)
+    # mis. koreksi defaultAudioLanguage lewat videos.update; juga dipakai
+    # captions().insert() saat upload() mengunggah caption track dari video.srt)
     "https://www.googleapis.com/auth/youtube.force-ssl",
 ]
 CLIENT_SECRETS = Path(__file__).parent.parent / "config" / "client_secrets.json"
